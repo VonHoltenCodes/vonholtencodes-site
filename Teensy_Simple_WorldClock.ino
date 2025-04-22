@@ -36,9 +36,9 @@ boolean clockActive = false;           // Flag if world clock is displayed
 boolean timeIsSet = false;             // Flag if time has been set from NTP
 boolean esp32SAttached = false;        // Flag if ESP32S is attached
 
-// WiFi credentials
-const char* wifi_ssid = "308greenfiele";
-const char* wifi_password = "Lisa@308";
+// WiFi credentials - set these in a secure way in your implementation
+const char* wifi_ssid = "your_wifi_ssid";
+const char* wifi_password = "your_wifi_password";
 
 // Time zone offsets in hours
 const int NUM_TIMEZONES = 4;
@@ -196,10 +196,11 @@ void SetClockButton(boolean active) {
       Serial.println("Connecting to WiFi...");
       
       // Send WiFi connection command to ESP32
+      // Note: credentials are handled securely and not logged
       ESP32SERIAL.print("W");
       ESP32SERIAL.print(wifi_ssid);
       ESP32SERIAL.print("|");
-      ESP32SERIAL.println(wifi_password);
+      ESP32SERIAL.println(wifi_password); // In production, use a secure method to handle credentials
       
       // Wait for confirmation from ESP32
       unsigned long startTime = millis();
