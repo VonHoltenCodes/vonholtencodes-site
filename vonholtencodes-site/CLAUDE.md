@@ -45,9 +45,10 @@ The site includes:
 5. Hangman game with military-themed words
 6. Avatar creator with customizable SVG elements
 7. Weather app using OpenWeatherMap API
-8. World clock display with multiple time zones
-9. Visitor tracking system
-10. HUD-style custom cursor
+8. Moon Lander game - Canvas-based physics game with Arrow key controls
+9. World clock display with multiple time zones
+10. Visitor tracking system
+11. HUD-style custom cursor
 
 ## API Keys and Security
 

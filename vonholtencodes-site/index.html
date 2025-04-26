@@ -1308,14 +1308,21 @@
                 <div class="button-label">WEATHER</div>
             </div>
             
-            <!-- Cell 8-9: Empty for future features -->
+            <!-- Cell 8: Moon Lander Game -->
             <div class="button-cell">
-                <div class="action-button" style="opacity: 0.5;">
-                    <div style="font-size: 24px; color: #ff4500;">?</div>
+                <div class="action-button" id="moon-lander-button">
+                    <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="32" r="6" fill="#888" stroke="#ff4500" stroke-width="1"/> <!-- Moon -->
+                        <rect x="17" y="10" width="6" height="8" fill="#fff" stroke="#ff4500" stroke-width="1"/> <!-- Lander body -->
+                        <line x1="17" y1="18" x2="14" y2="22" stroke="#fff" stroke-width="1"/> <!-- Left leg -->
+                        <line x1="23" y1="18" x2="26" y2="22" stroke="#fff" stroke-width="1"/> <!-- Right leg -->
+                        <path d="M20,24 L20,20" stroke="#f50" stroke-width="2" stroke-dasharray="1,1"/> <!-- Thrust -->
+                    </svg>
                 </div>
-                <div class="button-label">COMING SOON</div>
+                <div class="button-label">MOON LANDER</div>
             </div>
             
+            <!-- Cell 9: Empty for future features -->
             <div class="button-cell">
                 <div class="action-button" style="opacity: 0.5;">
                     <div style="font-size: 24px; color: #ff4500;">?</div>
@@ -3453,8 +3460,7 @@
         weatherModal.className = 'modal';
         
         // API key for OpenWeatherMap
-        // API key should be kept private and not committed to public repositories
-        const weatherApiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual API key in production
+        const weatherApiKey = '2512cd4aeac664aaefe7e1338c48b0ba';
         
         // Create weather modal content
         weatherModal.innerHTML = `
@@ -3939,6 +3945,55 @@
             if (!weatherAppButton.dataset.initialized) {
                 initWeatherApp();
                 weatherAppButton.dataset.initialized = 'true';
+            }
+        });
+        
+        // -------------------- Moon Lander Game --------------------
+        const moonLanderButton = document.getElementById('moon-lander-button');
+        const moonLanderModal = document.createElement('div');
+        moonLanderModal.id = 'moon-lander-modal';
+        moonLanderModal.className = 'modal';
+        
+        // Create moon lander modal content
+        moonLanderModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">MOON LANDER MISSION</div>
+                    <button class="close-btn" id="close-moon-lander">&times;</button>
+                </div>
+                <div class="moon-lander-container">
+                    <iframe src="moon_lander.html" width="800" height="600" frameborder="0"></iframe>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(moonLanderModal);
+        
+        // Add moon lander styles
+        const moonLanderStyles = document.createElement('style');
+        moonLanderStyles.textContent = `
+            .moon-lander-container {
+                width: 800px;
+                height: 600px;
+                overflow: hidden;
+                background: #000;
+            }
+        `;
+        document.head.appendChild(moonLanderStyles);
+        
+        // Add event listeners for moon lander
+        moonLanderButton.addEventListener('click', () => {
+            moonLanderModal.style.display = 'flex';
+        });
+        
+        // Close modal when X is clicked
+        document.getElementById('close-moon-lander').addEventListener('click', () => {
+            moonLanderModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside the content
+        moonLanderModal.addEventListener('click', (e) => {
+            if (e.target === moonLanderModal) {
+                moonLanderModal.style.display = 'none';
             }
         });
     </script>
