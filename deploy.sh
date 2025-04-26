@@ -78,6 +78,8 @@ fi
 # may need to be modified for your environment.
 # Note: This is a redacted version for GitHub. Server paths, usernames, and specific commands
 # may need to be modified for your environment.
+# Note: This is a redacted version for GitHub. Server paths, usernames, and specific commands
+# may need to be modified for your environment.
 echo "Deployment complete!"
 echo "Website can be accessed at: http://vonholtencodes.com/"
 echo "Admin panel: http://vonholtencodes.com/admin.php"
