@@ -42,7 +42,6 @@ files=(
     "get_counter.php"
     "admin.php"
     "moon_lander.html"
-    "pixel_art.html"
     "info.php"
     "server_status.php"
     ".htaccess"
@@ -57,7 +56,7 @@ run_sudo_command "cp /home/traxx/GITHUB/vonholtencodes-site/.htpasswd /var/www/v
 
 # Set correct permissions
 run_sudo_command "chown -R www-data:www-data /var/www/vonholtencodes.com/public_html/" "Setting ownership"
-run_sudo_command "chmod 644 /var/www/vonholtencodes.com/public_html/{index.html,counter.txt,get_counter.php,admin.php,moon_lander.html,pixel_art.html,info.php,server_status.php,.htaccess}" "Setting file permissions"
+run_sudo_command "chmod 644 /var/www/vonholtencodes.com/public_html/{index.html,counter.txt,get_counter.php,admin.php,moon_lander.html,info.php,server_status.php,.htaccess}" "Setting file permissions"
 run_sudo_command "chmod 644 /var/www/vonholtencodes.com/.htpasswd" "Setting .htpasswd permissions"
 run_sudo_command "chmod 755 /var/www/vonholtencodes.com/public_html/" "Setting directory permissions"
 
@@ -74,10 +73,6 @@ if [ ! -f /etc/apache2/mods-enabled/php*.load ]; then
     run_sudo_command "service apache2 restart" "Restarting Apache"
 fi
 
-# Note: This is a redacted version for GitHub. Server paths, usernames, and specific commands
-# may need to be modified for your environment.
-# Note: This is a redacted version for GitHub. Server paths, usernames, and specific commands
-# may need to be modified for your environment.
 echo "Deployment complete!"
 echo "Website can be accessed at: http://vonholtencodes.com/"
 echo "Admin panel: http://vonholtencodes.com/admin.php"

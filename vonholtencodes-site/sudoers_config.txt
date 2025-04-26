@@ -1,0 +1,15 @@
+# Sample sudoers entry to allow specific commands without password
+# DO NOT implement this without understanding the security implications
+
+# Allow user 'traxx' to run these specific commands without a password
+# Replace /path/to/command with actual command paths you need to run
+traxx ALL=(ALL) NOPASSWD: /usr/bin/cp /home/traxx/GITHUB/vonholtencodes-site/* /var/www/vonholtencodes.com/public_html/*
+traxx ALL=(ALL) NOPASSWD: /usr/bin/chown -R www-data:www-data /var/www/vonholtencodes.com/public_html/
+traxx ALL=(ALL) NOPASSWD: /usr/bin/chmod 644 /var/www/vonholtencodes.com/public_html/*
+traxx ALL=(ALL) NOPASSWD: /usr/bin/chmod 755 /var/www/vonholtencodes.com/public_html/
+
+# Instructions for implementation:
+# 1. Edit the sudoers file using: sudo visudo -f /etc/sudoers.d/vonholtencodes
+# 2. Copy and paste the relevant lines above (after modifying as needed)
+# 3. Save and exit (in visudo, typically Ctrl+O to save, Ctrl+X to exit)
+# 4. Test with a specific command: sudo -l
