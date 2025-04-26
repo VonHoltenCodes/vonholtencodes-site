@@ -16,6 +16,7 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 - Weather app with OpenWeatherMap integration
 - Hangman game with military terminology
 - Moon Lander game with realistic physics
+- Retro "Surfers" visitor counter in footer
 - Fully responsive for mobile devices
 
 ## File Structure
@@ -24,6 +25,9 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 - `index.html.bak` - Original version (MVP) for reference
 - `CLAUDE.md` - Helper notes for website maintenance and updates
 - `moon_lander.html` - Moon Lander game implementation
+- `get_counter.php` - Visitor counter script
+- `counter.txt` - Visitor count storage file
+- `track-visitor.php` - Detailed visitor tracking script
 
 ## Technologies
 
@@ -40,6 +44,8 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 
 ## Recent Updates
 
+- Added retro "Surfers" visitor counter in site footer with blinking effect
+- Implemented persistent counter with session-based tracking to prevent duplicate counts
 - Added Moon Lander game with realistic physics and responsive controls
 - Integrated Moon Lander into the main application grid as the 8th application
 - Fixed avatar creator bug: Solved issue where element references were lost after second edit

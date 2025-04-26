@@ -11,6 +11,9 @@ The website is served from:
 
 - Main HTML file: `/var/www/vonholtencodes.com/public_html/index.html`
 - Visitor tracking script: `/var/www/vonholtencodes.com/public_html/track-visitor.php`
+- Visitor counter script: `/var/www/vonholtencodes.com/public_html/get_counter.php`
+- Visitor counter storage: `/var/www/vonholtencodes.com/public_html/counter.txt`
+- Moon Lander game: `/var/www/vonholtencodes.com/public_html/moon_lander.html`
 - Admin view page: `/var/www/vonholtencodes.com/public_html/admin/view-logs.php`
 
 ## Development Repository
@@ -47,7 +50,7 @@ The site includes:
 7. Weather app using OpenWeatherMap API
 8. Moon Lander game - Canvas-based physics game with Arrow key controls
 9. World clock display with multiple time zones
-10. Visitor tracking system
+10. Visitor tracking system with retro "Surfers" counter
 11. HUD-style custom cursor
 
 ## API Keys and Security
