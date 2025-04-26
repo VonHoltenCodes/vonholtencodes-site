@@ -23,7 +23,10 @@ The website is served from:
 - Visitor counter script: `/var/www/vonholtencodes.com/public_html/get_counter.php`
 - Visitor counter storage: `/var/www/vonholtencodes.com/public_html/counter.txt`
 - Moon Lander game: `/var/www/vonholtencodes.com/public_html/moon_lander.html`
-- Admin view page: `/var/www/vonholtencodes.com/public_html/admin/view-logs.php`
+- Pixel Art Creator: `/var/www/vonholtencodes.com/public_html/pixel_art.html`
+- Admin panel: `/var/www/vonholtencodes.com/public_html/admin.php`
+- Server info diagnostic: `/var/www/vonholtencodes.com/public_html/info.php`
+- Server status: `/var/www/vonholtencodes.com/public_html/server_status.php`
 
 ## Development Repository
 
@@ -34,17 +37,23 @@ The development repository is located at:
 
 ## Commands to Run After Changes
 
-After making changes in the development repository, use these commands to update the live website:
+After making changes in the development repository, use the deployment script to update the live website:
 
 ```bash
-# Copy changes to the live server
-sudo cp /home/traxx/GITHUB/vonholtencodes-site/index.html /var/www/vonholtencodes.com/public_html/
+# Run the deployment script to update all files on the server
+cd /home/traxx/GITHUB/vonholtencodes-site
+./deploy.sh
+
+# Prepare files for GitHub (removes sensitive information)
+./github_prep.sh
 
 # Commit and push changes to GitHub
-cd /home/traxx/GITHUB/vonholtencodes-site
 git add .
 git commit -m "Description of your changes"
 git push origin main
+
+# Restore original files with actual credentials after pushing
+./github_restore.sh
 ```
 
 ## Site Features
@@ -58,9 +67,10 @@ The site includes:
 6. Avatar creator with customizable SVG elements
 7. Weather app using OpenWeatherMap API
 8. Moon Lander game - Canvas-based physics game with Arrow key controls
-9. World clock display with multiple time zones
-10. Visitor tracking system with retro "Surfers" counter
-11. HUD-style custom cursor
+9. Pixel Art Creator - Canvas-based drawing tool with color picker and localStorage saving
+10. World clock display with multiple time zones
+11. Visitor tracking system with retro "Surfers" counter
+12. HUD-style custom cursor
 
 ## API Keys and Security
 
