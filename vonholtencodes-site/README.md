@@ -11,8 +11,10 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 - Machine gun animation for toggling between display modes
 - Hydraulic pipes background design
 - 3x3 grid of interactive applications
-- Avatar creator with customizable features
+- Avatar creator with customizable SVG elements
+- Color mixer tool with RGB/HSL conversion
 - Weather app with OpenWeatherMap integration
+- Hangman game with military terminology
 - Fully responsive for mobile devices
 
 ## File Structure

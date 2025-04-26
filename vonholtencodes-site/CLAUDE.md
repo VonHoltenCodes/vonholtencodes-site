@@ -16,7 +16,9 @@ The website is served from:
 ## Development Repository
 
 The development repository is located at:
-- `/home/traxx/GITHUB/vonholtencodes-site/`
+- Local: `/home/traxx/GITHUB/vonholtencodes-site/`
+- Remote: `git@github.com:VonHoltenCodes/vonholtencodes-site.git`
+- GitHub URL: `https://github.com/VonHoltenCodes/vonholtencodes-site`
 
 ## Commands to Run After Changes
 
@@ -25,6 +27,12 @@ After making changes in the development repository, use these commands to update
 ```bash
 # Copy changes to the live server
 sudo cp /home/traxx/GITHUB/vonholtencodes-site/index.html /var/www/vonholtencodes.com/public_html/
+
+# Commit and push changes to GitHub
+cd /home/traxx/GITHUB/vonholtencodes-site
+git add .
+git commit -m "Description of your changes"
+git push origin main
 ```
 
 ## Site Features
@@ -32,13 +40,26 @@ sudo cp /home/traxx/GITHUB/vonholtencodes-site/index.html /var/www/vonholtencode
 The site includes:
 1. Interactive F-14 entry animation
 2. 3x3 button grid with various interactive applications
-3. Color mixer tool
-4. Night mode toggle
-5. Hangman game
-6. Avatar creator
-7. Weather app
-8. World clock display
+3. Color mixer tool - interactive RGB/HSL color mixing and conversion
+4. Night mode toggle with machine gun animation
+5. Hangman game with military-themed words
+6. Avatar creator with customizable SVG elements
+7. Weather app using OpenWeatherMap API
+8. World clock display with multiple time zones
 9. Visitor tracking system
+10. HUD-style custom cursor
+
+## API Keys and Security
+
+- Weather API key should NOT be committed to GitHub
+- In the public GitHub repository, replace the actual API key with: `YOUR_API_KEY_HERE`
+- The actual API key is: Check `/var/www/vonholtencodes.com/public_html/index.html` for the live key
+
+## Bug Fixes and Known Issues
+
+- Avatar creator: Fixed issue where selecting options stops working after the second edit
+- Solution: Update entire SVG at once rather than individual elements
+- Weather app: API key activation takes a few hours after registration
 
 ## Admin Access
 
