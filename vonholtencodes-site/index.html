@@ -1,0 +1,3946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>www.VonHoltenCodes.com</title>
+    <!-- Traffic tracking script -->
+    <script>
+        // Function to track visitor information
+        function trackVisitor() {
+            try {
+                const visitorData = {
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    language: navigator.language,
+                    screenResolution: `${window.screen.width}x${window.screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer || 'direct',
+                    pathname: window.location.pathname
+                };
+                
+                // Get visitor's IP and location information via a free API
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(ipData => {
+                        // Combine all data
+                        const fullData = {
+                            ...visitorData,
+                            ip: ipData.ip || 'unknown',
+                            city: ipData.city || 'unknown',
+                            region: ipData.region || 'unknown',
+                            country: ipData.country_name || 'unknown',
+                            isp: ipData.org || 'unknown'
+                        };
+                        
+                        // Send data to our server-side storage script
+                        fetch('/track-visitor.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(fullData)
+                        })
+                        .catch(error => {
+                            console.error('Tracking API error:', error);
+                            // Save to localStorage as fallback
+                            saveToLocalStorage(fullData);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('IP API error:', error);
+                        // Save to localStorage without IP data
+                        saveToLocalStorage(visitorData);
+                    });
+            } catch (error) {
+                console.error('Tracking error:', error);
+            }
+        }
+        
+        // Save visitor data to localStorage
+        function saveToLocalStorage(data) {
+            try {
+                // Get existing visitor log or create new one
+                let visitorLog = JSON.parse(localStorage.getItem('visitorLog') || '[]');
+                
+                // Add new entry
+                visitorLog.push(data);
+                
+                // Limit storage to most recent 1000 entries
+                if (visitorLog.length > 1000) {
+                    visitorLog = visitorLog.slice(-1000);
+                }
+                
+                // Save back to localStorage
+                localStorage.setItem('visitorLog', JSON.stringify(visitorLog));
+            } catch (error) {
+                console.error('localStorage error:', error);
+            }
+        }
+        
+        // Track visitor when page loads
+        window.addEventListener('DOMContentLoaded', trackVisitor);
+    </script>
+    <style>
+        :root {
+            --cursor-color: #00ff00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111111;
+            color: #ff4500; /* Retro orange */
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            cursor: none; /* Hide default cursor */
+            position: relative;
+        }
+
+        /* Background Hydraulic Pipes */
+        .hydraulic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .pipe {
+            position: absolute;
+            background-color: #555555;
+            border: 1px solid #777777;
+        }
+        .pipe-horizontal {
+            height: 10px;
+        }
+        .pipe-vertical {
+            width: 10px;
+        }
+        .connector {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #666666;
+            border: 2px solid #888888;
+            border-radius: 50%;
+        }
+
+        /* Custom cursor (F-14 Tomcat HUD style) */
+        #custom-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 9999;
+            background: transparent;
+            border: 2px solid var(--cursor-color);
+            border-radius: 50%;
+            box-sizing: border-box;
+            transform: translate(-50%, -50%); /* Center the click point */
+        }
+        #custom-cursor::before,
+        #custom-cursor::after {
+            content: '';
+            position: absolute;
+            background: var(--cursor-color);
+        }
+        #custom-cursor::before {
+            width: 2px;
+            height: 24px;
+            top: 8px;
+            left: 19px;
+        }
+        #custom-cursor::after {
+            width: 24px;
+            height: 2px;
+            left: 8px;
+            top: 19px;
+        }
+        #custom-cursor .tick {
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: var(--cursor-color);
+        }
+        #custom-cursor .tick:nth-child(1) { top: 0; left: 19px; }
+        #custom-cursor .tick:nth-child(2) { bottom: 0; left: 19px; }
+        #custom-cursor .tick:nth-child(3) { left: 0; top: 19px; }
+        #custom-cursor .tick:nth-child(4) { right: 0; top: 19px; }
+
+        /* Night Ops Mode (Night Vision) */
+        body.shred-gnar {
+            background-color: #000000;
+            color: #00ff00; /* Night vision green */
+        }
+        body.shred-gnar #custom-cursor,
+        body.shred-gnar #custom-cursor::before,
+        body.shred-gnar #custom-cursor::after,
+        body.shred-gnar #custom-cursor .tick {
+            border-color: #00ff00;
+            background: #00ff00;
+        }
+        body.shred-gnar .panel,
+        body.shred-gnar .timer,
+        body.shred-gnar .clock-display,
+        body.shred-gnar .service-clocks,
+        body.shred-gnar .modal-content {
+            background: rgba(0, 20, 0, 0.8);
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        body.shred-gnar .button-label,
+        body.shred-gnar .footer,
+        body.shred-gnar .shred-gnar-btn,
+        body.shred-gnar .target {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+        
+        body.shred-gnar .button-grid {
+            border-color: #00ff00;
+            background: rgba(0, 20, 0, 0.5);
+        }
+        
+        body.shred-gnar .action-button {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+        
+        body.shred-gnar .action-button:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+        }
+        
+        body.shred-gnar .action-button::before {
+            background: radial-gradient(circle, #00ff00, transparent);
+        }
+        body.shred-gnar .bullet {
+            background-color: #00ff00;
+        }
+        body.shred-gnar .machine-gun {
+            border-color: #00ff00;
+        }
+        body.shred-gnar .machine-gun::before {
+            border-left-color: #00ff00;
+            border-right-color: #00ff00;
+        }
+        body.shred-gnar .target::before,
+        body.shred-gnar .target::after {
+            background-color: #00ff00;
+        }
+        body.shred-gnar .github-button {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+        body.shred-gnar .github-button::before {
+            background: radial-gradient(circle, #00ff00, transparent);
+        }
+        body.shred-gnar .github-button:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+        }
+        body.shred-gnar .sim-button::after {
+            border-color: #00ff00;
+        }
+        body.shred-gnar .sim-button::before {
+            background: 
+                radial-gradient(circle at center, transparent 14px, #00ff00 14px, #00ff00 16px, transparent 16px),
+                linear-gradient(to right, transparent 39px, #00ff00 39px, #00ff00 41px, transparent 41px),
+                linear-gradient(to bottom, transparent 39px, #00ff00 39px, #00ff00 41px, transparent 41px);
+        }
+        body.shred-gnar .color-mixer-button::before {
+            background: 
+                radial-gradient(circle at 20px 20px, #ff0000 10px, transparent 10px),
+                radial-gradient(circle at 40px 20px, #00ff00 10px, transparent 10px),
+                radial-gradient(circle at 20px 40px, #0000ff 10px, transparent 10px),
+                radial-gradient(circle at 40px 40px, #ffff00 10px, transparent 10px);
+        }
+        
+        /* Color Mixer Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            overflow: auto;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: rgba(30, 30, 30, 0.9);
+            border: 2px solid #ff4500;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 20px;
+            animation: modalFadeIn 0.3s;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff4500;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: #ff4500;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ff4500;
+            font-size: 28px;
+            cursor: none;
+        }
+        
+        .close-btn:hover {
+            color: #ff7700;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Color wheel and mixer components */
+        .color-mixer-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .color-wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        
+        .color-wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            position: relative;
+            cursor: none;
+            border: 2px solid #ff4500;
+            /* Explicitly define each color at specific angles */
+            background: 
+                radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.2) 31%, transparent 32%),
+                conic-gradient(
+                    red 0deg, 
+                    orange 51.4deg, 
+                    yellow 102.8deg, 
+                    lime 154.3deg, 
+                    cyan 205.7deg, 
+                    blue 257.1deg, 
+                    magenta 308.6deg, 
+                    red 360deg
+            );
+        }
+        
+        .color-wheel::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #333;
+            border: 2px solid #ff4500;
+        }
+        
+        /* Add markers to help with alignment */
+        .color-wheel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+            transform: translateX(-50%);
+            z-index: 5;
+        }
+        
+        /* This marker should point to red */
+        .top-marker {
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            line-height: 1;
+            text-shadow: 0 0 3px black;
+            z-index: 6;
+        }
+        
+        .color-selector {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .color-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .selected-color {
+            width: 50px;
+            height: 30px;
+            border: 2px solid #ff4500;
+        }
+        
+        .color-slots {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .color-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #ff4500;
+            background: #333;
+            cursor: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .color-slot.filled {
+            border-style: solid;
+        }
+        
+        .color-slot .remove-color {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #ff4500;
+            color: #000;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+        }
+        
+        .color-slot.filled .remove-color {
+            display: flex;
+        }
+        
+        .color-slot .remove-color:hover {
+            background: #ff7700;
+        }
+        
+        .color-slot .add-icon {
+            font-size: 24px;
+            color: #ff4500;
+        }
+        
+        .color-slot.filled .add-icon {
+            display: none;
+        }
+        
+        .result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            border-top: 1px dashed #ff4500;
+            padding-top: 20px;
+        }
+        
+        .result-color {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ff4500;
+            position: relative;
+        }
+        
+        .result-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .color-value {
+            font-family: monospace;
+            color: #ff4500;
+            font-size: 16px;
+            padding: 5px 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #ff4500;
+        }
+        
+        .copy-btn {
+            background: #333;
+            color: #ff4500;
+            border: 1px solid #ff4500;
+            padding: 5px 10px;
+            font-family: monospace;
+            cursor: none;
+        }
+        
+        .copy-btn:hover {
+            background: #444;
+        }
+        
+        .mixing-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .mixing-method {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ff4500;
+        }
+        
+        .mixing-method input {
+            cursor: none;
+        }
+        
+        .reset-btn {
+            background: #333;
+            color: #ff4500;
+            border: 1px solid #ff4500;
+            padding: 5px 10px;
+            font-family: monospace;
+            cursor: none;
+            margin-top: 10px;
+        }
+        
+        .reset-btn:hover {
+            background: #444;
+        }
+        
+        /* Night vision mode adaptations */
+        body.shred-gnar .modal-content,
+        body.shred-gnar .color-wheel,
+        body.shred-gnar .color-slot,
+        body.shred-gnar .result-color,
+        body.shred-gnar .color-value,
+        body.shred-gnar .copy-btn,
+        body.shred-gnar .reset-btn {
+            border-color: #00ff00;
+        }
+        
+        body.shred-gnar .modal-title,
+        body.shred-gnar .close-btn,
+        body.shred-gnar .mixing-method,
+        body.shred-gnar .color-value,
+        body.shred-gnar .copy-btn,
+        body.shred-gnar .reset-btn,
+        body.shred-gnar .color-slot .add-icon,
+        body.shred-gnar .modal-header {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+        
+        body.shred-gnar .color-slot .remove-color {
+            background: #00ff00;
+        }
+        
+        body.shred-gnar .color-slot .remove-color:hover {
+            background: #00ff99;
+        }
+
+        /* Main container */
+        .container {
+            text-align: left;
+            padding: 20px;
+            display: none; /* Hidden until entrance animation */
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid #ff4500;
+            border-radius: 5px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+                margin: 50px 0;
+            }
+            body {
+                padding: 20px 0;
+            }
+        }
+
+        /* Header */
+        .header {
+            font-size: 36px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 2px;
+            text-align: left;
+            position: relative;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff4500, transparent);
+        }
+        .header span.thick {
+            font-weight: bold;
+        }
+        .header span.thin {
+            font-weight: normal;
+            font-size: 24px;
+        }
+
+        /* Panel style for components */
+        .panel {
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid #ff4500;
+            color: #ff4500;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 16px;
+            position: relative;
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px dashed rgba(255, 69, 0, 0.3);
+            pointer-events: none;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ff4500;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        /* Age Timer */
+        .timer {
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* World Clock */
+        .clock-display {
+            font-size: 16px;
+        }
+        .clock-display div {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .clock-location {
+            text-transform: uppercase;
+        }
+
+        /* Button Grid Layout */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.5);
+            border: 1px dashed #ff4500;
+        }
+        
+        /* Button Cell */
+        .button-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Round Button Style (shared by all action buttons) */
+        .action-button {
+            width: 80px;
+            height: 80px;
+            background: #333333;
+            border: 4px solid #ff4500;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: none;
+        }
+        .action-button::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ff4500, transparent);
+            opacity: 0.2;
+            border-radius: 50%;
+        }
+        .action-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+        }
+        .action-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Button Label */
+        .button-label {
+            font-size: 16px;
+            color: #ff4500;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        /* Combat Sim Button with crosshair */
+        .sim-button {
+            background: #333333;
+            position: relative;
+            overflow: hidden;
+        }
+        .sim-button::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ff4500;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .sim-button::before {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: 
+                radial-gradient(circle at center, transparent 14px, #ff4500 14px, #ff4500 16px, transparent 16px),
+                linear-gradient(to right, transparent 39px, #ff4500 39px, #ff4500 41px, transparent 41px),
+                linear-gradient(to bottom, transparent 39px, #ff4500 39px, #ff4500 41px, transparent 41px);
+            opacity: 0.8;
+            border-radius: 50%;
+        }
+        .sim-button:hover::before {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Color Mixer Button with palette pattern */
+        .color-mixer-button {
+            background: #333333;
+            position: relative;
+            overflow: hidden;
+        }
+        .color-mixer-button::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: 
+                radial-gradient(circle at 20px 20px, #ff0000 10px, transparent 10px),
+                radial-gradient(circle at 40px 20px, #00ff00 10px, transparent 10px),
+                radial-gradient(circle at 20px 40px, #0000ff 10px, transparent 10px),
+                radial-gradient(circle at 40px 40px, #ffff00 10px, transparent 10px);
+            opacity: 0.8;
+        }
+        .color-mixer-button:hover::before {
+            animation: rotate 3s infinite linear;
+        }
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .github-label {
+            font-size: 16px;
+            color: #ff4500;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* Shred Gnar Button (Machine Gun style) */
+        .shred-gnar-section {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .shred-gnar-btn {
+            background: #333333;
+            border: 2px solid #ff4500;
+            color: #ff4500;
+            padding: 10px 20px;
+            font-family: monospace;
+            font-size: 16px;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .shred-gnar-btn:hover {
+            background: #444444;
+        }
+        .machine-gun {
+            display: none;
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 30px;
+            background-color: #444444;
+            border: 2px solid #ff4500;
+        }
+        .machine-gun::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 15px;
+            width: 10px;
+            height: 15px;
+            background-color: #444444;
+            border-left: 2px solid #ff4500;
+            border-right: 2px solid #ff4500;
+        }
+        .bullet {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #ff4500;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        .target {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ff4500;
+            border-radius: 50%;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+        }
+        .target::before, .target::after {
+            content: '';
+            position: absolute;
+            background-color: #ff4500;
+        }
+        .target::before {
+            width: 20px;
+            height: 2px;
+            top: 14px;
+            left: 5px;
+        }
+        .target::after {
+            width: 2px;
+            height: 20px;
+            top: 5px;
+            left: 14px;
+        }
+
+        /* Shoot Down the Jet Entrance Animation */
+        .entrance {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        /* Grid overlay */
+        .grid-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
+            z-index: 10;
+        }
+        
+        .grid-cell {
+            background-color: rgba(20, 20, 20, 0.9);
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            cursor: none;
+            z-index: 15;
+        }
+        
+        .grid-cell.hit {
+            animation: cellExplode 0.6s forwards;
+            overflow: hidden;
+            transform-origin: center;
+            position: relative;
+        }
+
+        @keyframes cellExplode {
+            0% { transform: scale(1); opacity: 1; }
+            20% { transform: scale(1.2); opacity: 0.9; background-color: rgba(255, 69, 0, 0.8); }
+            50% { transform: scale(0.8) rotate(15deg); opacity: 0.7; background-color: rgba(255, 69, 0, 0.5); }
+            100% { transform: scale(0) rotate(45deg); opacity: 0; }
+        }
+        
+        /* MiG Jet */
+        .jet-container {
+            position: absolute;
+            width: 50px;
+            height: 36px;
+            z-index: 20;
+            cursor: none;
+            transition: transform 0.2s ease;
+        }
+        
+        .jet {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-origin: center;
+        }
+        
+        .jet-body {
+            position: absolute;
+            top: 8px;
+            left: 5px;
+            width: 40px;
+            height: 20px;
+            background-color: #666666;
+            clip-path: polygon(100% 50%, 85% 0, 10% 0, 0% 50%, 10% 100%, 85% 100%);
+        }
+        
+        .jet-wing-left {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 30px;
+            height: 8px;
+            background-color: #333333;
+            transform: skewX(-20deg);
+            transform-origin: right center;
+        }
+        
+        .jet-wing-right {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: 30px;
+            height: 8px;
+            background-color: #333333;
+            transform: skewX(20deg);
+            transform-origin: right center;
+        }
+        
+        .jet-tail {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 12px;
+            height: 25px;
+            background-color: #333333;
+            clip-path: polygon(100% 40%, 0% 0, 0% 100%, 100% 60%);
+        }
+        
+        .jet-window {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 10px;
+            height: 6px;
+            background-color: #4499ff;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        /* HUD Overlay */
+        .hud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            pointer-events: none;
+        }
+        
+        .target-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--cursor-color);
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .mission-status {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: var(--cursor-color);
+            font-family: monospace;
+            font-size: 14px;
+            text-align: right;
+        }
+        
+        /* Bullet hole and explosion effects */
+        .bullet-hole {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: bulletHoleAppear 0.5s forwards;
+            z-index: 15;
+        }
+        
+        .explosion {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,69,0,0.9) 0%, rgba(255,69,0,0) 70%);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: explosionAppear 0.8s forwards;
+            z-index: 25;
+        }
+        
+        .explosion-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: #ff4500;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 25;
+        }
+        
+        .explosion-ring {
+            position: absolute;
+            border: 2px solid #ff4500;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ringExpand 0.5s forwards;
+            z-index: 24;
+        }
+        
+        @keyframes ringExpand {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+        }
+        
+        /* Skip button */
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(30, 30, 30, 0.7);
+            color: var(--cursor-color);
+            border: 1px solid var(--cursor-color);
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: none;
+            z-index: 50;
+        }
+        
+        @keyframes bulletHoleAppear {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes explosionAppear {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #ff4500;
+            opacity: 0.7;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor">
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="tick"></div>
+    </div>
+
+    <!-- Hydraulic Pipes Background -->
+    <div class="hydraulic-background" id="hydraulic-background"></div>
+
+    <!-- Shoot Down the Jet Entrance Animation -->
+    <div class="entrance" id="entrance">
+        <!-- Grid overlay covering the site -->
+        <div class="grid-container" id="grid-container"></div>
+        
+        <!-- MiG Jet that bounces around -->
+        <div class="jet-container" id="jet-container">
+            <div class="jet">
+                <div class="jet-body"></div>
+                <div class="jet-wing-left"></div>
+                <div class="jet-wing-right"></div>
+                <div class="jet-tail"></div>
+                <div class="jet-window"></div>
+            </div>
+        </div>
+        
+        <!-- HUD Overlay -->
+        <div class="hud-overlay">
+            <div class="target-info" id="target-info">
+                TARGET: MiG-21<br>
+                STATUS: HOSTILE<br>
+                MISSION: ENGAGE AND DESTROY
+            </div>
+            <div class="mission-status" id="mission-status">
+                GRID INTEGRITY: 100%<br>
+                SHOTS FIRED: 0
+            </div>
+        </div>
+        
+        <!-- Skip button for accessibility -->
+        <button class="skip-btn" id="skip-btn">SKIP MISSION</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="container">
+        <div class="header">
+            <span class="thick">VonHolten</span><br>
+            <span class="thick">Codes</span><br>
+            <span class="thin">.com</span>
+        </div>
+
+        <!-- Age Timer -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>SERVICE RECORD SINCE</span>
+                <span>1984</span>
+            </div>
+            <div class="timer" id="timer">Calculating age...</div>
+        </div>
+
+        <!-- World Clock -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>MISSION CLOCK</span>
+                <span>ZULU</span>
+            </div>
+            <div class="clock-display" id="clock-display">
+                <div>
+                    <span class="clock-location">SEOUL</span>
+                    <span id="seoul-time"></span>
+                </div>
+                <div>
+                    <span class="clock-location">LONDON</span>
+                    <span id="london-time"></span>
+                </div>
+                <div>
+                    <span class="clock-location">BETHLEHEM</span>
+                    <span id="bethlehem-time"></span>
+                </div>
+                <div>
+                    <span class="clock-location">CHICAGO</span>
+                    <span id="chicago-time"></span>
+                </div>
+                <div>
+                    <span class="clock-location">SYDNEY</span>
+                    <span id="sydney-time"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button Grid Layout -->
+        <div class="button-grid">
+            <!-- Cell 1: GitHub -->
+            <div class="button-cell">
+                <a href="https://www.github.com/vonholtencodes" target="_blank" class="action-button" id="github-button"></a>
+                <div class="button-label">GITHUB</div>
+            </div>
+            
+            <!-- Cell 2: Combat Simulation -->
+            <div class="button-cell">
+                <div class="action-button sim-button" id="sim-button"></div>
+                <div class="button-label">COMBAT SIM</div>
+            </div>
+            
+            <!-- Cell 3: Color Mixer -->
+            <div class="button-cell">
+                <div class="action-button color-mixer-button" id="color-mixer-button"></div>
+                <div class="button-label">COLOR MIXER</div>
+            </div>
+            
+            <!-- Cell 4: Night Vision Toggle -->
+            <div class="button-cell">
+                <div class="action-button" id="night-vision-button">
+                    <div class="machine-gun" id="machine-gun"></div>
+                </div>
+                <div class="button-label">NIGHT OPS</div>
+                <div class="target" id="target" style="display: none;"></div>
+            </div>
+            
+            <!-- Cell 5: Hangman Game (Placeholder) -->
+            <div class="button-cell">
+                <div class="action-button" id="hangman-button">
+                    <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="10" y1="35" x2="30" y2="35" stroke="#ff4500" stroke-width="2"/>
+                        <line x1="20" y1="35" x2="20" y2="5" stroke="#ff4500" stroke-width="2"/>
+                        <line x1="20" y1="5" x2="30" y2="5" stroke="#ff4500" stroke-width="2"/>
+                        <line x1="30" y1="5" x2="30" y2="10" stroke="#ff4500" stroke-width="2"/>
+                        <circle cx="30" cy="15" r="5" stroke="#ff4500" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <div class="button-label">HANGMAN</div>
+            </div>
+            
+            <!-- Cell 6: Avatar Creator -->
+            <div class="button-cell">
+                <div class="action-button" id="avatar-creator-button">
+                    <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="15" r="10" stroke="#ff4500" stroke-width="2" fill="none"/>
+                        <path d="M10 35 Q20 25 30 35" stroke="#ff4500" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <div class="button-label">AVATAR</div>
+            </div>
+            
+            <!-- Cell 7: Weather App -->
+            <div class="button-cell">
+                <div class="action-button" id="weather-app-button">
+                    <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="15" r="8" stroke="#ff4500" stroke-width="2" fill="none"/>
+                        <line x1="20" y1="3" x2="20" y2="7" stroke="#ff4500" stroke-width="2"/>
+                        <line x1="20" y1="23" x2="20" y2="27" stroke="#ff4500" stroke-width="2"/>
+                        <line x1="8" y1="15" x2="12" y2="15" stroke="#ff4500" stroke-width="2"/>
+                        <line x1="28" y1="15" x2="32" y2="15" stroke="#ff4500" stroke-width="2"/>
+                        <path d="M13 30 Q20 35 27 30" stroke="#ff4500" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+                <div class="button-label">WEATHER</div>
+            </div>
+            
+            <!-- Cell 8-9: Empty for future features -->
+            <div class="button-cell">
+                <div class="action-button" style="opacity: 0.5;">
+                    <div style="font-size: 24px; color: #ff4500;">?</div>
+                </div>
+                <div class="button-label">COMING SOON</div>
+            </div>
+            
+            <div class="button-cell">
+                <div class="action-button" style="opacity: 0.5;">
+                    <div style="font-size: 24px; color: #ff4500;">?</div>
+                </div>
+                <div class="button-label">COMING SOON</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">Created by VonHoltenCodes 2025</div>
+    </div>
+
+    <script>
+        // Generate Hydraulic Pipes Background
+        const hydraulicBackground = document.getElementById('hydraulic-background');
+        const pipesCount = 12;
+        
+        // Create horizontal pipes
+        for (let i = 0; i < pipesCount; i++) {
+            const pipe = document.createElement('div');
+            pipe.className = 'pipe pipe-horizontal';
+            pipe.style.top = `${Math.random() * 100}%`;
+            pipe.style.left = '0';
+            pipe.style.width = `${Math.random() * 30 + 20}%`;
+            hydraulicBackground.appendChild(pipe);
+            
+            // Add connector
+            const connector = document.createElement('div');
+            connector.className = 'connector';
+            connector.style.top = '-5px';
+            connector.style.right = '-10px';
+            pipe.appendChild(connector);
+        }
+        
+        // Create vertical pipes
+        for (let i = 0; i < pipesCount; i++) {
+            const pipe = document.createElement('div');
+            pipe.className = 'pipe pipe-vertical';
+            pipe.style.left = `${Math.random() * 100}%`;
+            pipe.style.top = '0';
+            pipe.style.height = `${Math.random() * 30 + 20}%`;
+            hydraulicBackground.appendChild(pipe);
+            
+            // Add connector
+            const connector = document.createElement('div');
+            connector.className = 'connector';
+            connector.style.left = '-5px';
+            connector.style.bottom = '-10px';
+            pipe.appendChild(connector);
+        }
+
+        // Custom Cursor
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Game variables
+        const entrance = document.getElementById('entrance');
+        const container = document.getElementById('container');
+        const gridContainer = document.getElementById('grid-container');
+        const jetContainer = document.getElementById('jet-container');
+        const skipBtn = document.getElementById('skip-btn');
+        const missionStatus = document.getElementById('mission-status');
+        
+        let shotsFired = 0;
+        let gridCells = [];
+        let gridIntegrity = 100;
+        let isJetHit = false;
+        let jetPosition = { x: 100, y: 100 };
+        let jetVelocity = { x: 3.6, y: 2.4 }; // 20% faster
+        let animationFrameId;
+        
+        // Create the grid cells
+        function createGrid() {
+            const rows = 12;
+            const cols = 12;
+            
+            for (let i = 0; i < rows * cols; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.addEventListener('click', handleGridCellClick);
+                cell.addEventListener('touchstart', handleGridCellClick);
+                gridContainer.appendChild(cell);
+                gridCells.push(cell);
+            }
+            
+            // Add click event to the entire entrance area to handle clicks between grid cells
+            entrance.addEventListener('click', handleGridCellClick);
+            entrance.addEventListener('touchstart', handleGridCellClick);
+        }
+        
+        // Position and animate the jet
+        function moveJet() {
+            if (isJetHit) return;
+            
+            // Update jet position based on velocity
+            jetPosition.x += jetVelocity.x;
+            jetPosition.y += jetVelocity.y;
+            
+            // Bounce off the walls
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            if (jetPosition.x <= 0 || jetPosition.x >= windowWidth - 50) {
+                jetVelocity.x = -jetVelocity.x;
+                // Add slight random variation
+                jetVelocity.y += (Math.random() - 0.5) * 2;
+            }
+            
+            if (jetPosition.y <= 0 || jetPosition.y >= windowHeight - 40) {
+                jetVelocity.y = -jetVelocity.y;
+                // Add slight random variation
+                jetVelocity.x += (Math.random() - 0.5) * 2;
+            }
+            
+            // Limit velocity
+            jetVelocity.x = Math.max(-5, Math.min(5, jetVelocity.x));
+            jetVelocity.y = Math.max(-5, Math.min(5, jetVelocity.y));
+            
+            // Apply position to the jet element
+            jetContainer.style.left = jetPosition.x + 'px';
+            jetContainer.style.top = jetPosition.y + 'px';
+            
+            // Rotate jet based on movement direction
+            const angle = Math.atan2(jetVelocity.y, jetVelocity.x);
+            // Add 180 degrees (π radians) to make jet face the direction it's moving
+            jetContainer.style.transform = `rotate(${angle + Math.PI}rad)`;
+            
+            // Continue animation
+            animationFrameId = requestAnimationFrame(moveJet);
+        }
+        
+        // Handle click on grid cell
+        function handleGridCellClick(e) {
+            if (isJetHit) return;
+            
+            // Get click coordinates (supporting both mouse and touch)
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            if (!x || !y) return;
+            
+            shotsFired++;
+            updateMissionStatus();
+            
+            // Create bullet hole effect at click position
+            const bulletHole = document.createElement('div');
+            bulletHole.className = 'bullet-hole';
+            bulletHole.style.left = `${x - 10}px`;
+            bulletHole.style.top = `${y - 10}px`;
+            entrance.appendChild(bulletHole);
+            
+            // Remove bullet hole after animation
+            setTimeout(() => {
+                bulletHole.remove();
+            }, 2000);
+            
+            // Mark grid cell as hit
+            if (!e.target.classList.contains('hit') && e.target.classList.contains('grid-cell')) {
+                e.target.classList.add('hit');
+                
+                // Add explosion particles
+                createExplosionParticles(x, y);
+                
+                // Calculate grid integrity
+                const hitCells = document.querySelectorAll('.grid-cell.hit').length;
+                gridIntegrity = Math.max(0, 100 - Math.round((hitCells / gridCells.length) * 100));
+                updateMissionStatus();
+            }
+            
+            // Function to create explosion particles
+            function createExplosionParticles(x, y) {
+                // Create 8 particles in different directions
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'absolute';
+                    particle.style.width = '4px';
+                    particle.style.height = '4px';
+                    particle.style.backgroundColor = '#ff4500';
+                    particle.style.borderRadius = '50%';
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    particle.style.zIndex = '25';
+                    
+                    // Set random direction and speed
+                    const angle = (i / 8) * Math.PI * 2;
+                    const speed = 2 + Math.random() * 3;
+                    const dirX = Math.cos(angle) * speed;
+                    const dirY = Math.sin(angle) * speed;
+                    
+                    entrance.appendChild(particle);
+                    
+                    // Animate particle
+                    let posX = x;
+                    let posY = y;
+                    let opacity = 1;
+                    let gravity = 0.1;
+                    let velY = dirY;
+                    
+                    function animateParticle() {
+                        posX += dirX;
+                        velY += gravity;
+                        posY += velY;
+                        opacity -= 0.02;
+                        
+                        particle.style.left = `${posX}px`;
+                        particle.style.top = `${posY}px`;
+                        particle.style.opacity = opacity;
+                        
+                        if (opacity > 0) {
+                            requestAnimationFrame(animateParticle);
+                        } else {
+                            particle.remove();
+                        }
+                    }
+                    
+                    requestAnimationFrame(animateParticle);
+                }
+            }
+            
+            // Check if click hit the jet
+            const jetRect = jetContainer.getBoundingClientRect();
+            if (
+                x >= jetRect.left &&
+                x <= jetRect.right &&
+                y >= jetRect.top &&
+                y <= jetRect.bottom
+            ) {
+                handleJetHit(x, y);
+            }
+            
+            // Prevent further propagation
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        
+        // Handle successful hit on the jet
+        function handleJetHit(x, y) {
+            isJetHit = true;
+            cancelAnimationFrame(animationFrameId);
+            
+            // Create main explosion effect
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = `${x - 50}px`;
+            explosion.style.top = `${y - 50}px`;
+            entrance.appendChild(explosion);
+            
+            // Create explosion ring
+            const ring1 = document.createElement('div');
+            ring1.className = 'explosion-ring';
+            ring1.style.left = `${x}px`;
+            ring1.style.top = `${y}px`;
+            ring1.style.width = '40px';
+            ring1.style.height = '40px';
+            entrance.appendChild(ring1);
+            
+            // Create second explosion ring with delay
+            setTimeout(() => {
+                const ring2 = document.createElement('div');
+                ring2.className = 'explosion-ring';
+                ring2.style.left = `${x}px`;
+                ring2.style.top = `${y}px`;
+                ring2.style.width = '80px';
+                ring2.style.height = '80px';
+                entrance.appendChild(ring2);
+            }, 100);
+            
+            // Create explosion particles
+            for (let i = 0; i < 24; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'explosion-particle';
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                entrance.appendChild(particle);
+                
+                // Set random direction and speed
+                const angle = (i / 24) * Math.PI * 2 + (Math.random() * 0.3);
+                const speed = 5 + Math.random() * 15;
+                const distance = 20 + Math.random() * 100;
+                const duration = 500 + Math.random() * 1000;
+                
+                // Animate particle
+                particle.animate([
+                    { 
+                        transform: `translate(-50%, -50%)`,
+                        opacity: 1
+                    },
+                    { 
+                        transform: `translate(
+                            calc(-50% + ${Math.cos(angle) * distance}px), 
+                            calc(-50% + ${Math.sin(angle) * distance}px)
+                        )`,
+                        opacity: 0
+                    }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                }).onfinish = () => particle.remove();
+            }
+            
+            // Hide the jet with explosion
+            jetContainer.style.opacity = '0';
+            jetContainer.style.transition = 'opacity 0.2s';
+            
+            // Update mission status
+            missionStatus.innerHTML = `
+                GRID INTEGRITY: ${gridIntegrity}%<br>
+                TARGET DESTROYED<br>
+                SHOTS FIRED: ${shotsFired}
+            `;
+            
+            // Clear all grid cells with cascade effect
+            gridCells.forEach((cell, index) => {
+                setTimeout(() => {
+                    cell.classList.add('hit');
+                }, index * 10);
+            });
+            
+            // Transition to main content after delay
+            setTimeout(() => {
+                entrance.style.opacity = '0';
+                entrance.style.transition = 'opacity 1s';
+                setTimeout(() => {
+                    entrance.style.display = 'none';
+                    container.style.display = 'block';
+                }, 1000);
+            }, 2500);
+        }
+        
+        // Update mission status display
+        function updateMissionStatus() {
+            missionStatus.innerHTML = `
+                GRID INTEGRITY: ${gridIntegrity}%<br>
+                SHOTS FIRED: ${shotsFired}
+            `;
+        }
+        
+        // Skip button functionality
+        skipBtn.addEventListener('click', () => {
+            cancelAnimationFrame(animationFrameId);
+            entrance.style.opacity = '0';
+            entrance.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                entrance.style.display = 'none';
+                container.style.display = 'block';
+            }, 500);
+        });
+        
+        // Initialize game
+        function initGame() {
+            createGrid();
+            
+            // Position jet randomly
+            jetPosition.x = Math.random() * (window.innerWidth - 100) + 50;
+            jetPosition.y = Math.random() * (window.innerHeight - 100) + 50;
+            
+            // Apply initial position
+            jetContainer.style.left = jetPosition.x + 'px';
+            jetContainer.style.top = jetPosition.y + 'px';
+            
+            // Start animation
+            moveJet();
+        }
+        
+        // Start the game
+        initGame();
+
+        // Age Timer
+        const startDate = new Date('1984-05-27T13:27:00');
+        const timerDisplay = document.getElementById('timer');
+        
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.42));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.42)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            timerDisplay.innerHTML = `
+                <div>SERVICE TIME: ${years}Y ${months}M ${days}D | ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
+            `;
+        }
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // World Clock
+        function updateClock() {
+            const now = new Date();
+            const options = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+
+            const cities = [
+                { id: 'seoul-time', offset: 9 }, // Seoul: UTC+9
+                { id: 'london-time', offset: 0 }, // London: UTC+0
+                { id: 'bethlehem-time', offset: 3 }, // Bethlehem: UTC+3
+                { id: 'chicago-time', offset: -5 }, // Chicago: UTC-5
+                { id: 'sydney-time', offset: 10 }  // Sydney: UTC+10
+            ];
+
+            cities.forEach(city => {
+                const cityTime = new Date(now.getTime() + city.offset * 60 * 60 * 1000);
+                document.getElementById(city.id).textContent = cityTime.toLocaleTimeString('en-US', options);
+            });
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // GitHub Button
+        const githubButton = document.getElementById('github-button');
+        githubButton.addEventListener('mouseover', () => {
+            githubButton.style.boxShadow = '0 0 20px rgba(255, 69, 0, 0.7)';
+        });
+        githubButton.addEventListener('mouseout', () => {
+            githubButton.style.boxShadow = '0 0 15px rgba(255, 69, 0, 0.3)';
+        });
+        
+        // Combat Sim Button
+        const simButton = document.getElementById('sim-button');
+        simButton.addEventListener('click', restartCombatSim);
+        
+        function restartCombatSim() {
+            // Create a firing effect on click
+            const bulletSound = new Audio();
+            bulletSound.volume = 0.2;
+            try {
+                bulletSound.src = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//uQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAsAABHiAAEB0RERERETExMTExMWVlZWVlZZmZmZmZmc3Nzc3Nzc4CAgICAgI2NjY2NjZqampqamp6enp6enqampqampqazs7Ozs7O/v7+/v7/MzMzMzMzZ2dnZ2dna5eXl5eXl8vLy8vLy////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQCkAAAAAAAAAeIqwL8jQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//vAxAAAAAAAJAAAAABESklFTEQAAABURU5DT0RFUgAAAARMWVhBAAAATElCQVBJQwBJRDMAAAAAAAAAAAAAIwAGAAgAAQGCAIAAAP/jQgALVkgEAAEA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUQ==';
+            } catch(e) {
+                // Ignore audio errors
+            }
+            bulletSound.play().catch(e => {/* ignore */});
+            
+            // Show explosion particles around the button
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '5px';
+                particle.style.height = '5px';
+                particle.style.backgroundColor = '#ff4500';
+                particle.style.borderRadius = '50%';
+                particle.style.zIndex = '100';
+                
+                const rect = simButton.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                particle.style.left = `${centerX}px`;
+                particle.style.top = `${centerY}px`;
+                
+                document.body.appendChild(particle);
+                
+                // Animate particle
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 30 + Math.random() * 40;
+                
+                particle.animate([
+                    { transform: `translate(-50%, -50%)`, opacity: 1 },
+                    { 
+                        transform: `translate(
+                            calc(-50% + ${Math.cos(angle) * distance}px), 
+                            calc(-50% + ${Math.sin(angle) * distance}px)
+                        )`, 
+                        opacity: 0 
+                    }
+                ], {
+                    duration: 500,
+                    easing: 'ease-out'
+                }).onfinish = () => particle.remove();
+            }
+            
+            // Flash the button
+            simButton.style.boxShadow = '0 0 30px #ff4500';
+            setTimeout(() => {
+                simButton.style.boxShadow = '';
+            }, 300);
+            
+            // Delay before restarting so we can see the effect
+            setTimeout(() => {
+                // Reset all game variables
+                shotsFired = 0;
+                gridIntegrity = 100;
+                isJetHit = false;
+                
+                // Clear previous grid and jet
+                gridContainer.innerHTML = '';
+                gridCells = [];
+                
+                // Hide main container and show entrance again
+                container.style.display = 'none';
+                entrance.style.display = 'flex';
+                entrance.style.opacity = '1';
+                
+                // Reset jet position and make visible
+                jetPosition = { 
+                    x: Math.random() * (window.innerWidth - 100) + 50,
+                    y: Math.random() * (window.innerHeight - 100) + 50
+                };
+                jetVelocity = { x: 3.6, y: 2.4 };
+                jetContainer.style.opacity = '1';
+                jetContainer.style.transition = 'none';
+                
+                // Restart the game
+                initGame();
+            }, 500);
+        }
+
+        // Night Vision Mode with Machine Gun Animation
+        // Get references to all the relevant elements
+        const nightVisionButton = document.getElementById('night-vision-button');
+        const machineGun = document.getElementById('machine-gun');
+        const target = document.getElementById('target');
+        const nightOpsLabel = nightVisionButton.nextElementSibling;
+        
+        // Check current night mode state and update elements if needed
+        if (document.body.classList.contains('shred-gnar')) {
+            nightOpsLabel.textContent = 'DAY OPS';
+            document.documentElement.style.setProperty('--cursor-color', '#00ff00');
+            // Update SVG colors for hangman button
+            document.querySelectorAll('#hangman-button svg line, #hangman-button svg circle').forEach(element => {
+                element.setAttribute('stroke', '#00ff00');
+            });
+        }
+        
+        let isAnimating = false;
+        
+        nightVisionButton.addEventListener('click', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+            
+            // Position and show target
+            target.style.display = 'block';
+            target.style.position = 'absolute';
+            target.style.top = '50%';
+            target.style.right = '-50px';
+            target.style.zIndex = '1000';
+            
+            // Show machine gun
+            machineGun.style.display = 'block';
+            setTimeout(() => {
+                // Show target
+                target.style.opacity = '1';
+                target.style.right = '50px';
+                target.style.transition = 'all 0.5s ease';
+                
+                // Fire bullets
+                let bulletCount = 0;
+                const bulletInterval = setInterval(() => {
+                    if (bulletCount >= 20) {
+                        clearInterval(bulletInterval);
+                        
+                        // Target hit effect
+                        setTimeout(() => {
+                            target.style.transform = 'translateY(-50%) scale(1.5)';
+                            target.style.opacity = '0';
+                            target.style.transition = 'all 0.3s ease';
+                            
+                            // Toggle dark mode
+                            setTimeout(() => {
+                                document.body.classList.toggle('shred-gnar');
+                                nightOpsLabel.textContent = document.body.classList.contains('shred-gnar') ? 'DAY OPS' : 'NIGHT OPS';
+                                
+                                // Update cursor color for night vision mode
+                                if (document.body.classList.contains('shred-gnar')) {
+                                    document.documentElement.style.setProperty('--cursor-color', '#00ff00');
+                                    // Update SVG colors for hangman button
+                                    document.querySelectorAll('#hangman-button svg line, #hangman-button svg circle').forEach(element => {
+                                        element.setAttribute('stroke', '#00ff00');
+                                    });
+                                } else {
+                                    document.documentElement.style.setProperty('--cursor-color', '#ff4500');
+                                    // Update SVG colors for hangman button
+                                    document.querySelectorAll('#hangman-button svg line, #hangman-button svg circle').forEach(element => {
+                                        element.setAttribute('stroke', '#ff4500');
+                                    });
+                                }
+                                
+                                // Reset animation
+                                setTimeout(() => {
+                                    machineGun.style.display = 'none';
+                                    target.style.right = '-50px';
+                                    target.style.transform = 'translateY(-50%)';
+                                    target.style.opacity = '0';
+                                    target.style.transition = 'none';
+                                    target.style.display = 'none';
+                                    isAnimating = false;
+                                }, 500);
+                            }, 300);
+                        }, 300);
+                    } else {
+                        const bullet = document.createElement('div');
+                        bullet.className = 'bullet';
+                        bullet.style.left = '20px';
+                        bullet.style.top = '15px';
+                        machineGun.appendChild(bullet);
+                        
+                        // Animate bullet
+                        setTimeout(() => {
+                            bullet.style.left = '400px';
+                            bullet.style.opacity = '1';
+                            bullet.style.transition = 'all 0.5s linear';
+                            
+                            // Remove bullet after animation
+                            setTimeout(() => {
+                                bullet.remove();
+                            }, 500);
+                        }, 10);
+                        
+                        bulletCount++;
+                    }
+                }, 50);
+            }, 300);
+        });
+        
+        // Color Mixer
+        const colorMixerButton = document.getElementById('color-mixer-button');
+        const colorMixerModal = document.createElement('div');
+        colorMixerModal.id = 'color-mixer-modal';
+        colorMixerModal.className = 'modal';
+        colorMixerModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">COLOR MIXER OPERATIONS</div>
+                    <button class="close-btn" id="close-color-mixer">&times;</button>
+                </div>
+                <div class="color-mixer-container">
+                    <div class="mixing-controls">
+                        <label class="mixing-method">
+                            <input type="radio" name="mixing-method" value="average" checked>
+                            AVERAGE
+                        </label>
+                        <label class="mixing-method">
+                            <input type="radio" name="mixing-method" value="additive">
+                            ADDITIVE
+                        </label>
+                        <label class="mixing-method">
+                            <input type="radio" name="mixing-method" value="subtractive">
+                            SUBTRACTIVE
+                        </label>
+                    </div>
+                    
+                    <div class="color-wheel-container">
+                        <div class="color-wheel" id="color-wheel">
+                            <div class="top-marker">RED</div>
+                        </div>
+                        <div class="color-selector" id="color-selector"></div>
+                        <div class="color-info">
+                            <div class="selected-color" id="selected-color"></div>
+                            <div class="color-value" id="selected-color-value">#FFFFFF</div>
+                        </div>
+                    </div>
+                    
+                    <div class="color-slots" id="color-slots">
+                        <div class="color-slot" data-index="0">
+                            <div class="add-icon">+</div>
+                            <div class="remove-color">×</div>
+                        </div>
+                        <div class="color-slot" data-index="1">
+                            <div class="add-icon">+</div>
+                            <div class="remove-color">×</div>
+                        </div>
+                        <div class="color-slot" data-index="2">
+                            <div class="add-icon">+</div>
+                            <div class="remove-color">×</div>
+                        </div>
+                        <div class="color-slot" data-index="3">
+                            <div class="add-icon">+</div>
+                            <div class="remove-color">×</div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-container">
+                        <div class="result-color" id="result-color"></div>
+                        <div class="result-info">
+                            <div class="color-value" id="result-color-value">#FFFFFF</div>
+                            <button class="copy-btn" id="copy-color-btn">COPY HEX</button>
+                        </div>
+                    </div>
+                    
+                    <button class="reset-btn" id="reset-colors-btn">RESET ALL COLORS</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(colorMixerModal);
+        
+        // Color mixer functionality
+        function initColorMixer() {
+            const colorWheel = document.getElementById('color-wheel');
+            const colorSelector = document.getElementById('color-selector');
+            const selectedColor = document.getElementById('selected-color');
+            const selectedColorValue = document.getElementById('selected-color-value');
+            const colorSlots = document.querySelectorAll('.color-slot');
+            const resultColor = document.getElementById('result-color');
+            const resultColorValue = document.getElementById('result-color-value');
+            const copyColorBtn = document.getElementById('copy-color-btn');
+            const resetColorsBtn = document.getElementById('reset-colors-btn');
+            const closeColorMixerBtn = document.getElementById('close-color-mixer');
+            
+            let currentColor = '#FFFFFF';
+            let slotColors = ['', '', '', ''];
+            let isSelecting = false;
+            
+            // Convert HSV to RGB
+            function hsvToRgb(h, s, v) {
+                let r, g, b;
+                const i = Math.floor(h * 6);
+                const f = h * 6 - i;
+                const p = v * (1 - s);
+                const q = v * (1 - f * s);
+                const t = v * (1 - (1 - f) * s);
+                
+                switch (i % 6) {
+                    case 0: r = v; g = t; b = p; break;
+                    case 1: r = q; g = v; b = p; break;
+                    case 2: r = p; g = v; b = t; break;
+                    case 3: r = p; g = q; b = v; break;
+                    case 4: r = t; g = p; b = v; break;
+                    case 5: r = v; g = p; b = q; break;
+                }
+                
+                return {
+                    r: Math.round(r * 255),
+                    g: Math.round(g * 255),
+                    b: Math.round(b * 255)
+                };
+            }
+            
+            // Convert RGB to Hex
+            function rgbToHex(r, g, b) {
+                return '#' + [r, g, b].map(x => {
+                    const hex = x.toString(16);
+                    return hex.length === 1 ? '0' + hex : hex;
+                }).join('');
+            }
+            
+            // Convert Hex to RGB
+            function hexToRgb(hex) {
+                // Remove the backslash that was causing the regex to fail
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+            
+            // Get color from wheel position
+            function getColorFromPosition(x, y) {
+                const rect = colorWheel.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Calculate position relative to center
+                const dx = x - centerX;
+                const dy = y - centerY;
+                
+                // Convert to polar coordinates
+                const radius = Math.sqrt(dx * dx + dy * dy);
+                const maxRadius = rect.width / 2;
+                
+                // If clicked central black area, return black
+                if (radius < maxRadius * 0.2) {
+                    return '#000000';
+                }
+                
+                // If clicked outside wheel, limit to edge
+                const cappedRadius = Math.min(radius, maxRadius);
+                const saturation = cappedRadius / maxRadius;
+                
+                // Calculate angle (hue)
+                // Get the raw angle first (atan2 gives angle from positive x-axis, counterclockwise)
+                let angle = Math.atan2(dy, dx);
+                
+                // Convert to angle from top (red), clockwise
+                // This is a 90-degree counterclockwise rotation
+                angle = angle + (Math.PI / 2);
+                
+                // Normalize to 0-2π range
+                if (angle < 0) angle += 2 * Math.PI;
+                if (angle > 2 * Math.PI) angle -= 2 * Math.PI;
+                
+                // Log for debugging
+                console.log('Raw angle:', Math.atan2(dy, dx) * 180 / Math.PI);
+                console.log('Adjusted angle:', angle * 180 / Math.PI);
+                
+                const hue = angle / (2 * Math.PI);
+                
+                // Convert HSV to RGB
+                const rgb = hsvToRgb(hue, saturation, 1);
+                
+                // Convert RGB to hex
+                return rgbToHex(rgb.r, rgb.g, rgb.b);
+            }
+            
+            // Set selector position on wheel
+            function setSelectorPosition(x, y) {
+                const rect = colorWheel.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Calculate position relative to center
+                let dx = x - centerX;
+                let dy = y - centerY;
+                
+                // Limit to wheel radius
+                const radius = Math.sqrt(dx * dx + dy * dy);
+                const maxRadius = rect.width / 2;
+                
+                if (radius > maxRadius) {
+                    const angle = Math.atan2(dy, dx);
+                    dx = Math.cos(angle) * maxRadius;
+                    dy = Math.sin(angle) * maxRadius;
+                }
+                
+                // Update selector position
+                colorSelector.style.left = `${centerX + dx}px`;
+                colorSelector.style.top = `${centerY + dy}px`;
+                
+                // Update current color
+                currentColor = getColorFromPosition(centerX + dx, centerY + dy);
+                colorSelector.style.backgroundColor = currentColor;
+                selectedColor.style.backgroundColor = currentColor;
+                selectedColorValue.textContent = currentColor.toUpperCase();
+            }
+            
+            // Mix colors according to selected method
+            function mixColors() {
+                // Filter out empty slots
+                const colors = slotColors.filter(color => color !== '');
+                
+                // Debug output
+                console.log('Mixing colors:', colors);
+                
+                if (colors.length === 0) {
+                    resultColor.style.backgroundColor = '#FFFFFF';
+                    resultColorValue.textContent = '#FFFFFF';
+                    return;
+                }
+                
+                // Get selected mixing method
+                const mixingMethod = document.querySelector('input[name="mixing-method"]:checked').value;
+                console.log('Mixing method:', mixingMethod);
+                
+                // Convert all hex colors to RGB
+                const rgbColors = colors.map(hexToRgb);
+                console.log('RGB colors:', rgbColors);
+                
+                // Add direct color to first slot if no colors available
+                if (!rgbColors[0]) {
+                    resultColor.style.backgroundColor = '#FF0000';
+                    resultColorValue.textContent = '#FF0000';
+                    return;
+                }
+                
+                let mixedColor;
+                
+                switch (mixingMethod) {
+                    case 'average':
+                        // Simple average of colors
+                        mixedColor = {
+                            r: Math.round(rgbColors.reduce((sum, color) => sum + color.r, 0) / colors.length),
+                            g: Math.round(rgbColors.reduce((sum, color) => sum + color.g, 0) / colors.length),
+                            b: Math.round(rgbColors.reduce((sum, color) => sum + color.b, 0) / colors.length)
+                        };
+                        break;
+                        
+                    case 'additive':
+                        // Additive color mixing (light) - simplified to fix the bug
+                        mixedColor = {
+                            r: Math.min(255, rgbColors.reduce((sum, color) => sum + color.r, 0)),
+                            g: Math.min(255, rgbColors.reduce((sum, color) => sum + color.g, 0)),
+                            b: Math.min(255, rgbColors.reduce((sum, color) => sum + color.b, 0))
+                        };
+                        
+                        // Normalize if all values are too high
+                        const maxVal = Math.max(mixedColor.r, mixedColor.g, mixedColor.b);
+                        if (maxVal > 255) {
+                            const factor = 255 / maxVal;
+                            mixedColor.r = Math.round(mixedColor.r * factor);
+                            mixedColor.g = Math.round(mixedColor.g * factor);
+                            mixedColor.b = Math.round(mixedColor.b * factor);
+                        }
+                        break;
+                        
+                    case 'subtractive':
+                        // Subtractive color mixing (pigment)
+                        const subtractive = rgbColors.reduce((acc, color) => {
+                            return {
+                                r: acc.r * (color.r / 255),
+                                g: acc.g * (color.g / 255),
+                                b: acc.b * (color.b / 255)
+                            };
+                        }, { r: 1, g: 1, b: 1 });
+                        
+                        mixedColor = {
+                            r: Math.round(subtractive.r * 255),
+                            g: Math.round(subtractive.g * 255),
+                            b: Math.round(subtractive.b * 255)
+                        };
+                        break;
+                }
+                
+                const hexColor = rgbToHex(mixedColor.r, mixedColor.g, mixedColor.b);
+                resultColor.style.backgroundColor = hexColor;
+                resultColorValue.textContent = hexColor.toUpperCase();
+            }
+            
+            // Update slot colors
+            function updateColorSlots() {
+                try {
+                    colorSlots.forEach((slot, index) => {
+                        if (slotColors[index]) {
+                            slot.style.backgroundColor = slotColors[index];
+                            slot.classList.add('filled');
+                        } else {
+                            slot.style.backgroundColor = '#333';
+                            slot.classList.remove('filled');
+                        }
+                    });
+                    
+                    // Set a direct color for testing
+                    if (slotColors.filter(c => c).length > 0) {
+                        console.log('At least one color selected, running mixColors');
+                        resultColor.style.backgroundColor = slotColors.filter(c => c)[0];
+                    }
+                    
+                    // Now run the proper color mixing
+                    mixColors();
+                } catch (error) {
+                    console.error('Error in updateColorSlots:', error);
+                    // Fallback to a direct color if there's an error
+                    if (slotColors.filter(c => c).length > 0) {
+                        resultColor.style.backgroundColor = slotColors.filter(c => c)[0];
+                        resultColorValue.textContent = slotColors.filter(c => c)[0].toUpperCase();
+                    }
+                }
+            }
+            
+            // Add event listeners for color wheel interaction
+            colorWheel.addEventListener('mousedown', function(e) {
+                isSelecting = true;
+                colorSelector.style.display = 'block';
+                
+                const rect = colorWheel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                setSelectorPosition(x, y);
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isSelecting) return;
+                
+                const rect = colorWheel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                setSelectorPosition(x, y);
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isSelecting = false;
+            });
+            
+            // Touch support
+            colorWheel.addEventListener('touchstart', function(e) {
+                isSelecting = true;
+                colorSelector.style.display = 'block';
+                
+                const rect = colorWheel.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                setSelectorPosition(x, y);
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (!isSelecting) return;
+                
+                const rect = colorWheel.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                setSelectorPosition(x, y);
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', function() {
+                isSelecting = false;
+            });
+            
+            // Add event listeners for color slot selection
+            colorSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    
+                    if (!this.classList.contains('filled')) {
+                        // Add color to this slot
+                        slotColors[index] = currentColor;
+                    }
+                    
+                    updateColorSlots();
+                });
+                
+                const removeBtn = slot.querySelector('.remove-color');
+                removeBtn.addEventListener('click', function(e) {
+                    const index = parseInt(this.parentNode.dataset.index);
+                    slotColors[index] = '';
+                    updateColorSlots();
+                    e.stopPropagation();
+                });
+            });
+            
+            // Add event listeners for mixing method changes
+            document.querySelectorAll('input[name="mixing-method"]').forEach(radio => {
+                radio.addEventListener('change', mixColors);
+            });
+            
+            // Add event listener for copy button
+            copyColorBtn.addEventListener('click', function() {
+                const tempInput = document.createElement('input');
+                tempInput.value = resultColorValue.textContent;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                // Visual feedback
+                this.textContent = 'COPIED!';
+                setTimeout(() => {
+                    this.textContent = 'COPY HEX';
+                }, 1500);
+            });
+            
+            // Add event listener for reset button
+            resetColorsBtn.addEventListener('click', function() {
+                slotColors = ['', '', '', ''];
+                updateColorSlots();
+            });
+            
+            // Initialize color mixer
+            colorSelector.style.display = 'block';
+            colorSelector.style.left = '150px'; // Center of wheel
+            colorSelector.style.top = '150px';
+            colorSelector.style.backgroundColor = '#FFFFFF';
+            
+            // Add event listener for opening color mixer modal
+            colorMixerButton.addEventListener('click', function() {
+                colorMixerModal.style.display = 'flex';
+            });
+            
+            // Add event listener for closing color mixer modal
+            closeColorMixerBtn.addEventListener('click', function() {
+                colorMixerModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            colorMixerModal.addEventListener('click', function(e) {
+                if (e.target === colorMixerModal) {
+                    colorMixerModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Initialize color mixer immediately
+        initColorMixer();
+        
+        // Also try with a slight delay as a fallback
+        setTimeout(function() {
+            if (!document.getElementById('color-wheel').getBoundingClientRect) {
+                console.log('Reinitializing color mixer');
+                initColorMixer();
+            }
+        }, 1000);
+        
+        // Hangman Game Implementation
+        const hangmanButton = document.getElementById('hangman-button');
+        const hangmanModal = document.createElement('div');
+        hangmanModal.id = 'hangman-modal';
+        hangmanModal.className = 'modal';
+        
+        // List of kid-friendly words (ages 4-9)
+        const wordList = [
+            "apple", "banana", "orange", "grape", "dog", "cat", "fish", "bird", 
+            "tree", "flower", "sun", "moon", "star", "cloud", "rain", "snow",
+            "ball", "book", "car", "bike", "hat", "shoe", "sock", "shirt",
+            "red", "blue", "green", "yellow", "big", "small", "happy", "sad",
+            "mom", "dad", "baby", "girl", "boy", "friend", "home", "school",
+            "milk", "juice", "water", "cookie", "cake", "pizza", "candy", "ice",
+            "jump", "run", "walk", "swim", "play", "sing", "dance", "sleep",
+            "lion", "tiger", "bear", "elephant", "monkey", "zebra", "giraffe", "turtle",
+            "boat", "train", "plane", "bus", "park", "beach", "farm", "zoo",
+            "smile", "laugh", "love", "hug", "toy", "game", "fun", "day",
+            "night", "light", "dark", "summer", "winter", "spring", "fall", "time",
+            "morning", "good", "nice", "bad", "hot", "cold", "wet", "dry",
+            "pig", "cow", "duck", "bee", "ant", "frog", "snake", "worm"
+        ];
+        
+        // Create hangman modal content
+        hangmanModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">HANGMAN MISSION</div>
+                    <button class="close-btn" id="close-hangman">&times;</button>
+                </div>
+                <div class="hangman-container">
+                    <div class="hangman-drawing">
+                        <svg width="200" height="250" id="hangman-svg">
+                            <!-- Base -->
+                            <line x1="20" y1="230" x2="180" y2="230" stroke="#ff4500" stroke-width="3"/>
+                            <!-- Vertical pole -->
+                            <line x1="60" y1="230" x2="60" y2="30" stroke="#ff4500" stroke-width="3" id="pole"/>
+                            <!-- Horizontal beam -->
+                            <line x1="60" y1="30" x2="150" y2="30" stroke="#ff4500" stroke-width="3" id="beam"/>
+                            <!-- Rope -->
+                            <line x1="150" y1="30" x2="150" y2="50" stroke="#ff4500" stroke-width="3" id="rope"/>
+                            
+                            <!-- Person (all invisible initially) -->
+                            <circle cx="150" cy="70" r="20" stroke="#ff4500" stroke-width="3" fill="transparent" id="head" style="display: none;"/>
+                            <line x1="150" y1="90" x2="150" y2="150" stroke="#ff4500" stroke-width="3" id="body" style="display: none;"/>
+                            <line x1="150" y1="110" x2="120" y2="130" stroke="#ff4500" stroke-width="3" id="left-arm" style="display: none;"/>
+                            <line x1="150" y1="110" x2="180" y2="130" stroke="#ff4500" stroke-width="3" id="right-arm" style="display: none;"/>
+                            <line x1="150" y1="150" x2="130" y2="190" stroke="#ff4500" stroke-width="3" id="left-leg" style="display: none;"/>
+                            <line x1="150" y1="150" x2="170" y2="190" stroke="#ff4500" stroke-width="3" id="right-leg" style="display: none;"/>
+                            <!-- Extra body parts for non-losing mode -->
+                            <circle cx="120" cy="130" r="8" stroke="#ff4500" stroke-width="2" fill="transparent" id="left-hand" style="display: none;"/>
+                            <circle cx="180" cy="130" r="8" stroke="#ff4500" stroke-width="2" fill="transparent" id="right-hand" style="display: none;"/>
+                            <circle cx="130" cy="190" r="8" stroke="#ff4500" stroke-width="2" fill="transparent" id="left-foot" style="display: none;"/>
+                            <circle cx="170" cy="190" r="8" stroke="#ff4500" stroke-width="2" fill="transparent" id="right-foot" style="display: none;"/>
+                            
+                            <!-- Fingers and Toes (Extreme Details) -->
+                            <line x1="115" y1="125" x2="110" y2="120" stroke="#ff4500" stroke-width="1" id="finger1" style="display: none;"/>
+                            <line x1="115" y1="130" x2="110" y2="130" stroke="#ff4500" stroke-width="1" id="finger2" style="display: none;"/>
+                            <line x1="115" y1="135" x2="110" y2="140" stroke="#ff4500" stroke-width="1" id="finger3" style="display: none;"/>
+                            
+                            <line x1="185" y1="125" x2="190" y2="120" stroke="#ff4500" stroke-width="1" id="finger4" style="display: none;"/>
+                            <line x1="185" y1="130" x2="190" y2="130" stroke="#ff4500" stroke-width="1" id="finger5" style="display: none;"/>
+                            <line x1="185" y1="135" x2="190" y2="140" stroke="#ff4500" stroke-width="1" id="finger6" style="display: none;"/>
+                            
+                            <line x1="130" y1="195" x2="125" y2="200" stroke="#ff4500" stroke-width="1" id="toe1" style="display: none;"/>
+                            <line x1="130" y1="195" x2="130" y2="200" stroke="#ff4500" stroke-width="1" id="toe2" style="display: none;"/>
+                            <line x1="130" y1="195" x2="135" y2="200" stroke="#ff4500" stroke-width="1" id="toe3" style="display: none;"/>
+                            
+                            <line x1="170" y1="195" x2="165" y2="200" stroke="#ff4500" stroke-width="1" id="toe4" style="display: none;"/>
+                            <line x1="170" y1="195" x2="170" y2="200" stroke="#ff4500" stroke-width="1" id="toe5" style="display: none;"/>
+                            <line x1="170" y1="195" x2="175" y2="200" stroke="#ff4500" stroke-width="1" id="toe6" style="display: none;"/>
+                            
+                            <!-- Blinking Eye -->
+                            <circle cx="145" cy="65" r="3" fill="#ff4500" id="left-eye" style="display: none;"/>
+                            <circle cx="155" cy="65" r="3" fill="#ff4500" id="right-eye" style="display: none;"/>
+                            <path d="M142 80 Q150 85 158 80" stroke="#ff4500" stroke-width="2" fill="transparent" id="smile" style="display: none;"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="word-display" id="word-display"></div>
+                    
+                    <div class="message-area" id="message-area"></div>
+                    
+                    <div class="keyboard" id="keyboard">
+                        <div class="keyboard-row">
+                            <button class="key">A</button>
+                            <button class="key">B</button>
+                            <button class="key">C</button>
+                            <button class="key">D</button>
+                            <button class="key">E</button>
+                            <button class="key">F</button>
+                            <button class="key">G</button>
+                            <button class="key">H</button>
+                            <button class="key">I</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key">J</button>
+                            <button class="key">K</button>
+                            <button class="key">L</button>
+                            <button class="key">M</button>
+                            <button class="key">N</button>
+                            <button class="key">O</button>
+                            <button class="key">P</button>
+                            <button class="key">Q</button>
+                            <button class="key">R</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key">S</button>
+                            <button class="key">T</button>
+                            <button class="key">U</button>
+                            <button class="key">V</button>
+                            <button class="key">W</button>
+                            <button class="key">X</button>
+                            <button class="key">Y</button>
+                            <button class="key">Z</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button id="new-word-btn" class="reset-btn">NEW WORD</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(hangmanModal);
+        
+        // Add hangman styles
+        const hangmanStyles = document.createElement('style');
+        hangmanStyles.textContent = `
+            .hangman-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                max-width: 100%;
+            }
+            
+            .word-display {
+                margin: 20px 0;
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            
+            .letter-box {
+                width: 30px;
+                height: 40px;
+                border-bottom: 3px solid #ff4500;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 24px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            
+            .keyboard {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin: 20px 0;
+                width: 100%;
+            }
+            
+            .keyboard-row {
+                display: flex;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .key {
+                width: 35px;
+                height: 35px;
+                background: #333;
+                color: #ff4500;
+                border: 1px solid #ff4500;
+                border-radius: 5px;
+                font-family: monospace;
+                font-size: 18px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: none;
+                transition: all 0.3s ease;
+            }
+            
+            .key:hover {
+                background: #444;
+            }
+            
+            .key.used {
+                opacity: 0.3;
+                cursor: default;
+            }
+            
+            .key.correct {
+                background: #004400;
+                border-color: #00ff00;
+                color: #00ff00;
+            }
+            
+            .key.incorrect {
+                background: #440000;
+                border-color: #ff0000;
+                color: #ff0000;
+            }
+            
+            .message-area {
+                margin: 15px 0;
+                font-size: 20px;
+                min-height: 30px;
+                text-align: center;
+                font-weight: bold;
+                color: #ff4500;
+            }
+            
+            .win-message {
+                animation: pulse 1.5s infinite alternate;
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                100% { transform: scale(1.1); }
+            }
+            
+            .game-controls {
+                margin-top: 20px;
+            }
+            
+            body.shred-gnar .letter-box {
+                border-bottom-color: #00ff00;
+                color: #00ff00;
+            }
+            
+            body.shred-gnar .key {
+                color: #00ff00;
+                border-color: #00ff00;
+            }
+            
+            body.shred-gnar .message-area {
+                color: #00ff00;
+            }
+            
+            body.shred-gnar #hangman-svg line,
+            body.shred-gnar #hangman-svg circle,
+            body.shred-gnar #hangman-svg path {
+                stroke: #00ff00;
+            }
+            
+            body.shred-gnar #left-eye,
+            body.shred-gnar #right-eye {
+                fill: #00ff00;
+            }
+            
+            body.shred-gnar .key.correct {
+                background: #003300;
+                border-color: #00ff00;
+                color: #00ff00;
+            }
+            
+            body.shred-gnar .key.incorrect {
+                background: #331100;
+                border-color: #ff7700;
+                color: #ff7700;
+            }
+
+            @media (max-width: 500px) {
+                .keyboard {
+                    transform: scale(0.9);
+                }
+                .word-display {
+                    flex-wrap: wrap;
+                }
+                .letter-box {
+                    width: 25px;
+                    height: 35px;
+                    font-size: 20px;
+                }
+            }
+        `;
+        document.head.appendChild(hangmanStyles);
+        
+        // Initialize hangman game
+        function initHangmanGame() {
+            const closeHangmanBtn = document.getElementById('close-hangman');
+            const newWordBtn = document.getElementById('new-word-btn');
+            const wordDisplay = document.getElementById('word-display');
+            const messageArea = document.getElementById('message-area');
+            const keys = document.querySelectorAll('.key');
+            
+            let currentWord = '';
+            let guessedLetters = [];
+            let wrongGuesses = 0;
+            const maxWrongGuesses = 18; // Increased to include all details
+            
+            // Body parts in order of appearance
+            const bodyParts = [
+                'head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg',
+                'left-hand', 'right-hand', 'left-foot', 'right-foot',
+                'finger1', 'finger2', 'finger3', 'finger4', 'finger5', 'finger6',
+                'toe1', 'toe2', 'toe3', 'toe4', 'toe5', 'toe6',
+                'left-eye', 'right-eye', 'smile'
+            ];
+            
+            // Select a random word
+            function getRandomWord() {
+                return wordList[Math.floor(Math.random() * wordList.length)];
+            }
+            
+            // Reset game with a new word
+            function startNewGame() {
+                // Reset variables
+                currentWord = getRandomWord();
+                guessedLetters = [];
+                wrongGuesses = 0;
+                
+                // Reset UI
+                keys.forEach(key => {
+                    key.classList.remove('used', 'correct', 'incorrect');
+                    key.disabled = false;
+                });
+                
+                // Hide all body parts
+                bodyParts.forEach(part => {
+                    document.getElementById(part).style.display = 'none';
+                });
+                
+                // Reset message
+                messageArea.textContent = '';
+                messageArea.className = 'message-area';
+                
+                // Update word display
+                updateWordDisplay();
+            }
+            
+            // Update the displayed word with blanks and correctly guessed letters
+            function updateWordDisplay() {
+                wordDisplay.innerHTML = '';
+                
+                for (let letter of currentWord) {
+                    const letterBox = document.createElement('div');
+                    letterBox.className = 'letter-box';
+                    
+                    if (guessedLetters.includes(letter)) {
+                        letterBox.textContent = letter;
+                    }
+                    
+                    wordDisplay.appendChild(letterBox);
+                }
+            }
+            
+            // Check if the player has won
+            function checkWin() {
+                return [...currentWord].every(letter => guessedLetters.includes(letter));
+            }
+            
+            // Handle letter guess
+            function guessLetter(letter) {
+                letter = letter.toLowerCase();
+                
+                // Check if letter has already been guessed
+                if (guessedLetters.includes(letter)) return;
+                
+                // Add to guessed letters
+                guessedLetters.push(letter);
+                
+                // Check if letter is in the word
+                if (currentWord.includes(letter)) {
+                    // Mark key as correct
+                    const keyElements = document.querySelectorAll('.key');
+                    const keyIndex = letter.charCodeAt(0) - 97; // 'a' is 97 in ASCII
+                    if (keyIndex >= 0 && keyIndex < 26) {
+                        keyElements[keyIndex].classList.add('used', 'correct');
+                    }
+                    
+                    // Update display
+                    updateWordDisplay();
+                    
+                    // Check for win
+                    if (checkWin()) {
+                        messageArea.textContent = 'MISSION ACCOMPLISHED! PRISONER SAVED!';
+                        messageArea.className = 'message-area win-message';
+                        
+                        // Animate smile
+                        document.getElementById('smile').style.display = 'block';
+                        
+                        // Disable all keys
+                        keys.forEach(key => {
+                            key.disabled = true;
+                            key.classList.add('used');
+                        });
+                    }
+                } else {
+                    // Mark key as incorrect
+                    const keyElements = document.querySelectorAll('.key');
+                    const keyIndex = letter.charCodeAt(0) - 97; // 'a' is 97 in ASCII
+                    if (keyIndex >= 0 && keyIndex < 26) {
+                        keyElements[keyIndex].classList.add('used', 'incorrect');
+                    }
+                    
+                    // Show next body part
+                    if (wrongGuesses < bodyParts.length) {
+                        document.getElementById(bodyParts[wrongGuesses]).style.display = 'block';
+                    }
+                    
+                    wrongGuesses++;
+                    
+                    // No losing condition, just keep adding details and encourage
+                    if (wrongGuesses >= maxWrongGuesses) {
+                        // Start blinking eyes animation
+                        const leftEye = document.getElementById('left-eye');
+                        const rightEye = document.getElementById('right-eye');
+                        
+                        // Set up blinking animation
+                        setInterval(() => {
+                            leftEye.style.display = leftEye.style.display === 'none' ? 'block' : 'none';
+                            rightEye.style.display = rightEye.style.display === 'none' ? 'block' : 'none';
+                        }, 300);
+                        
+                        messageArea.textContent = "KEEP TRYING! YOU'RE GETTING CLOSE!";
+                    }
+                }
+            }
+            
+            // Set up keyboard event listeners
+            keys.forEach(key => {
+                key.addEventListener('click', () => {
+                    if (!key.classList.contains('used')) {
+                        guessLetter(key.textContent);
+                    }
+                });
+            });
+            
+            // Listen for physical keyboard input
+            document.addEventListener('keydown', (e) => {
+                if (hangmanModal.style.display === 'flex') {
+                    const key = e.key.toLowerCase();
+                    if (/^[a-z]$/.test(key)) {
+                        guessLetter(key);
+                    }
+                }
+            });
+            
+            // New word button
+            newWordBtn.addEventListener('click', startNewGame);
+            
+            // Close button
+            closeHangmanBtn.addEventListener('click', () => {
+                hangmanModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            hangmanModal.addEventListener('click', (e) => {
+                if (e.target === hangmanModal) {
+                    hangmanModal.style.display = 'none';
+                }
+            });
+            
+            // Start the first game
+            startNewGame();
+        }
+        
+        // Open hangman modal when button is clicked
+        hangmanButton.addEventListener('click', () => {
+            hangmanModal.style.display = 'flex';
+            // Initialize game if it's first time opening
+            if (!hangmanButton.dataset.initialized) {
+                initHangmanGame();
+                hangmanButton.dataset.initialized = 'true';
+            }
+        });
+        
+        // -------------------- Avatar Creator --------------------
+        const avatarCreatorButton = document.getElementById('avatar-creator-button');
+        const avatarModal = document.createElement('div');
+        avatarModal.id = 'avatar-modal';
+        avatarModal.className = 'modal';
+        
+        // Avatar options
+        const avatarOptions = {
+            head: [
+                { name: 'Round', url: 'circle' }, 
+                { name: 'Square', url: 'square' },
+                { name: 'Diamond', url: 'diamond' }
+            ],
+            eyes: [
+                { name: 'Round', url: 'round' }, 
+                { name: 'Oval', url: 'oval' },
+                { name: 'Happy', url: 'happy' },
+                { name: 'Cool', url: 'cool' }
+            ],
+            mouth: [
+                { name: 'Smile', url: 'smile' }, 
+                { name: 'Big Smile', url: 'bigsmile' },
+                { name: 'Serious', url: 'serious' },
+                { name: 'Surprised', url: 'surprised' }
+            ],
+            accessories: [
+                { name: 'None', url: 'none' },
+                { name: 'Hat', url: 'hat' }, 
+                { name: 'Crown', url: 'crown' },
+                { name: 'Bow', url: 'bow' }
+            ],
+            color: [
+                { name: 'Orange', value: '#ff4500' },
+                { name: 'Blue', value: '#4499ff' },
+                { name: 'Green', value: '#44ff99' },
+                { name: 'Purple', value: '#9944ff' },
+                { name: 'Yellow', value: '#ffff44' }
+            ]
+        };
+        
+        // Create avatar modal content
+        avatarModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">AVATAR CREATOR</div>
+                    <button class="close-btn" id="close-avatar">&times;</button>
+                </div>
+                <div class="avatar-container">
+                    <div class="avatar-display-section">
+                        <div class="avatar-display" id="avatar-display">
+                            <svg width="200" height="200" viewBox="0 0 200 200" id="avatar-svg">
+                                <!-- Head (default: circle) -->
+                                <circle cx="100" cy="100" r="70" fill="#ff4500" id="avatar-head" />
+                                
+                                <!-- Eyes (default: round) -->
+                                <g id="avatar-eyes">
+                                    <circle cx="70" cy="80" r="10" fill="white" />
+                                    <circle cx="130" cy="80" r="10" fill="white" />
+                                    <circle cx="70" cy="80" r="5" fill="black" />
+                                    <circle cx="130" cy="80" r="5" fill="black" />
+                                </g>
+                                
+                                <!-- Mouth (default: smile) -->
+                                <path d="M60,120 Q100,150 140,120" stroke="black" stroke-width="4" fill="none" id="avatar-mouth" />
+                                
+                                <!-- Accessories (default: none) -->
+                                <g id="avatar-accessories"></g>
+                            </svg>
+                        </div>
+                        <div class="avatar-name">
+                            <label for="avatar-name-input">NAME:</label>
+                            <input type="text" id="avatar-name-input" maxlength="10" placeholder="My Avatar">
+                        </div>
+                        <button id="save-avatar-btn" class="reset-btn">SAVE AVATAR</button>
+                    </div>
+                    
+                    <div class="avatar-options">
+                        <div class="option-section">
+                            <h3>HEAD SHAPE</h3>
+                            <div class="option-buttons" id="head-options">
+                                <button class="option-btn active" data-option="head" data-value="0">Round</button>
+                                <button class="option-btn" data-option="head" data-value="1">Square</button>
+                                <button class="option-btn" data-option="head" data-value="2">Diamond</button>
+                            </div>
+                        </div>
+                        
+                        <div class="option-section">
+                            <h3>EYES</h3>
+                            <div class="option-buttons" id="eyes-options">
+                                <button class="option-btn active" data-option="eyes" data-value="0">Round</button>
+                                <button class="option-btn" data-option="eyes" data-value="1">Oval</button>
+                                <button class="option-btn" data-option="eyes" data-value="2">Happy</button>
+                                <button class="option-btn" data-option="eyes" data-value="3">Cool</button>
+                            </div>
+                        </div>
+                        
+                        <div class="option-section">
+                            <h3>MOUTH</h3>
+                            <div class="option-buttons" id="mouth-options">
+                                <button class="option-btn active" data-option="mouth" data-value="0">Smile</button>
+                                <button class="option-btn" data-option="mouth" data-value="1">Big Smile</button>
+                                <button class="option-btn" data-option="mouth" data-value="2">Serious</button>
+                                <button class="option-btn" data-option="mouth" data-value="3">Surprised</button>
+                            </div>
+                        </div>
+                        
+                        <div class="option-section">
+                            <h3>ACCESSORIES</h3>
+                            <div class="option-buttons" id="accessories-options">
+                                <button class="option-btn active" data-option="accessories" data-value="0">None</button>
+                                <button class="option-btn" data-option="accessories" data-value="1">Hat</button>
+                                <button class="option-btn" data-option="accessories" data-value="2">Crown</button>
+                                <button class="option-btn" data-option="accessories" data-value="3">Bow</button>
+                            </div>
+                        </div>
+                        
+                        <div class="option-section">
+                            <h3>COLOR</h3>
+                            <div class="option-buttons color-options" id="color-options">
+                                <button class="color-btn active" data-option="color" data-value="0" style="background-color: #ff4500;"></button>
+                                <button class="color-btn" data-option="color" data-value="1" style="background-color: #4499ff;"></button>
+                                <button class="color-btn" data-option="color" data-value="2" style="background-color: #44ff99;"></button>
+                                <button class="color-btn" data-option="color" data-value="3" style="background-color: #9944ff;"></button>
+                                <button class="color-btn" data-option="color" data-value="4" style="background-color: #ffff44;"></button>
+                            </div>
+                        </div>
+                        
+                        <button id="random-avatar-btn" class="reset-btn">RANDOM AVATAR</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(avatarModal);
+        
+        // Add avatar creator styles
+        const avatarStyles = document.createElement('style');
+        avatarStyles.textContent = `
+            .avatar-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 20px;
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            @media (max-width: 768px) {
+                .avatar-container {
+                    flex-direction: column;
+                }
+            }
+            
+            .avatar-display-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 40%;
+                min-width: 200px;
+            }
+            
+            .avatar-display {
+                background: rgba(30, 30, 30, 0.6);
+                border: 2px solid #ff4500;
+                border-radius: 10px;
+                padding: 10px;
+                margin-bottom: 15px;
+                width: 100%;
+                max-width: 250px;
+                aspect-ratio: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .avatar-name {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                max-width: 250px;
+                margin-bottom: 15px;
+            }
+            
+            .avatar-name label {
+                color: #ff4500;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            
+            .avatar-name input {
+                background: #333;
+                color: #ff4500;
+                border: 2px solid #ff4500;
+                padding: 8px;
+                font-family: monospace;
+                font-size: 16px;
+                text-align: center;
+            }
+            
+            .avatar-options {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                width: 60%;
+            }
+            
+            .option-section {
+                background: rgba(30, 30, 30, 0.6);
+                border: 1px solid #ff4500;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            
+            .option-section h3 {
+                color: #ff4500;
+                margin: 0 0 10px 0;
+                font-size: 16px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-bottom: 1px dashed #ff4500;
+                padding-bottom: 5px;
+            }
+            
+            .option-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .option-btn {
+                background: #333;
+                color: #ff4500;
+                border: 1px solid #ff4500;
+                border-radius: 3px;
+                padding: 5px 10px;
+                font-family: monospace;
+                font-size: 14px;
+                cursor: none;
+                transition: all 0.2s ease;
+            }
+            
+            .option-btn:hover {
+                background: #444;
+            }
+            
+            .option-btn.active {
+                background: #ff4500;
+                color: #111;
+                font-weight: bold;
+            }
+            
+            .color-options {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .color-btn {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 2px solid #555;
+                cursor: none;
+            }
+            
+            .color-btn.active {
+                border: 2px solid white;
+                transform: scale(1.2);
+            }
+            
+            .saved-avatar-message {
+                color: #44ff99;
+                font-size: 14px;
+                text-align: center;
+                animation: fadeOut 3s forwards;
+                margin-top: 10px;
+            }
+            
+            @keyframes fadeOut {
+                0% { opacity: 1; }
+                70% { opacity: 1; }
+                100% { opacity: 0; }
+            }
+            
+            body.shred-gnar .avatar-display {
+                border-color: #00ff00;
+                background: rgba(0, 30, 0, 0.6);
+            }
+            
+            body.shred-gnar .option-section {
+                border-color: #00ff00;
+            }
+            
+            body.shred-gnar .option-section h3 {
+                color: #00ff00;
+                border-bottom-color: #00ff00;
+            }
+            
+            body.shred-gnar .option-btn {
+                color: #00ff00;
+                border-color: #00ff00;
+            }
+            
+            body.shred-gnar .option-btn.active {
+                background: #00ff00;
+                color: #111;
+            }
+            
+            body.shred-gnar .avatar-name label {
+                color: #00ff00;
+            }
+            
+            body.shred-gnar .avatar-name input {
+                color: #00ff00;
+                border-color: #00ff00;
+            }
+            
+            body.shred-gnar #avatar-svg #avatar-eyes circle:nth-child(1),
+            body.shred-gnar #avatar-svg #avatar-eyes circle:nth-child(2) {
+                fill: #eeffee;
+            }
+        `;
+        document.head.appendChild(avatarStyles);
+        
+        // Initialize avatar creator
+        function initAvatarCreator() {
+            const closeAvatarBtn = document.getElementById('close-avatar');
+            const avatarSvg = document.getElementById('avatar-svg');
+            const avatarHead = document.getElementById('avatar-head');
+            const avatarEyes = document.getElementById('avatar-eyes');
+            const avatarMouth = document.getElementById('avatar-mouth');
+            const avatarAccessories = document.getElementById('avatar-accessories');
+            const avatarNameInput = document.getElementById('avatar-name-input');
+            const saveAvatarBtn = document.getElementById('save-avatar-btn');
+            const randomAvatarBtn = document.getElementById('random-avatar-btn');
+            
+            // Current avatar state
+            let currentAvatar = {
+                head: 0,
+                eyes: 0,
+                mouth: 0,
+                accessories: 0,
+                color: 0,
+                name: 'My Avatar'
+            };
+            
+            // Update avatar display based on current state
+            function updateAvatar() {
+                // Always refresh SVG reference
+                const avatarSvg = document.getElementById('avatar-svg');
+                
+                // Update head - using innerHTML on the parent SVG instead of outerHTML on elements
+                let headHtml = '';
+                switch(currentAvatar.head) {
+                    case 0: // Round
+                        headHtml = `<circle cx="100" cy="100" r="70" fill="${avatarOptions.color[currentAvatar.color].value}" id="avatar-head" />`;
+                        break;
+                    case 1: // Square
+                        headHtml = `<rect x="30" y="30" width="140" height="140" rx="20" fill="${avatarOptions.color[currentAvatar.color].value}" id="avatar-head" />`;
+                        break;
+                    case 2: // Diamond
+                        headHtml = `<polygon points="100,20 180,100 100,180 20,100" fill="${avatarOptions.color[currentAvatar.color].value}" id="avatar-head" />`;
+                        break;
+                }
+                
+                // Update eyes
+                let eyesHtml = '';
+                switch(currentAvatar.eyes) {
+                    case 0: // Round
+                        eyesHtml = `
+                            <circle cx="70" cy="80" r="10" fill="white" />
+                            <circle cx="130" cy="80" r="10" fill="white" />
+                            <circle cx="70" cy="80" r="5" fill="black" />
+                            <circle cx="130" cy="80" r="5" fill="black" />
+                        `;
+                        break;
+                    case 1: // Oval
+                        eyesHtml = `
+                            <ellipse cx="70" cy="80" rx="15" ry="8" fill="white" />
+                            <ellipse cx="130" cy="80" rx="15" ry="8" fill="white" />
+                            <circle cx="70" cy="80" r="4" fill="black" />
+                            <circle cx="130" cy="80" r="4" fill="black" />
+                        `;
+                        break;
+                    case 2: // Happy
+                        eyesHtml = `
+                            <path d="M60,80 Q70,65 80,80" stroke="black" stroke-width="3" fill="white" />
+                            <path d="M120,80 Q130,65 140,80" stroke="black" stroke-width="3" fill="white" />
+                        `;
+                        break;
+                    case 3: // Cool
+                        eyesHtml = `
+                            <rect x="55" y="75" width="30" height="10" fill="black" />
+                            <rect x="115" y="75" width="30" height="10" fill="black" />
+                        `;
+                        break;
+                }
+                
+                // Update mouth
+                let mouthHtml = '';
+                switch(currentAvatar.mouth) {
+                    case 0: // Smile
+                        mouthHtml = `<path d="M60,120 Q100,150 140,120" stroke="black" stroke-width="4" fill="none" id="avatar-mouth" />`;
+                        break;
+                    case 1: // Big Smile
+                        mouthHtml = `<path d="M60,120 Q100,160 140,120" stroke="black" stroke-width="4" fill="white" id="avatar-mouth" />`;
+                        break;
+                    case 2: // Serious
+                        mouthHtml = `<line x1="70" y1="125" x2="130" y2="125" stroke="black" stroke-width="4" id="avatar-mouth" />`;
+                        break;
+                    case 3: // Surprised
+                        mouthHtml = `<circle cx="100" cy="125" r="10" fill="black" id="avatar-mouth" />`;
+                        break;
+                }
+                
+                // Update accessories
+                let accessoriesHtml = '';
+                switch(currentAvatar.accessories) {
+                    case 0: // None
+                        accessoriesHtml = '';
+                        break;
+                    case 1: // Hat
+                        accessoriesHtml = `
+                            <path d="M50,70 L150,70 L140,40 L60,40 Z" fill="#333" />
+                            <rect x="40" y="65" width="120" height="10" fill="#333" rx="2" />
+                        `;
+                        break;
+                    case 2: // Crown
+                        accessoriesHtml = `
+                            <path d="M60,55 L80,35 L100,55 L120,35 L140,55 L140,65 L60,65 Z" fill="gold" />
+                            <circle cx="80" cy="45" r="4" fill="red" />
+                            <circle cx="100" cy="45" r="4" fill="blue" />
+                            <circle cx="120" cy="45" r="4" fill="green" />
+                        `;
+                        break;
+                    case 3: // Bow
+                        accessoriesHtml = `
+                            <path d="M85,40 Q75,50 85,60 L115,60 Q125,50 115,40 Z" fill="#ff88ff" />
+                            <circle cx="100" cy="50" r="8" fill="#ff44ff" />
+                        `;
+                        break;
+                }
+                
+                // Update entire SVG at once
+                avatarSvg.innerHTML = `
+                    ${headHtml}
+                    <g id="avatar-eyes">${eyesHtml}</g>
+                    ${mouthHtml}
+                    <g id="avatar-accessories">${accessoriesHtml}</g>
+                `;
+                
+                // Get fresh references to all elements
+                avatarHead = document.getElementById('avatar-head');
+                avatarEyes = document.getElementById('avatar-eyes');
+                avatarMouth = document.getElementById('avatar-mouth');
+                avatarAccessories = document.getElementById('avatar-accessories');
+            }
+            
+            // Set up event listeners for option buttons
+            document.querySelectorAll('.option-btn, .color-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from siblings
+                    const option = this.dataset.option;
+                    document.querySelectorAll(`[data-option="${option}"]`).forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Update avatar state
+                    currentAvatar[option] = parseInt(this.dataset.value);
+                    
+                    // Update avatar display
+                    updateAvatar();
+                });
+            });
+            
+            // Generate random avatar
+            randomAvatarBtn.addEventListener('click', function() {
+                // Generate random values
+                currentAvatar = {
+                    head: Math.floor(Math.random() * avatarOptions.head.length),
+                    eyes: Math.floor(Math.random() * avatarOptions.eyes.length),
+                    mouth: Math.floor(Math.random() * avatarOptions.mouth.length),
+                    accessories: Math.floor(Math.random() * avatarOptions.accessories.length),
+                    color: Math.floor(Math.random() * avatarOptions.color.length),
+                    name: avatarNameInput.value || 'Random Avatar'
+                };
+                
+                // Update button UI
+                document.querySelectorAll('.option-btn, .color-btn').forEach(button => {
+                    button.classList.remove('active');
+                });
+                
+                document.querySelector(`[data-option="head"][data-value="${currentAvatar.head}"]`).classList.add('active');
+                document.querySelector(`[data-option="eyes"][data-value="${currentAvatar.eyes}"]`).classList.add('active');
+                document.querySelector(`[data-option="mouth"][data-value="${currentAvatar.mouth}"]`).classList.add('active');
+                document.querySelector(`[data-option="accessories"][data-value="${currentAvatar.accessories}"]`).classList.add('active');
+                document.querySelector(`[data-option="color"][data-value="${currentAvatar.color}"]`).classList.add('active');
+                
+                // Update avatar
+                updateAvatar();
+            });
+            
+            // Save avatar
+            saveAvatarBtn.addEventListener('click', function() {
+                // Update name
+                currentAvatar.name = avatarNameInput.value || 'My Avatar';
+                
+                // Show save message
+                const saveMsg = document.createElement('div');
+                saveMsg.className = 'saved-avatar-message';
+                saveMsg.textContent = 'Avatar saved!';
+                
+                const saveSection = document.querySelector('.avatar-display-section');
+                saveSection.appendChild(saveMsg);
+                
+                // Remove message after animation
+                setTimeout(() => {
+                    saveMsg.remove();
+                }, 3000);
+                
+                // In a real app, you'd save to localStorage or a database here
+                localStorage.setItem('savedAvatar', JSON.stringify(currentAvatar));
+            });
+            
+            // Load saved avatar if available
+            const savedAvatar = localStorage.getItem('savedAvatar');
+            if (savedAvatar) {
+                try {
+                    const parsedAvatar = JSON.parse(savedAvatar);
+                    currentAvatar = parsedAvatar;
+                    
+                    // Update UI
+                    avatarNameInput.value = currentAvatar.name;
+                    
+                    document.querySelectorAll('.option-btn, .color-btn').forEach(button => {
+                        button.classList.remove('active');
+                    });
+                    
+                    document.querySelector(`[data-option="head"][data-value="${currentAvatar.head}"]`).classList.add('active');
+                    document.querySelector(`[data-option="eyes"][data-value="${currentAvatar.eyes}"]`).classList.add('active');
+                    document.querySelector(`[data-option="mouth"][data-value="${currentAvatar.mouth}"]`).classList.add('active');
+                    document.querySelector(`[data-option="accessories"][data-value="${currentAvatar.accessories}"]`).classList.add('active');
+                    document.querySelector(`[data-option="color"][data-value="${currentAvatar.color}"]`).classList.add('active');
+                    
+                    updateAvatar();
+                } catch (e) {
+                    console.error('Error loading saved avatar:', e);
+                }
+            }
+            
+            // Close button
+            closeAvatarBtn.addEventListener('click', () => {
+                avatarModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            avatarModal.addEventListener('click', (e) => {
+                if (e.target === avatarModal) {
+                    avatarModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Open avatar modal when button is clicked
+        avatarCreatorButton.addEventListener('click', () => {
+            avatarModal.style.display = 'flex';
+            // Initialize if it's first time opening
+            if (!avatarCreatorButton.dataset.initialized) {
+                initAvatarCreator();
+                avatarCreatorButton.dataset.initialized = 'true';
+            }
+        });
+        
+        // -------------------- Weather App --------------------
+        const weatherAppButton = document.getElementById('weather-app-button');
+        const weatherModal = document.createElement('div');
+        weatherModal.id = 'weather-modal';
+        weatherModal.className = 'modal';
+        
+        // API key for OpenWeatherMap
+        // API key should be kept private and not committed to public repositories
+        const weatherApiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual API key in production
+        
+        // Create weather modal content
+        weatherModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">WEATHER INTEL</div>
+                    <button class="close-btn" id="close-weather">&times;</button>
+                </div>
+                <div class="weather-container">
+                    <div class="search-section">
+                        <input type="text" id="city-input" placeholder="Enter city name...">
+                        <button id="search-btn" class="reset-btn">SEARCH</button>
+                    </div>
+                    
+                    <div class="weather-display" id="weather-display">
+                        <div class="placeholder-message">Enter a city name to see weather information</div>
+                    </div>
+                    
+                    <div class="recent-searches" id="recent-searches">
+                        <h3>RECENT SEARCHES</h3>
+                        <div class="search-list" id="search-list"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(weatherModal);
+        
+        // Add weather app styles
+        const weatherStyles = document.createElement('style');
+        weatherStyles.textContent = `
+            .weather-container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+            }
+            
+            .search-section {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .search-section input {
+                flex: 1;
+                background: #333;
+                color: #ff4500;
+                border: 2px solid #ff4500;
+                padding: 8px 12px;
+                font-family: monospace;
+                font-size: 16px;
+            }
+            
+            .weather-display {
+                min-height: 200px;
+                background: rgba(30, 30, 30, 0.6);
+                border: 2px solid #ff4500;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .placeholder-message {
+                color: #999;
+                font-style: italic;
+                text-align: center;
+            }
+            
+            .weather-card {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                animation: fadeIn 0.5s;
+            }
+            
+            .weather-header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            
+            .city-name {
+                font-size: 24px;
+                font-weight: bold;
+                color: #ff4500;
+                margin-bottom: 5px;
+            }
+            
+            .weather-date {
+                font-size: 14px;
+                color: #aaa;
+            }
+            
+            .weather-info {
+                display: flex;
+                justify-content: space-around;
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .weather-main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+                min-width: 140px;
+            }
+            
+            .weather-icon img {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .temperature {
+                font-size: 32px;
+                font-weight: bold;
+                color: #ff4500;
+            }
+            
+            .weather-description {
+                text-transform: capitalize;
+                font-size: 18px;
+            }
+            
+            .weather-details {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 140px;
+            }
+            
+            .detail-item {
+                display: flex;
+                justify-content: space-between;
+                font-size: 14px;
+                border-bottom: 1px solid rgba(255, 69, 0, 0.3);
+                padding-bottom: 5px;
+            }
+            
+            .detail-label {
+                color: #aaa;
+            }
+            
+            .detail-value {
+                color: #ff4500;
+                font-weight: bold;
+            }
+            
+            .error-message {
+                color: #ff4444;
+                text-align: center;
+                padding: 10px;
+            }
+            
+            .recent-searches {
+                width: 100%;
+            }
+            
+            .recent-searches h3 {
+                color: #ff4500;
+                font-size: 16px;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-bottom: 1px dashed #ff4500;
+                padding-bottom: 5px;
+            }
+            
+            .search-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .search-item {
+                background: #333;
+                color: #ff4500;
+                border: 1px solid #ff4500;
+                border-radius: 3px;
+                padding: 5px 10px;
+                font-family: monospace;
+                font-size: 14px;
+                cursor: none;
+                transition: all 0.2s ease;
+            }
+            
+            .search-item:hover {
+                background: #444;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            /* Weather background themes */
+            .weather-clear {
+                background: radial-gradient(circle, rgba(80, 50, 0, 0.6), rgba(30, 30, 30, 0.6));
+            }
+            
+            .weather-clouds {
+                background: radial-gradient(circle, rgba(50, 50, 60, 0.6), rgba(30, 30, 30, 0.6));
+            }
+            
+            .weather-rain {
+                background: radial-gradient(circle, rgba(40, 40, 70, 0.6), rgba(30, 30, 30, 0.6));
+            }
+            
+            .weather-snow {
+                background: radial-gradient(circle, rgba(70, 70, 80, 0.6), rgba(30, 30, 30, 0.6));
+            }
+            
+            .weather-thunderstorm {
+                background: radial-gradient(circle, rgba(40, 20, 60, 0.6), rgba(30, 30, 30, 0.6));
+            }
+            
+            .weather-mist {
+                background: radial-gradient(circle, rgba(60, 70, 70, 0.6), rgba(30, 30, 30, 0.6));
+            }
+            
+            body.shred-gnar .search-section input {
+                color: #00ff00;
+                border-color: #00ff00;
+            }
+            
+            body.shred-gnar .weather-display {
+                border-color: #00ff00;
+                background: rgba(0, 30, 0, 0.6);
+            }
+            
+            body.shred-gnar .city-name {
+                color: #00ff00;
+            }
+            
+            body.shred-gnar .temperature {
+                color: #00ff00;
+            }
+            
+            body.shred-gnar .detail-value {
+                color: #00ff00;
+            }
+            
+            body.shred-gnar .detail-item {
+                border-bottom-color: rgba(0, 255, 0, 0.3);
+            }
+            
+            body.shred-gnar .recent-searches h3 {
+                color: #00ff00;
+                border-bottom-color: #00ff00;
+            }
+            
+            body.shred-gnar .search-item {
+                color: #00ff00;
+                border-color: #00ff00;
+            }
+        `;
+        document.head.appendChild(weatherStyles);
+        
+        // Initialize weather app
+        function initWeatherApp() {
+            const closeWeatherBtn = document.getElementById('close-weather');
+            const cityInput = document.getElementById('city-input');
+            const searchBtn = document.getElementById('search-btn');
+            const weatherDisplay = document.getElementById('weather-display');
+            const searchList = document.getElementById('search-list');
+            
+            // Recent searches array
+            let recentSearches = JSON.parse(localStorage.getItem('recentWeatherSearches') || '[]');
+            
+            // Update recent searches UI
+            function updateRecentSearches() {
+                searchList.innerHTML = '';
+                
+                // Show only most recent 5 searches
+                const searches = recentSearches.slice(0, 5);
+                
+                searches.forEach(city => {
+                    const item = document.createElement('button');
+                    item.className = 'search-item';
+                    item.textContent = city;
+                    item.addEventListener('click', () => {
+                        cityInput.value = city;
+                        getWeather(city);
+                    });
+                    
+                    searchList.appendChild(item);
+                });
+            }
+            
+            // Format date
+            function formatDate(date) {
+                const options = { weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                return date.toLocaleDateString('en-US', options);
+            }
+            
+            // Get weather data
+            function getWeather(city) {
+                // Show loading
+                weatherDisplay.innerHTML = `
+                    <div class="placeholder-message">Loading weather data...</div>
+                `;
+                
+                // Fetch weather data with error handling
+                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherApiKey}&units=metric`, {
+                    mode: 'cors',
+                    cache: 'no-cache'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('City not found');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Add to recent searches if not already present
+                        if (!recentSearches.includes(city)) {
+                            recentSearches.unshift(city);
+                            
+                            // Limit to 10 searches
+                            if (recentSearches.length > 10) {
+                                recentSearches.pop();
+                            }
+                            
+                            // Save to localStorage
+                            localStorage.setItem('recentWeatherSearches', JSON.stringify(recentSearches));
+                            
+                            // Update UI
+                            updateRecentSearches();
+                        }
+                        
+                        // Determine weather class for background
+                        const weatherMain = data.weather[0].main.toLowerCase();
+                        let weatherClass = 'weather-clouds';
+                        
+                        if (weatherMain.includes('clear')) {
+                            weatherClass = 'weather-clear';
+                        } else if (weatherMain.includes('cloud')) {
+                            weatherClass = 'weather-clouds';
+                        } else if (weatherMain.includes('rain') || weatherMain.includes('drizzle')) {
+                            weatherClass = 'weather-rain';
+                        } else if (weatherMain.includes('snow')) {
+                            weatherClass = 'weather-snow';
+                        } else if (weatherMain.includes('thunderstorm')) {
+                            weatherClass = 'weather-thunderstorm';
+                        } else if (weatherMain.includes('mist') || weatherMain.includes('fog') || weatherMain.includes('haze')) {
+                            weatherClass = 'weather-mist';
+                        }
+                        
+                        // Format time
+                        const date = new Date();
+                        
+                        // Display weather data
+                        weatherDisplay.innerHTML = `
+                            <div class="weather-card ${weatherClass}">
+                                <div class="weather-header">
+                                    <div class="city-name">${data.name}, ${data.sys.country}</div>
+                                    <div class="weather-date">${formatDate(date)}</div>
+                                </div>
+                                <div class="weather-info">
+                                    <div class="weather-main">
+                                        <div class="weather-icon">
+                                            <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt="${data.weather[0].description}">
+                                        </div>
+                                        <div class="temperature">${Math.round(data.main.temp)}°C</div>
+                                        <div class="weather-description">${data.weather[0].description}</div>
+                                    </div>
+                                    <div class="weather-details">
+                                        <div class="detail-item">
+                                            <span class="detail-label">Feels Like</span>
+                                            <span class="detail-value">${Math.round(data.main.feels_like)}°C</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Humidity</span>
+                                            <span class="detail-value">${data.main.humidity}%</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Wind</span>
+                                            <span class="detail-value">${Math.round(data.wind.speed * 3.6)} km/h</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <span class="detail-label">Pressure</span>
+                                            <span class="detail-value">${data.main.pressure} hPa</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Update weather display class
+                        weatherDisplay.className = `weather-display ${weatherClass}`;
+                    })
+                    .catch(error => {
+                        console.error('Weather API error:', error);
+                        
+                        // Show detailed error message
+                        weatherDisplay.innerHTML = `
+                            <div class="error-message">
+                                <p>${error.message === 'City not found' ? 'City not found. Try a different location.' : 'Error loading weather data. Please try again.'}</p>
+                                <p>Details: ${error.toString()}</p>
+                                <p>Status: ${error.status || 'unknown'}</p>
+                                <p>API Key: ${weatherApiKey.substring(0, 5)}...${weatherApiKey.substring(weatherApiKey.length - 5)}</p>
+                            </div>
+                        `;
+                        
+                        // Try a hardcoded example if there's an API key issue
+                        if (error.message.includes('API key') || error.message.includes('appid')) {
+                            weatherDisplay.innerHTML += `
+                                <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.2);">
+                                    <p>Example fallback data:</p>
+                                    <div class="weather-card weather-clouds">
+                                        <div class="weather-header">
+                                            <div class="city-name">Chicago, US</div>
+                                            <div class="weather-date">${formatDate(new Date())}</div>
+                                        </div>
+                                        <div class="weather-info">
+                                            <div class="weather-main">
+                                                <div class="temperature">18°C</div>
+                                                <div class="weather-description">partly cloudy</div>
+                                            </div>
+                                            <div class="weather-details">
+                                                <div class="detail-item">
+                                                    <span class="detail-label">Feels Like</span>
+                                                    <span class="detail-value">16°C</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">Humidity</span>
+                                                    <span class="detail-value">71%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+            }
+            
+            // Search button
+            searchBtn.addEventListener('click', () => {
+                const city = cityInput.value.trim();
+                if (city) {
+                    getWeather(city);
+                }
+            });
+            
+            // Enter key in input
+            cityInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const city = cityInput.value.trim();
+                    if (city) {
+                        getWeather(city);
+                    }
+                }
+            });
+            
+            // Close button
+            closeWeatherBtn.addEventListener('click', () => {
+                weatherModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            weatherModal.addEventListener('click', (e) => {
+                if (e.target === weatherModal) {
+                    weatherModal.style.display = 'none';
+                }
+            });
+            
+            // Update recent searches UI
+            updateRecentSearches();
+        }
+        
+        // Open weather modal when button is clicked
+        weatherAppButton.addEventListener('click', () => {
+            weatherModal.style.display = 'flex';
+            // Initialize if it's first time opening
+            if (!weatherAppButton.dataset.initialized) {
+                initWeatherApp();
+                weatherAppButton.dataset.initialized = 'true';
+            }
+        });
+    </script>
+</body>
+</html>
