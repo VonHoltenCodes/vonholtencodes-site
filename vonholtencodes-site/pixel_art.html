@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Canvas</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+        .canvas-container {
+            margin: 20px;
+        }
+        #pixelCanvas {
+            background-color: #111;
+            cursor: crosshair;
+            border: 2px solid #ff4500;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .color-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+            max-width: 500px;
+        }
+        .color-option {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #333;
+            cursor: pointer;
+        }
+        .color-option.selected {
+            border: 2px solid white;
+        }
+        button {
+            background: #333;
+            color: white;
+            border: 1px solid #ff4500;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background: #444;
+        }
+        h2 {
+            color: #ff4500;
+            margin-bottom: 5px;
+        }
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .pixel-size {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>PIXEL ART CREATOR</h2>
+    <div class="canvas-container">
+        <canvas id="pixelCanvas" width="500" height="500"></canvas>
+    </div>
+    
+    <div class="controls-panel">
+        <div class="pixel-size">
+            <span>Pixel Size:</span>
+            <select id="pixelSize">
+                <option value="10">10px</option>
+                <option value="15">15px</option>
+                <option value="20" selected>20px</option>
+                <option value="25">25px</option>
+            </select>
+        </div>
+        
+        <div>
+            <div>Colors:</div>
+            <div class="color-picker" id="colorPicker"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="clearBtn">CLEAR</button>
+            <button id="saveBtn">SAVE</button>
+            <button id="loadBtn">LOAD</button>
+        </div>
+    </div>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('pixelCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Variables
+        let pixelSize = 20;
+        let currentColor = '#ff4500';
+        let isDrawing = false;
+        
+        // Predefined colors for military-themed pixel art
+        const colors = [
+            '#ff4500', '#ffffff', '#000000', '#333333', '#666666', 
+            '#00ff00', '#006400', '#8B4513', '#A0522D', '#F5DEB3',
+            '#00BFFF', '#4682B4', '#191970', '#ff0000', '#8B0000',
+            '#FFFF00', '#FFD700', '#808000', '#FFA500', '#7CFC00'
+        ];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create color picker
+            createColorPicker();
+            
+            // Clear canvas to start
+            clearCanvas();
+            
+            // Set initial pixel size
+            document.getElementById('pixelSize').value = pixelSize;
+        });
+        
+        // Create color picker UI
+        function createColorPicker() {
+            const colorPicker = document.getElementById('colorPicker');
+            colors.forEach(color => {
+                const colorOption = document.createElement('div');
+                colorOption.className = 'color-option';
+                colorOption.style.backgroundColor = color;
+                if (color === currentColor) {
+                    colorOption.classList.add('selected');
+                }
+                colorOption.addEventListener('click', () => {
+                    document.querySelectorAll('.color-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    colorOption.classList.add('selected');
+                    currentColor = color;
+                });
+                colorPicker.appendChild(colorOption);
+            });
+        }
+        
+        // Clear canvas
+        function clearCanvas() {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Draw a pixel
+        function drawPixel(x, y) {
+            // Get position aligned to grid
+            const gridX = Math.floor(x / pixelSize) * pixelSize;
+            const gridY = Math.floor(y / pixelSize) * pixelSize;
+            
+            ctx.fillStyle = currentColor;
+            ctx.fillRect(gridX, gridY, pixelSize, pixelSize);
+        }
+        
+        // Mouse event handlers
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            drawPixel(x, y);
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            drawPixel(x, y);
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+        
+        // Pixel size change
+        document.getElementById('pixelSize').addEventListener('change', (e) => {
+            pixelSize = parseInt(e.target.value);
+        });
+        
+        // Button handlers
+        document.getElementById('clearBtn').addEventListener('click', clearCanvas);
+        
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            // Save to localStorage
+            localStorage.setItem('pixelArtCanvas', canvas.toDataURL());
+            alert('Artwork saved!');
+        });
+        
+        document.getElementById('loadBtn').addEventListener('click', () => {
+            // Load from localStorage
+            const savedArt = localStorage.getItem('pixelArtCanvas');
+            if (savedArt) {
+                const img = new Image();
+                img.onload = function() {
+                    clearCanvas();
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = savedArt;
+            } else {
+                alert('No saved artwork found!');
+            }
+        });
+    </script>
+</body>
+</html>

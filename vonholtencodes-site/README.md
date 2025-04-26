@@ -16,6 +16,7 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 - Weather app with OpenWeatherMap integration
 - Hangman game with military terminology
 - Moon Lander game with realistic physics
+- Pixel Art Creator with color picker and save/load functionality
 - Retro "Surfers" visitor counter in footer
 - Fully responsive for mobile devices
 
@@ -25,6 +26,7 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 - `index.html` - Current version with fighter pilot theme
 - `index.html.bak` - Original version (MVP) for reference
 - `moon_lander.html` - Moon Lander game implementation
+- `pixel_art.html` - Pixel Art Creator implementation
 - `get_counter.php` - Visitor counter script
 - `counter.txt` - Visitor count storage file
 - `admin.php` - Admin panel for site management
@@ -62,6 +64,9 @@ A personal website for VonHoltenCodes featuring a fighter pilot-inspired retro u
 
 ## Recent Updates
 
+- Added Pixel Art Creator with color picker and save/load functionality
+- Integrated Pixel Art Creator into the main application grid as the 9th application
+- Implemented localStorage saving/loading for pixel art creations
 - Added secure admin panel with protected access for site management
 - Created automated deployment script with password-based authentication
 - Added PHP installation and configuration script for server setup
