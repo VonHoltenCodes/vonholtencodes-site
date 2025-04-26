@@ -2,6 +2,15 @@
 
 This document contains important information for Claude when helping with the VonHoltenCodes website.
 
+## Security Note
+
+When working with this repository, be aware that some files need to be redacted before pushing to GitHub:
+
+1. Use the `redact_files.sh` script to create GitHub-safe versions of sensitive files
+2. For local development, use the original files
+3. Before committing to public GitHub, use the redacted versions
+4. Never commit real API keys, passwords, or usernames to the public repository
+
 ## Server Configuration
 
 The website is served from:

@@ -1,0 +1,21 @@
+# Local backups of sensitive files
+.local_backups/
+
+# Any temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+
+# npm/yarn
+node_modules/
+package-lock.json
+yarn.lock

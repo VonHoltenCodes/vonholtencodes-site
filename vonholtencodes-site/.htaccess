@@ -1,0 +1,23 @@
+# Protect the admin page
+<Files "admin.php">
+  AuthType Basic
+  AuthName "VHC Admin Access"
+  AuthUserFile /var/www/vonholtencodes.com/.htpasswd
+  Require valid-user
+</Files>
+
+# Prevent direct access to counter files
+<Files "counter.txt">
+  Order deny,allow
+  Deny from all
+  Allow from 127.0.0.1
+</Files>
+
+# Allow access to counter.txt only via PHP scripts
+<FilesMatch "\.(txt)$">
+  <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_REFERER} !^http://(www\.)?vonholtencodes\.com [NC]
+    RewriteRule .*\.(txt)$ - [F,L]
+  </IfModule>
+</FilesMatch>

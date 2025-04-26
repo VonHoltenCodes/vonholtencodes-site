@@ -1183,27 +1183,6 @@
         body:not(.shred-gnar) .counter-display {
             color: #ff9500;
         }
-        
-        /* Ghost Admin Link */
-        .admin-link {
-            margin-left: 15px;
-            color: rgba(255, 69, 0, 0.2);
-            text-decoration: none;
-            font-size: 18px;
-            transition: color 0.3s ease, transform 0.3s ease;
-            position: relative;
-            display: inline-block;
-            padding: 2px 8px;
-            border: 1px solid rgba(255, 69, 0, 0.1);
-            border-radius: 3px;
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-        
-        .admin-link:hover {
-            color: rgba(255, 69, 0, 0.8);
-            border-color: rgba(255, 69, 0, 0.3);
-            transform: scale(1.05);
-        }
     </style>
 </head>
 <body>
@@ -1397,7 +1376,6 @@
                 <span class="counter-label">SURFERS:</span>
                 <span class="counter-display" id="surfer-count">00000</span>
             </div>
-            <a href="admin.php" class="admin-link">ADMIN</a>
         </div>
     </div>
 
