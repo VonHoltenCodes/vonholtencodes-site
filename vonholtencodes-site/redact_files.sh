@@ -24,9 +24,10 @@ sed -i "s/const weatherApiKey = '[a-zA-Z0-9]*';/const weatherApiKey = 'YOUR_API_
 
 echo "Creating GitHub-ready deploy.sh..."
 cp deploy.sh deploy.sh.github
-echo "" >> deploy.sh.github
-echo "# Note: This is a redacted version for GitHub. Server paths, usernames, and specific commands" >> deploy.sh.github
-echo "# may need to be modified for your environment." >> deploy.sh.github
+# Add a note at the end that this is a redacted version
+sed -i '/echo "Deployment complete!"/i\
+# Note: This is a redacted version for GitHub. Server paths, usernames, and specific commands\
+# may need to be modified for your environment.' deploy.sh.github
 
 echo "Done creating redacted versions."
 echo ""

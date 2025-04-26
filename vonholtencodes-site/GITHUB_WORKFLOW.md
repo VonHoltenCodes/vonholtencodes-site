@@ -79,6 +79,24 @@ These files contain sensitive information and are automatically redacted:
 - `index.html` - Contains API keys
 - `deploy.sh` - Contains server paths and commands
 
+## Deployment
+
+To deploy the website to the server:
+
+1. Run the deploy script:
+   ```bash
+   ./deploy.sh
+   ```
+
+2. Enter your sudo password once when prompted
+
+The deploy script will:
+- Ask for your password only once and cache it for the entire script
+- Copy all necessary files to the web server
+- Set appropriate permissions
+- Install PHP and Apache modules if needed
+- Provide clear feedback on each step of the process
+
 ## Regular Workflow Summary
 
 1. Make your changes to the site
