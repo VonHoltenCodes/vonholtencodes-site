@@ -21,25 +21,44 @@
         .canvas-container {
             margin: 20px;
             position: relative;
+            display: block;
+            width: 500px;
+            height: 450px;
+        }
+        #pixelCanvas, #gridCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500px;
+            height: 450px;
         }
         #pixelCanvas {
-            background-color: #111;
+            background-color: white;
             cursor: crosshair;
             border: 2px solid #ff4500;
-            background-image:
-                linear-gradient(rgba(100, 100, 100, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(100, 100, 100, 0.2) 1px, transparent 1px);
+            outline: none; /* Remove default focus outline */
+        }
+        #gridCanvas {
+            pointer-events: none; /* Allow clicks to pass through to pixelCanvas */
+            border: 2px solid transparent; /* Match border size but transparent */
+        }
+        
+        #pixelCanvas:focus {
+            border: 2px solid #00ff00; /* Green border when focused */
         }
         .controls {
             display: flex;
             gap: 10px;
             margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .color-picker {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 5px;
             margin-bottom: 15px;
+            width: 100%;
             max-width: 500px;
             padding: 5px;
             background-color: rgba(0, 0, 0, 0.3);
@@ -71,11 +90,28 @@
             margin: 0 5px;
             transition: all 0.2s ease;
             border-radius: 3px;
+            min-width: 100px;
         }
         button:hover {
             background: #444;
             box-shadow: 0 0 8px rgba(255, 69, 0, 0.7);
             transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 0 5px rgba(255, 69, 0, 0.5);
+        }
+        #undoBtn {
+            background-color: #444;
+            border-color: #ff9800;
+        }
+        #downloadBtn {
+            background-color: #006400;
+            border-color: #00ff00;
+        }
+        #toggleGridBtn[data-grid-visible="false"] {
+            background-color: #555;
+            border-color: #999;
         }
         h2 {
             color: #ff4500;
@@ -86,6 +122,8 @@
             flex-direction: column;
             gap: 15px;
             margin-top: 10px;
+            width: 500px;
+            align-items: center;
         }
         .pixel-size {
             display: flex;
@@ -97,7 +135,8 @@
 <body>
     <h2>PIXEL ART CREATOR</h2>
     <div class="canvas-container">
-        <canvas id="pixelCanvas" width="500" height="450"></canvas>
+        <canvas id="pixelCanvas" width="500" height="450" tabindex="1"></canvas>
+        <canvas id="gridCanvas" width="500" height="450"></canvas>
     </div>
     
     <div class="controls-panel">
@@ -109,6 +148,7 @@
                 <option value="20" selected>20px</option>
                 <option value="25">25px</option>
             </select>
+            <span style="margin-left: 20px; font-size: 0.8em; color: #aaa;">(Press 'G' to toggle grid)</span>
         </div>
         
         <div>
@@ -117,21 +157,38 @@
         </div>
         
         <div class="controls">
+            <button id="undoBtn">UNDO</button>
             <button id="clearBtn">CLEAR</button>
             <button id="saveBtn">SAVE</button>
             <button id="loadBtn">LOAD</button>
+            <button id="downloadBtn">DOWNLOAD</button>
+            <button id="toggleGridBtn">HIDE GRID</button>
         </div>
     </div>
     
     <script>
-        // Canvas setup
-        const canvas = document.getElementById('pixelCanvas');
-        const ctx = canvas.getContext('2d');
+        // Canvas setup - dual canvas approach
+        const pixelCanvas = document.getElementById('pixelCanvas');
+        const gridCanvas = document.getElementById('gridCanvas');
+        const pixelCtx = pixelCanvas.getContext('2d');
+        const gridCtx = gridCanvas.getContext('2d');
+        
+        // Disable image smoothing for crisp lines
+        pixelCtx.imageSmoothingEnabled = false;
+        gridCtx.imageSmoothingEnabled = false;
         
         // Variables
         let pixelSize = 20;
         let currentColor = '#ff4500';
         let isDrawing = false;
+        let lastAction = null; // Store the last pixel that was drawn for undo functionality
+        let gridVisible = true; // Track whether the grid is visible
+        
+        // Key tracking object (similar to Moon Lander implementation)
+        let keys = {
+            g: false,
+            G: false
+        };
         
         // Predefined colors for military-themed pixel art
         const colors = [
@@ -152,9 +209,55 @@
             // Set initial pixel size
             document.getElementById('pixelSize').value = pixelSize;
             
-            // Initialize grid
-            updateGridSize();
+            // Set initial grid state based on button text
+            const toggleBtn = document.getElementById('toggleGridBtn');
+            toggleBtn.textContent = gridVisible ? 'HIDE GRID' : 'SHOW GRID';
+            toggleBtn.setAttribute('data-grid-visible', gridVisible.toString());
+            
+            // Draw the initial grid if it should be visible
+            if (gridVisible) {
+                drawGrid();
+            }
         });
+        
+        // Add keyboard event listeners at ALL levels to ensure they work in all browsers
+        // 1. Document level
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+        
+        // 2. Window level (most reliable across browsers)
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        
+        // Key handling functions
+        function handleKeyDown(e) {
+            // Update key state
+            if (e.key in keys) {
+                keys[e.key] = true;
+                
+                // Toggle grid on 'g' key press
+                if (e.key === 'g' || e.key === 'G') {
+                    e.preventDefault();
+                    toggleGrid();
+                }
+            }
+            
+            // Undo shortcut (Ctrl+Z)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                if (undoLastAction()) {
+                    showStatus('Last action undone');
+                } else {
+                    showStatus('Nothing to undo', true);
+                }
+            }
+        }
+        
+        function handleKeyUp(e) {
+            if (e.key in keys) {
+                keys[e.key] = false;
+            }
+        }
         
         // Create color picker UI
         function createColorPicker() {
@@ -177,45 +280,123 @@
             });
         }
         
-        // Clear canvas
+        // Clear the pixel canvas
         function clearCanvas() {
-            ctx.fillStyle = '#111';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            pixelCtx.fillStyle = 'white'; // Match our background color
+            pixelCtx.fillRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+            
+            // Reset our tracking variables
+            lastAction = null;
+            
+            // Grid canvas is separate, so no need to touch it
         }
         
-        // Draw a pixel
+        // Draw a pixel on the pixel canvas (not the grid)
         function drawPixel(x, y) {
             // Get position aligned to grid
             const gridX = Math.floor(x / pixelSize) * pixelSize;
             const gridY = Math.floor(y / pixelSize) * pixelSize;
             
-            ctx.fillStyle = currentColor;
-            ctx.fillRect(gridX, gridY, pixelSize, pixelSize);
+            // Save the current state for undo purposes
+            const imageData = pixelCtx.getImageData(gridX, gridY, pixelSize, pixelSize);
+            lastAction = {
+                x: gridX,
+                y: gridY,
+                size: pixelSize,
+                data: imageData
+            };
+            
+            // Draw the new pixel on the pixel canvas
+            pixelCtx.fillStyle = currentColor;
+            pixelCtx.fillRect(gridX, gridY, pixelSize, pixelSize);
+        }
+        
+        // Function to draw grid lines on the grid canvas
+        function drawGrid() {
+            // Clear the grid canvas first
+            gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+            
+            // Set grid line style
+            gridCtx.strokeStyle = 'rgba(150, 150, 150, 0.8)';
+            gridCtx.lineWidth = 1;
+            
+            // Draw vertical lines
+            for (let x = 0; x <= gridCanvas.width; x += pixelSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(x, 0);
+                gridCtx.lineTo(x, gridCanvas.height);
+                gridCtx.stroke();
+            }
+            
+            // Draw horizontal lines
+            for (let y = 0; y <= gridCanvas.height; y += pixelSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, y);
+                gridCtx.lineTo(gridCanvas.width, y);
+                gridCtx.stroke();
+            }
         }
         
         // Mouse event handlers
-        canvas.addEventListener('mousedown', (e) => {
+        pixelCanvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
+            const rect = pixelCanvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             drawPixel(x, y);
+            
+            // Give focus to canvas when clicked - helps with keyboard events
+            pixelCanvas.focus();
         });
         
-        canvas.addEventListener('mousemove', (e) => {
+        pixelCanvas.addEventListener('mousemove', (e) => {
             if (!isDrawing) return;
-            const rect = canvas.getBoundingClientRect();
+            const rect = pixelCanvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             drawPixel(x, y);
         });
         
-        canvas.addEventListener('mouseup', () => {
+        pixelCanvas.addEventListener('mouseup', () => {
+            // On mouse up, capture the current state for undo
+            if (isDrawing) {
+                // Get the current final state of the canvas (only the pixel canvas)
+                const currentFullState = pixelCtx.getImageData(0, 0, pixelCanvas.width, pixelCanvas.height);
+                
+                // Save this as a snapshot for undo
+                lastAction = {
+                    x: 0,
+                    y: 0,
+                    size: pixelCanvas.width,
+                    data: currentFullState
+                };
+            }
             isDrawing = false;
         });
         
-        canvas.addEventListener('mouseleave', () => {
+        pixelCanvas.addEventListener('mouseleave', () => {
+            // Same logic as mouseup
+            if (isDrawing) {
+                // Get the current final state of the canvas (only the pixel canvas)
+                const currentFullState = pixelCtx.getImageData(0, 0, pixelCanvas.width, pixelCanvas.height);
+                
+                // Save this as a snapshot for undo
+                lastAction = {
+                    x: 0,
+                    y: 0,
+                    size: pixelCanvas.width,
+                    data: currentFullState
+                };
+            }
             isDrawing = false;
+        });
+        
+        // Add canvas-specific keyboard event for better accessibility
+        pixelCanvas.addEventListener('keydown', (e) => {
+            if (e.key === 'g' || e.key === 'G') {
+                e.preventDefault();
+                toggleGrid();
+            }
         });
         
         // Pixel size change
@@ -224,9 +405,41 @@
             updateGridSize();
         });
         
-        // Update the grid size to match pixel size
+        // We no longer need to track canvas state since we're using CSS for grid
+
+        // Update the grid size to match pixel size (dual-canvas approach)
         function updateGridSize() {
-            canvas.style.backgroundSize = `${pixelSize}px ${pixelSize}px`;
+            // If grid is visible, redraw it with new pixel size
+            if (gridVisible) {
+                drawGrid();
+            }
+            
+            // Ensure the toggle button has the correct state
+            const toggleBtn = document.getElementById('toggleGridBtn');
+            toggleBtn.textContent = gridVisible ? 'HIDE GRID' : 'SHOW GRID';
+            toggleBtn.setAttribute('data-grid-visible', gridVisible.toString());
+        }
+        
+        // Toggle grid visibility (dual-canvas approach)
+        function toggleGrid() {
+            // Toggle the grid visibility state
+            gridVisible = !gridVisible;
+            
+            if (gridVisible) {
+                // Draw grid on the grid canvas
+                drawGrid();
+            } else {
+                // Clear the grid canvas completely
+                gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+            }
+            
+            // Update the button appearance
+            const toggleBtn = document.getElementById('toggleGridBtn');
+            toggleBtn.textContent = gridVisible ? 'HIDE GRID' : 'SHOW GRID';
+            toggleBtn.setAttribute('data-grid-visible', gridVisible.toString());
+            
+            // Show feedback
+            showStatus(`Grid ${gridVisible ? 'Enabled' : 'Disabled'}`);
         }
         
         // Add status message display
@@ -256,15 +469,55 @@
             }, 2000);
         }
         
+        // Undo the last action
+        function undoLastAction() {
+            if (lastAction) {
+                // Put the image data back to what it was before the last draw action
+                // Only affects the pixel canvas, not the grid
+                pixelCtx.putImageData(lastAction.data, lastAction.x, lastAction.y);
+                
+                // Grid is on a separate canvas, no need to redraw it
+                
+                // Clear the last action since we've now used it
+                lastAction = null;
+                return true;
+            }
+            return false;
+        }
+        
+        // Download the canvas as a PNG image (without grid)
+        function downloadCanvas() {
+            // Create a temporary link element
+            const link = document.createElement('a');
+            // Set the download attribute with a filename
+            link.download = 'pixel-art-' + new Date().toISOString().slice(0, 10) + '.png';
+            
+            // Convert the pixel canvas to a data URL (without grid)
+            link.href = pixelCanvas.toDataURL('image/png');
+            
+            // Simulate a click on the link to trigger the download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
         // Button handlers
+        document.getElementById('undoBtn').addEventListener('click', () => {
+            if (undoLastAction()) {
+                showStatus('Last action undone');
+            } else {
+                showStatus('Nothing to undo', true);
+            }
+        });
+        
         document.getElementById('clearBtn').addEventListener('click', () => {
             clearCanvas();
             showStatus('Canvas cleared');
         });
         
         document.getElementById('saveBtn').addEventListener('click', () => {
-            // Save to localStorage
-            localStorage.setItem('pixelArtCanvas', canvas.toDataURL());
+            // Save to localStorage (just the pixel canvas, not the grid)
+            localStorage.setItem('pixelArtCanvas', pixelCanvas.toDataURL());
             showStatus('Artwork saved successfully!');
         });
         
@@ -275,13 +528,27 @@
                 const img = new Image();
                 img.onload = function() {
                     clearCanvas();
-                    ctx.drawImage(img, 0, 0);
+                    pixelCtx.drawImage(img, 0, 0);
                     showStatus('Artwork loaded successfully!');
+                    
+                    // Redraw grid if it was visible
+                    if (gridVisible) {
+                        drawGrid();
+                    }
                 };
                 img.src = savedArt;
             } else {
                 showStatus('No saved artwork found!', true);
             }
+        });
+        
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            downloadCanvas();
+            showStatus('Downloading your pixel art...');
+        });
+        
+        document.getElementById('toggleGridBtn').addEventListener('click', () => {
+            toggleGrid();
         });
     </script>
 </body>
