@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VonHoltenCodes - Kids Mission Center</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: black;
+            color: #ff4500;
+            margin: 0;
+            padding: 0;
+            background-image: radial-gradient(circle, #111 1px, transparent 1px);
+            background-size: 15px 15px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header with F-14 */
+        header {
+            position: relative;
+            height: 120px;
+            border-bottom: 2px solid #ff4500;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
+            margin-bottom: 10px;
+        }
+        
+        .main-nav {
+            margin-top: 10px;
+        }
+        
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: #111;
+            color: #ff4500;
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 2px solid #ff4500;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            gap: 8px;
+        }
+        
+        .home-button:hover {
+            background-color: #ff4500;
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
+            transform: translateY(-2px);
+        }
+        
+        body.night-mode .home-button {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+        
+        body.night-mode .home-button:hover {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+        }
+        
+        .home-icon {
+            font-size: 18px;
+        }
+        
+        /* Custom cursor */
+        body {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23ff4500' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%23ff4500'/%3E%3Cline x1='12' y1='2' x2='12' y2='4' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='12' y1='20' x2='12' y2='22' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='4' y2='12' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='20' y1='12' x2='22' y2='12' stroke='%23ff4500' stroke-width='2'/%3E%3C/svg%3E"), auto;
+        }
+        
+        /* Kids links container */
+        .kids-links-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Vertical links layout */
+        .kids-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .link-card {
+            background-color: #111;
+            border: 2px solid #ff4500;
+            border-radius: 5px;
+            padding: 15px;
+            text-decoration: none;
+            color: #ff4500;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ff4500, transparent);
+        }
+        
+        .link-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.4);
+            background-color: #1a1a1a;
+        }
+        
+        .link-card:active {
+            transform: translateY(1px);
+        }
+        
+        .link-card .icon-container {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .link-card .pixel-icon {
+            width: 40px;
+            height: 40px;
+            image-rendering: pixelated;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .link-card .pixel-row {
+            display: flex;
+            height: 5px;
+        }
+        
+        .link-card .pixel {
+            width: 5px;
+            height: 5px;
+        }
+        
+        .link-card .link-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .link-card .link-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .link-card .link-description {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #ff4500;
+            text-decoration: none;
+            border: 2px solid #ff4500;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            align-self: center;
+        }
+        
+        .back-button:hover {
+            background-color: #444;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .back-button:active {
+            transform: translateY(1px);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 69, 0, 0.3);
+            font-size: 14px;
+        }
+        
+        /* Night mode */
+        body.night-mode {
+            background-color: #000;
+        }
+        
+        body.night-mode .link-card {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        body.night-mode .link-card::before {
+            background: linear-gradient(to right, transparent, #00ff00, transparent);
+        }
+        
+        body.night-mode .link-card:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+        }
+        
+        body.night-mode h1,
+        body.night-mode .description,
+        body.night-mode footer {
+            color: #00ff00;
+        }
+        
+        body.night-mode .back-button {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+        
+        body.night-mode .back-button:hover {
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        body.night-mode {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%2300ff00' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%2300ff00'/%3E%3Cline x1='12' y1='2' x2='12' y2='4' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='12' y1='20' x2='12' y2='22' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='4' y2='12' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='20' y1='12' x2='22' y2='12' stroke='%2300ff00' stroke-width='2'/%3E%3C/svg%3E"), auto;
+        }
+        
+        /* Night mode toggle button */
+        .night-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff4500;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .night-mode-toggle:hover {
+            text-decoration: underline;
+        }
+        
+        body.night-mode .night-mode-toggle {
+            color: #00ff00;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 22px;
+            }
+            
+            .link-card {
+                padding: 12px;
+            }
+            
+            .link-card .icon-container {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .link-card .link-title {
+                font-size: 16px;
+            }
+            
+            .link-card .link-description {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="night-mode-toggle" onclick="toggleNightMode()">
+        <span id="mode-text">NIGHT MODE</span>
+    </button>
+
+    <header>
+        <div class="header-content">
+            <h1>KIDS MISSION CENTER</h1>
+            <nav class="main-nav">
+                <a href="index.html" class="home-button">
+                    <span class="home-icon">⌂</span>
+                    RETURN TO BASE
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="kids-links-container">
+        <div class="description">
+            Welcome to the Kids Mission Center, cadet! Below are secure links to educational and entertainment resources approved for young recruits. Each link opens in a new tab for mission security.
+        </div>
+
+        <div class="kids-links">
+            <!-- YouTube Kids -->
+            <a href="https://www.youtubekids.com" class="link-card" target="_blank">
+                <div class="icon-container">
+                    <div class="pixel-icon">
+                        <!-- YouTube Play Button Pixel Art -->
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: #FF0000"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-content">
+                    <div class="link-title">YouTube Kids</div>
+                    <div class="link-description">Kid-friendly videos and content, with parental controls</div>
+                </div>
+            </a>
+            
+            <!-- PBS Kids -->
+            <a href="https://pbskids.org" class="link-card" target="_blank">
+                <div class="icon-container">
+                    <div class="pixel-icon">
+                        <!-- PBS Kids TV Pixel Art -->
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #63C700"></div>
+                            <div class="pixel" style="background-color: #63C700"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #63C700"></div>
+                            <div class="pixel" style="background-color: #63C700"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: #0072CE"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-content">
+                    <div class="link-title">PBS KIDS</div>
+                    <div class="link-description">Educational games and videos with beloved characters</div>
+                </div>
+            </a>
+            
+            
+            <!-- Typing Club -->
+            <a href="https://www.typingclub.com" class="link-card" target="_blank">
+                <div class="icon-container">
+                    <div class="pixel-icon">
+                        <!-- Typing Club Keyboard Pixel Art -->
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #666666"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #666666"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #FFFFFF"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: #333333"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-content">
+                    <div class="link-title">Typing Club</div>
+                    <div class="link-description">Learn touch typing with interactive lessons</div>
+                </div>
+            </a>
+            
+            <!-- Starfall -->
+            <a href="https://www.starfall.com" class="link-card" target="_blank">
+                <div class="icon-container">
+                    <div class="pixel-icon">
+                        <!-- Starfall Star Pixel Art -->
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFA500"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: #FFD700"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-content">
+                    <div class="link-title">Starfall</div>
+                    <div class="link-description">Reading, math, and language arts for pre-K through 3rd grade</div>
+                </div>
+            </a>
+            
+            <!-- National Geographic Kids -->
+            <a href="https://kids.nationalgeographic.com" class="link-card" target="_blank">
+                <div class="icon-container">
+                    <div class="pixel-icon">
+                        <!-- Nat Geo Globe Pixel Art -->
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #00A473"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: #005DB4"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-content">
+                    <div class="link-title">Nat Geo Kids</div>
+                    <div class="link-description">Explore animals, science, and geography with amazing photos</div>
+                </div>
+            </a>
+            
+            <!-- Pixilart -->
+            <a href="https://www.pixilart.com" class="link-card" target="_blank">
+                <div class="icon-container">
+                    <div class="pixel-icon">
+                        <!-- Pixilart Paintbrush Pixel Art -->
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: #A0522D"></div>
+                            <div class="pixel" style="background-color: #A0522D"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: #A0522D"></div>
+                            <div class="pixel" style="background-color: #A0522D"></div>
+                            <div class="pixel" style="background-color: #A0522D"></div>
+                            <div class="pixel" style="background-color: #A0522D"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: #8B4513"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: transparent"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: transparent"></div>
+                        </div>
+                        <div class="pixel-row">
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF69B4"></div>
+                            <div class="pixel" style="background-color: #FF1493"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="link-content">
+                    <div class="link-title">Pixilart</div>
+                    <div class="link-description">Create, share, and discover pixel art and animations</div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    <footer>
+        VonHoltenCodes - Kids Mission Center &copy; 2025
+    </footer>
+
+    <script>
+        // Toggle night mode
+        function toggleNightMode() {
+            document.body.classList.toggle('night-mode');
+            updateModeText();
+        }
+        
+        // Update mode text on the toggle button
+        function updateModeText() {
+            const modeText = document.getElementById('mode-text');
+            if (document.body.classList.contains('night-mode')) {
+                modeText.textContent = 'DAY MODE';
+            } else {
+                modeText.textContent = 'NIGHT MODE';
+            }
+        }
+        
+        // Check if night mode was previously enabled
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if night mode is active on the main page
+            if (window.opener && window.opener.document.body.classList.contains('shred-gnar')) {
+                document.body.classList.add('night-mode');
+            }
+            updateModeText();
+        });
+    </script>
+</body>
+</html>
