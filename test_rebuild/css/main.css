@@ -1,0 +1,200 @@
+/* Base styles for the VonHoltenCodes site rebuild */
+
+:root {
+    /* Day mode colors */
+    --primary-color: #1c2526;
+    --accent-color: #FFD700;
+    --text-color: #e0e0e0;
+    --link-color: #4CAF50;
+    --link-hover-color: #81C784;
+    --grid-item-bg: #2a3132;
+    --header-bg: #111618;
+    --footer-bg: #111618;
+    
+    /* Night mode colors (used when .night-mode class is added to body) */
+    --night-primary-color: #0a0f14;
+    --night-accent-color: #00ff00;
+    --night-text-color: #33ff33;
+    --night-link-color: #00cc00;
+    --night-link-hover-color: #00ff00;
+    --night-grid-item-bg: #121a1e;
+    --night-header-bg: #050a0d;
+    --night-footer-bg: #050a0d;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--primary-color);
+    font-family: 'Arial', sans-serif;
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Night mode styles */
+body.night-mode {
+    background-color: var(--night-primary-color);
+    color: var(--night-text-color);
+}
+
+body.night-mode .accent-color,
+body.night-mode h1, 
+body.night-mode h2, 
+body.night-mode h3, 
+body.night-mode h4 {
+    color: var(--night-accent-color);
+}
+
+body.night-mode a {
+    color: var(--night-link-color);
+}
+
+body.night-mode a:hover {
+    color: var(--night-link-hover-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Header container styles */
+#header-container {
+    margin-bottom: 2rem;
+}
+
+/* Navigation styles */
+nav {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    margin: 1rem 0;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+}
+
+nav li {
+    margin: 0 0.5rem;
+}
+
+nav a {
+    color: var(--accent-color);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+/* Main content area */
+main {
+    padding: 1rem 0;
+}
+
+.intro {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+}
+
+.intro h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+}
+
+/* Component grid */
+.component-grid h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.grid-item {
+    background-color: var(--grid-item-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+body.night-mode .grid-item {
+    background-color: var(--night-grid-item-bg);
+}
+
+.grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.grid-item h3 {
+    color: var(--accent-color);
+    margin-top: 0;
+}
+
+.placeholder {
+    opacity: 0.7;
+    border: 2px dashed rgba(255, 215, 0, 0.3);
+}
+
+body.night-mode .placeholder {
+    border: 2px dashed rgba(0, 255, 0, 0.3);
+}
+
+/* Footer styles */
+footer {
+    background-color: var(--footer-bg);
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 2rem;
+    border-top: 2px solid var(--accent-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.night-mode footer {
+    background-color: var(--night-footer-bg);
+    border-top: 2px solid var(--night-accent-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    nav li {
+        margin: 0.25rem 0;
+    }
+}

@@ -1,0 +1,204 @@
+/* 
+ * Mission Control styles for VonHoltenCodes site
+ * Contains styles for the mission control list layout and components
+ */
+
+/* Mission intro section */
+.mission-intro {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0 2rem 0;
+    position: relative;
+    border-left: 4px solid #ff4500; /* Bright Orange for mission section */
+    transition: border-left-color 0.3s ease;
+}
+
+body.night-mode .mission-intro {
+    border-left-color: #00ff00;
+}
+
+.mission-intro h2 {
+    color: #ff4500;
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+body.night-mode .mission-intro h2 {
+    color: #00ff00;
+}
+
+.mission-intro p {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Mission control container */
+.mission-container {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    padding: 0;
+}
+
+/* Vertical links layout */
+.mission-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.mission-card {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid #ff4500; /* Bright Orange for mission section */
+    border-radius: 8px;
+    padding: 15px;
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ff4500, transparent);
+    transition: background 0.3s ease;
+}
+
+.mission-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 69, 0, 0.3);
+    background-color: rgba(255, 69, 0, 0.1);
+}
+
+.mission-card:active {
+    transform: translateY(1px);
+}
+
+.mission-card .icon-container {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.mission-card .pixel-icon {
+    width: 40px;
+    height: 40px;
+    image-rendering: pixelated;
+    display: flex;
+    flex-direction: column;
+}
+
+.mission-card .pixel-row {
+    display: flex;
+    height: 5px;
+}
+
+.mission-card .pixel {
+    width: 5px;
+    height: 5px;
+}
+
+.mission-card .card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.mission-card .card-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.mission-card .card-description {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Night mode styles */
+body.night-mode .mission-card {
+    border-color: #00ff00;
+}
+
+body.night-mode .mission-card::before {
+    background: linear-gradient(to right, transparent, #00ff00, transparent);
+}
+
+body.night-mode .mission-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+    background-color: rgba(0, 255, 0, 0.1);
+}
+
+/* GitHub specific styles */
+.github-icon {
+    display: block;
+    margin: 0 auto;
+    width: 40px;
+    height: 40px;
+    fill: #fff;
+    transition: fill 0.3s ease;
+}
+
+.github-card:hover .github-icon {
+    fill: #ff4500;
+}
+
+body.night-mode .github-card:hover .github-icon {
+    fill: #00ff00;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mission-container {
+        padding: 0 15px;
+    }
+    
+    .mission-card {
+        padding: 12px;
+    }
+    
+    .mission-card .icon-container {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .mission-card .pixel-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .mission-card .pixel {
+        width: 4px;
+        height: 4px;
+    }
+    
+    .mission-card .card-title {
+        font-size: 16px;
+    }
+    
+    .mission-card .card-description {
+        font-size: 12px;
+    }
+}

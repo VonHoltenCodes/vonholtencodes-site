@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#000000"/>
+  <rect x="2" y="2" width="28" height="28" fill="#111111" stroke="#ff4500" stroke-width="2"/>
+  <text x="16" y="22" font-family="Arial Black, Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ff4500">VH</text>
+</svg>

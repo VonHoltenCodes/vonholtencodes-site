@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Links - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/tabs-v2.css">
+    <link rel="stylesheet" href="../../css/footer.css">
+    <link rel="stylesheet" href="../../css/custom-cursor.css">
+    <link rel="stylesheet" href="../../css/background.css">
+    <link rel="stylesheet" href="../../css/night-mode-toggle.css">
+    <link rel="stylesheet" href="../../css/kids-links.css">
+    <style>
+        .kids-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .kids-link-card {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+        
+        .kids-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-left-color: var(--accent-color);
+        }
+        
+        /* Night mode styling for card titles */
+        body.night-mode .kids-link-card .card-title {
+            color: #ff9933; /* Brighter orange for night mode */
+            text-shadow: 0 0 8px rgba(255, 153, 51, 0.7); /* Enhanced glow effect for night mode */
+        }
+        
+        .kids-link-card .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff6600; /* Retro orange color */
+            text-shadow: 0 0 5px rgba(255, 102, 0, 0.5); /* Subtle glow effect */
+        }
+        
+        .kids-link-card .card-description {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .category-heading {
+            margin-top: 40px;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: #ff6600; /* Matching retro orange color */
+            border-bottom: 1px solid #ff6600;
+            padding-bottom: 5px;
+            text-shadow: 0 0 5px rgba(255, 102, 0, 0.5); /* Subtle glow effect */
+        }
+        
+        /* Night mode styling for category headings */
+        body.night-mode .category-heading {
+            color: #ff9933; /* Brighter orange for night mode */
+            border-bottom: 1px solid #ff9933;
+            text-shadow: 0 0 8px rgba(255, 153, 51, 0.7); /* Enhanced glow effect for night mode */
+        }
+        
+        .category-icon {
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-container">
+        <div class="hydraulic-background"></div>
+        <div class="scanlines"></div>
+        <div class="diagonal-stripes"></div>
+        <div class="circuit-lines"></div>
+    </div>
+    
+    <!-- Night Mode Toggle in Top Right -->
+    <div class="night-mode-toggle">
+        <div class="toggle-button">
+            <span class="toggle-icon toggle-sun">☀</span>
+            <span class="toggle-icon toggle-moon">☽</span>
+        </div>
+    </div>
+    <div class="bullet-hole-container"></div>
+    
+    <div class="container">
+        <!-- Header (will be identical across all pages) -->
+        <div id="header-container">
+            <header class="site-header">
+                <a href="http://www.vonholtencodes.com" style="text-decoration: none; color: inherit;">
+                    <span class="thick">VonHolten</span><br>
+                    <span class="thick">Codes</span><br>
+                    <span class="thin">.com</span>
+                </a>
+                
+                <!-- 3D Rotating VH Logo -->
+                <div class="vh-logo-3d">
+                    <div class="logo-face front">
+                        VH
+                        <span class="bullet-hole bullet-hole-1"></span>
+                        <span class="bullet-hole bullet-hole-2"></span>
+                    </div>
+                    <div class="logo-face back">VH</div>
+                    <div class="logo-face right"></div>
+                    <div class="logo-face left"></div>
+                    <div class="logo-face top"></div>
+                    <div class="logo-face bottom"></div>
+                </div>
+            </header>
+        </div>
+        
+        <!-- Tabs Navigation (will be identical across all pages) -->
+        <div id="tabs-container">
+            <div class="tabs-container">
+                <nav class="tabs-nav">
+                    <a href="../apis/index.html" class="tab-link tab-apis">API's</a>
+                    <a href="../kids/index.html" class="tab-link tab-kids active">Kids Links</a>
+                    <a href="../games/index.html" class="tab-link tab-games">Game Room</a>
+                    <a href="../creation/index.html" class="tab-link tab-creation">Creation Station</a>
+                    <a href="../mission/index.html" class="tab-link tab-mission">Mission Control</a>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Page-specific content -->
+        <main>
+            <section class="page-content">
+                <div class="kids-intro">
+                    <h2>KIDS LINKS</h2>
+                    <p>Welcome to Kids Links! Here you'll find a collection of awesome, safe, and educational websites perfect for curious young minds. Every link has been carefully selected to inspire learning and creativity.</p>
+                </div>
+                
+                <div class="kids-container">
+                    <!-- Fun & Learning Section (Moved to top) -->
+                    <h3 class="category-heading"><span class="category-icon">🎮</span>Fun & Learning</h3>
+                    <div class="kids-links-grid">
+                        <a href="https://www.youtubekids.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">YouTube Kids</div>
+                            <div class="card-description">A kid-friendly version of YouTube with videos, channels and playlists specifically designed for children.</div>
+                        </a>
+                        
+                        <a href="https://www.starfall.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Starfall</div>
+                            <div class="card-description">Educational games and activities focused on reading, phonics and mathematics for pre-K through 3rd grade.</div>
+                        </a>
+                        
+                        <a href="https://pbskids.org/" class="kids-link-card" target="_blank">
+                            <div class="card-title">PBS Kids</div>
+                            <div class="card-description">Educational games, videos and activities featuring characters from popular PBS Kids shows.</div>
+                        </a>
+                        
+                        <a href="https://www.sesamestreet.org/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Sesame Street</div>
+                            <div class="card-description">Games, videos and activities featuring beloved Sesame Street characters that teach important skills while having fun.</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Science & Space Section -->
+                    <h3 class="category-heading"><span class="category-icon">🔭</span>Science & Space</h3>
+                    <div class="kids-links-grid">
+                        <a href="https://www.nasa.gov/kidsclub/index.html" class="kids-link-card" target="_blank">
+                            <div class="card-title">NASA Kids' Club</div>
+                            <div class="card-description">Games, activities, and information about space exploration from NASA, designed for kids of all ages to enjoy while learning about the universe.</div>
+                        </a>
+                        
+                        <a href="https://climatekids.nasa.gov/" class="kids-link-card" target="_blank">
+                            <div class="card-title">NASA Climate Kids</div>
+                            <div class="card-description">Learn about Earth, climate science, and how to help our planet with games, activities, and videos from NASA.</div>
+                        </a>
+                        
+                        <a href="https://kids.nationalgeographic.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">National Geographic Kids</div>
+                            <div class="card-description">Explore amazing animals, cool science, geography, and more with fun facts, videos, and games.</div>
+                        </a>
+                        
+                        <a href="https://www.amnh.org/explore/ology" class="kids-link-card" target="_blank">
+                            <div class="card-title">Ology</div>
+                            <div class="card-description">The American Museum of Natural History's science website for kids covering topics like astronomy, paleontology, zoology, and more.</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Coding & Technology -->
+                    <h3 class="category-heading"><span class="category-icon">💻</span>Coding & Technology</h3>
+                    <div class="kids-links-grid">
+                        <a href="https://scratch.mit.edu/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Scratch</div>
+                            <div class="card-description">Create stories, games, and animations with MIT's block-based programming language designed especially for kids ages 8-16.</div>
+                        </a>
+                        
+                        <a href="https://code.org/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Code.org</div>
+                            <div class="card-description">Learn computer science with fun coding activities and tutorials featuring your favorite characters.</div>
+                        </a>
+                        
+                        <a href="https://www.tynker.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Tynker</div>
+                            <div class="card-description">Learn to code through fun games, Minecraft modding, and more. Perfect for beginners!</div>
+                        </a>
+                        
+                        <a href="https://hourofcode.com/us/learn" class="kids-link-card" target="_blank">
+                            <div class="card-title">Hour of Code</div>
+                            <div class="card-description">One-hour coding tutorials for all ages, featuring popular games and characters.</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Math & Problem Solving -->
+                    <h3 class="category-heading"><span class="category-icon">🔢</span>Math & Problem Solving</h3>
+                    <div class="kids-links-grid">
+                        <a href="https://www.coolmathgames.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Cool Math Games</div>
+                            <div class="card-description">Logic, thinking and math games that are both fun and challenging.</div>
+                        </a>
+                        
+                        <a href="https://www.funbrain.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Funbrain</div>
+                            <div class="card-description">Educational games, videos, and books for math, reading, and more.</div>
+                        </a>
+                        
+                        <a href="https://www.khanacademy.org/kids" class="kids-link-card" target="_blank">
+                            <div class="card-title">Khan Academy Kids</div>
+                            <div class="card-description">Free educational activities, books, songs, and games for young children.</div>
+                        </a>
+                        
+                        <a href="https://www.setgame.com/set/puzzle" class="kids-link-card" target="_blank">
+                            <div class="card-title">SET Daily Puzzle</div>
+                            <div class="card-description">Play the daily SET puzzle and improve your visual perception and pattern recognition skills.</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Art & Creativity -->
+                    <h3 class="category-heading"><span class="category-icon">🎨</span>Art & Creativity</h3>
+                    <div class="kids-links-grid">
+                        <a href="https://www.artsonia.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Artsonia</div>
+                            <div class="card-description">The world's largest student art museum. Get inspired by other kids' artwork.</div>
+                        </a>
+                        
+                        <a href="https://www.metmuseum.org/art/online-features/metkids/" class="kids-link-card" target="_blank">
+                            <div class="card-title">MetKids</div>
+                            <div class="card-description">Explore the Metropolitan Museum of Art with a time machine, videos, and fun facts about art.</div>
+                        </a>
+                        
+                        <a href="https://www.tate.org.uk/kids" class="kids-link-card" target="_blank">
+                            <div class="card-title">Tate Kids</div>
+                            <div class="card-description">Games, videos, and activities inspired by artists and artworks from the Tate galleries.</div>
+                        </a>
+                        
+                        <a href="https://www.youtube.com/user/ArtforKidsHub" class="kids-link-card" target="_blank">
+                            <div class="card-title">Art for Kids Hub</div>
+                            <div class="card-description">Step-by-step drawing tutorials that are fun and easy to follow for kids of all ages.</div>
+                        </a>
+                        
+                        <a href="https://pixilart.com/" class="kids-link-card" target="_blank">
+                            <div class="card-title">Pixilart</div>
+                            <div class="card-description">Free online pixel art creation tool where kids can draw, create animations, and share their pixel art with others.</div>
+                        </a>
+                    </div>
+<!-- This section was moved to the top -->
+                </div>
+            </section>
+        </main>
+        
+        <!-- Simple Footer Component -->
+        <footer class="site-footer">
+            <div class="copyright">Created by VonHoltenCodes 2025</div>
+        </footer>
+    </div>
+    
+    <script src="../../js/main.js"></script>
+    <script src="../../js/header.js"></script>
+    <script src="../../js/tabs.js"></script>
+    <script src="../../js/custom-cursor.js"></script>
+    <script src="../../js/background.js"></script>
+    <script src="../../js/night-mode-toggle.js"></script>
+</body>
+</html>

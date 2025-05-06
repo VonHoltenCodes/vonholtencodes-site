@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combat Simulator - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --primary-hover: #ff6a33;
+            --accent-color: #ff8c00;
+            --background-color: #000000;
+            --text-color: #00ff00;
+            --hud-color: rgba(0, 255, 0, 0.8);
+            --warning-color: #ff4500;
+            --target-color: #2da866;
+            --target-stroke: #1a7045;
+            --cockpit-color: #a8d8e8;
+        }
+        
+        body.night-mode {
+            --primary-color: #00ff00;
+            --primary-hover: #66ff66;
+            --accent-color: #00cc00;
+            --text-color: #00ff00;
+            --hud-color: rgba(0, 255, 0, 0.8);
+            --warning-color: #ff4500;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: var(--text-color);
+            height: 100vh;
+            position: relative;
+            cursor: none;
+        }
+        
+        /* Custom cursor (F-14 Tomcat HUD style) */
+        #custom-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 9999;
+            background: transparent;
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+            box-sizing: border-box;
+            transform: translate(-50%, -50%); /* Center the click point */
+            transition: all 0.05s ease;
+        }
+        
+        #custom-cursor::before,
+        #custom-cursor::after {
+            content: '';
+            position: absolute;
+            background: var(--text-color);
+        }
+        
+        #custom-cursor::before {
+            width: 2px;
+            height: 24px;
+            top: 8px;
+            left: 19px;
+        }
+        
+        #custom-cursor::after {
+            width: 24px;
+            height: 2px;
+            left: 8px;
+            top: 19px;
+        }
+        
+        #custom-cursor .tick {
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: var(--text-color);
+        }
+        
+        #custom-cursor .tick:nth-child(1) { top: 0; left: 19px; }
+        #custom-cursor .tick:nth-child(2) { bottom: 0; left: 19px; }
+        #custom-cursor .tick:nth-child(3) { left: 0; top: 19px; }
+        #custom-cursor .tick:nth-child(4) { right: 0; top: 19px; }
+        
+        /* Targeting mode */
+        #custom-cursor.targeting {
+            border-color: var(--warning-color);
+        }
+        
+        #custom-cursor.targeting::before,
+        #custom-cursor.targeting::after,
+        #custom-cursor.targeting .tick {
+            background: var(--warning-color);
+        }
+        
+        #custom-cursor .target-lock {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border: 2px dashed var(--warning-color);
+            border-radius: 50%;
+            top: -5px;
+            left: -5px;
+            opacity: 0;
+            animation: blink 0.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        
+        #sim-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #001122;
+        }
+        
+        /* Sky background with stars */
+        .sky-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #001133 0%, #003366 100%);
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #fff;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        
+        /* Clouds */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            z-index: 3;
+        }
+        
+        /* Ground */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background: linear-gradient(to bottom, #1a3300 0%, #105510 100%);
+            z-index: 4;
+        }
+        
+        /* Ground grid pattern */
+        .ground-grid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: bottom;
+            z-index: 5;
+        }
+        
+        /* HUD Elements */
+        .hud-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            color: var(--hud-color);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .hud-frame {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            right: 50px;
+            bottom: 50px;
+            border: 1px solid var(--hud-color);
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--hud-color);
+            opacity: 0.5;
+        }
+        
+        .hud-corners {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hud-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--hud-color);
+            border-style: solid;
+            border-width: 0;
+        }
+        
+        .top-left {
+            top: 50px;
+            left: 50px;
+            border-top-width: 1px;
+            border-left-width: 1px;
+        }
+        
+        .top-right {
+            top: 50px;
+            right: 50px;
+            border-top-width: 1px;
+            border-right-width: 1px;
+        }
+        
+        .bottom-left {
+            bottom: 50px;
+            left: 50px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+        }
+        
+        .bottom-right {
+            bottom: 50px;
+            right: 50px;
+            border-bottom-width: 1px;
+            border-right-width: 1px;
+        }
+        
+        .hud-panel {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--hud-color);
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .hud-panel h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--hud-color);
+        }
+        
+        .altitude-panel {
+            top: 70px;
+            left: 70px;
+            width: 120px;
+        }
+        
+        .weapons-panel {
+            top: 70px;
+            right: 70px;
+            width: 120px;
+        }
+        
+        .radar-panel {
+            bottom: 70px;
+            left: 70px;
+            width: 180px;
+            height: 150px;
+        }
+        
+        .stats-panel {
+            bottom: 70px;
+            right: 70px;
+            width: 120px;
+        }
+        
+        .radar-display {
+            width: 160px;
+            height: 100px;
+            background-color: rgba(0, 30, 0, 0.7);
+            border: 1px solid var(--hud-color);
+            border-radius: 3px;
+            margin-top: 10px;
+            position: relative;
+        }
+        
+        .radar-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+        
+        .radar-center {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: var(--hud-color);
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 160px solid rgba(0, 255, 0, 0.1);
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            animation: radar-sweep 4s linear infinite;
+        }
+        
+        @keyframes radar-sweep {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+        
+        .radar-blip {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--warning-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .radar-blip.friendly {
+            background-color: var(--hud-color);
+        }
+        
+        .altitude-display, .speed-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .altitude-bar, .speed-bar {
+            height: 10px;
+            background-color: rgba(0, 255, 0, 0.3);
+            border: 1px solid var(--hud-color);
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        .altitude-fill, .speed-fill {
+            height: 100%;
+            background-color: var(--hud-color);
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+        
+        .ammo-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .ammo-bar {
+            height: 10px;
+            background-color: rgba(0, 255, 0, 0.3);
+            border: 1px solid var(--hud-color);
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        .ammo-fill {
+            height: 100%;
+            background-color: var(--hud-color);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .ammo-fill.low {
+            background-color: var(--warning-color);
+        }
+        
+        .missile-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .missile-count {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .missile-icon {
+            width: 10px;
+            height: 10px;
+            background-color: var(--hud-color);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            margin-top: 5px;
+        }
+        
+        .missile-icon.used {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        
+        .score-display, .target-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        /* Targets */
+        .aircraft-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+        
+        .aircraft {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .aircraft svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .target-indicator {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px dashed var(--warning-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 9;
+        }
+        
+        .target-info {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--warning-color);
+            font-size: 12px;
+            white-space: nowrap;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        /* Projectiles */
+        .bullet {
+            position: absolute;
+            width: 3px;
+            height: 15px;
+            background-color: yellow;
+            border-radius: 1px;
+            z-index: 8;
+            transform: translate(-50%, -50%);
+        }
+        
+        .missile {
+            position: absolute;
+            width: 5px;
+            height: 20px;
+            background-color: white;
+            border-radius: 2px;
+            z-index: 8;
+            transform: translate(-50%, -50%);
+        }
+        
+        .missile::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 5px;
+            height: 10px;
+            background-color: orange;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            animation: flame 0.1s infinite alternate;
+        }
+        
+        @keyframes flame {
+            0% { height: 10px; background-color: orange; }
+            100% { height: 15px; background-color: red; }
+        }
+        
+        .explosion {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            animation: explosion 0.5s forwards;
+        }
+        
+        @keyframes explosion {
+            0% { 
+                width: 1px; 
+                height: 1px; 
+                background-color: white;
+                box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8);
+            }
+            25% { 
+                width: 30px; 
+                height: 30px; 
+                background-color: yellow;
+                box-shadow: 0 0 20px 10px rgba(255, 165, 0, 0.8);
+            }
+            50% { 
+                width: 60px; 
+                height: 60px; 
+                background-color: orange;
+                box-shadow: 0 0 30px 15px rgba(255, 69, 0, 0.8);
+            }
+            75% { 
+                width: 80px; 
+                height: 80px; 
+                background-color: red;
+                box-shadow: 0 0 40px 20px rgba(139, 0, 0, 0.8);
+            }
+            100% { 
+                width: 100px; 
+                height: 100px; 
+                background-color: rgba(139, 0, 0, 0);
+                box-shadow: 0 0 50px 25px rgba(139, 0, 0, 0);
+            }
+        }
+        
+        /* Game status overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+        
+        .overlay h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-align: center;
+        }
+        
+        .overlay p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .overlay button {
+            background: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .night-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 150;
+        }
+        
+        .return-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 150;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .return-button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Message display */
+        .message-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-color);
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 90;
+            text-shadow: 0 0 10px var(--hud-color);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .message-display.show {
+            opacity: 1;
+        }
+        
+        /* Controls panel */
+        .controls-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--hud-color);
+            border-radius: 5px;
+            padding: 10px;
+            color: var(--text-color);
+            font-size: 12px;
+            z-index: 100;
+            transition: opacity 0.3s ease;
+            opacity: 0.3;
+        }
+        
+        .controls-panel:hover {
+            opacity: 1;
+        }
+        
+        .controls-panel h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 5px 15px;
+        }
+        
+        .key {
+            padding: 2px 6px;
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 1px solid var(--hud-color);
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .hud-panel {
+                padding: 5px;
+            }
+            
+            .altitude-panel, .weapons-panel, .stats-panel {
+                width: 100px;
+            }
+            
+            .radar-panel {
+                width: 150px;
+                height: 120px;
+            }
+            
+            .radar-display {
+                width: 130px;
+                height: 80px;
+            }
+            
+            .hud-panel h3 {
+                font-size: 12px;
+            }
+            
+            .controls-panel {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor">
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="target-lock"></div>
+    </div>
+    
+    <!-- Night Mode Toggle -->
+    <button class="night-mode-toggle" id="nightModeToggle">
+        <span id="modeIcon">☀</span>
+    </button>
+    
+    <!-- Return Button -->
+    <a href="index.html" class="return-button">
+        <span class="return-icon">←</span>
+        <span>RETURN</span>
+    </a>
+    
+    <!-- Main Simulator Container -->
+    <div id="sim-container">
+        <div class="sky-background"></div>
+        <!-- Stars will be dynamically added -->
+        <!-- Clouds will be dynamically added -->
+        <div class="ground"></div>
+        <div class="ground-grid"></div>
+        
+        <!-- Aircraft Container -->
+        <div class="aircraft-container" id="aircraftContainer"></div>
+        
+        <!-- HUD Elements -->
+        <div class="hud-container">
+            <div class="hud-frame"></div>
+            <div class="hud-corners">
+                <div class="hud-corner top-left"></div>
+                <div class="hud-corner top-right"></div>
+                <div class="hud-corner bottom-left"></div>
+                <div class="hud-corner bottom-right"></div>
+            </div>
+            
+            <!-- Altitude Panel -->
+            <div class="hud-panel altitude-panel">
+                <h3>Navigation</h3>
+                <div class="altitude-display">
+                    <span>ALT:</span>
+                    <span id="altitudeValue">5000</span>
+                </div>
+                <div class="altitude-bar">
+                    <div class="altitude-fill" id="altitudeFill"></div>
+                </div>
+                <div class="speed-display">
+                    <span>SPD:</span>
+                    <span id="speedValue">450</span>
+                </div>
+                <div class="speed-bar">
+                    <div class="speed-fill" id="speedFill"></div>
+                </div>
+            </div>
+            
+            <!-- Weapons Panel -->
+            <div class="hud-panel weapons-panel">
+                <h3>Weapons</h3>
+                <div class="ammo-display">
+                    <span>GUNS:</span>
+                    <span id="ammoValue">500</span>
+                </div>
+                <div class="ammo-bar">
+                    <div class="ammo-fill" id="ammoFill"></div>
+                </div>
+                <div class="missile-display">
+                    <span>MSSL:</span>
+                    <div class="missile-count" id="missileCount">
+                        <div class="missile-icon"></div>
+                        <div class="missile-icon"></div>
+                        <div class="missile-icon"></div>
+                        <div class="missile-icon"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Radar Panel -->
+            <div class="hud-panel radar-panel">
+                <h3>Radar</h3>
+                <div class="radar-display">
+                    <div class="radar-grid"></div>
+                    <div class="radar-center"></div>
+                    <div class="radar-sweep"></div>
+                    <!-- Radar blips will be added dynamically -->
+                </div>
+            </div>
+            
+            <!-- Stats Panel -->
+            <div class="hud-panel stats-panel">
+                <h3>Mission</h3>
+                <div class="score-display">
+                    <span>SCORE:</span>
+                    <span id="scoreValue">0</span>
+                </div>
+                <div class="target-display">
+                    <span>TARGETS:</span>
+                    <span id="targetValue">0/10</span>
+                </div>
+                <div class="target-display">
+                    <span>TIME:</span>
+                    <span id="timeValue">00:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls Help Panel -->
+        <div class="controls-panel">
+            <h3>CONTROLS</h3>
+            <div class="controls-grid">
+                <div>Move:</div><div><span class="key">MOUSE</span></div>
+                <div>Fire Guns:</div><div><span class="key">LEFT CLICK</span></div>
+                <div>Fire Missile:</div><div><span class="key">RIGHT CLICK</span></div>
+                <div>Toggle Radar:</div><div><span class="key">R</span></div>
+                <div>Increase Speed:</div><div><span class="key">W</span></div>
+                <div>Decrease Speed:</div><div><span class="key">S</span></div>
+                <div>Change Altitude:</div><div><span class="key">Q / E</span></div>
+            </div>
+        </div>
+        
+        <!-- Message Display -->
+        <div class="message-display" id="messageDisplay"></div>
+        
+        <!-- Start Screen -->
+        <div class="overlay" id="startScreen">
+            <h2>COMBAT SIMULATOR</h2>
+            <p>Welcome to the Fighter Jet Combat Simulator. Your mission is to eliminate all enemy aircraft. Use your guns for close range and missiles for distant targets.</p>
+            <button id="startBtn">START MISSION</button>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div class="overlay" id="gameOverScreen" style="display: none;">
+            <h2 id="gameOverTitle">MISSION COMPLETE</h2>
+            <p id="gameOverMessage">You successfully completed the mission!</p>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Time: <span id="finalTime">00:00</span></p>
+            <button id="restartBtn">RESTART MISSION</button>
+        </div>
+    </div>
+    
+    <script>
+        // Game state
+        const gameState = {
+            isRunning: false,
+            score: 0,
+            targetsDestroyed: 0,
+            totalTargets: 10,
+            ammo: 500,
+            missiles: 4,
+            altitude: 5000,
+            speed: 450,
+            maxAltitude: 10000,
+            maxSpeed: 900,
+            targets: [],
+            bullets: [],
+            missiles: [],
+            explosions: [],
+            targetLocked: null,
+            radarActive: true,
+            gameTime: 0,
+            gameTimeInterval: null,
+            nightMode: false
+        };
+        
+        // DOM Elements
+        const cursor = document.getElementById('custom-cursor');
+        const cursorLock = cursor.querySelector('.target-lock');
+        const aircraftContainer = document.getElementById('aircraftContainer');
+        const simContainer = document.getElementById('sim-container');
+        const skyBackground = document.querySelector('.sky-background');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const messageDisplay = document.getElementById('messageDisplay');
+        const altitudeValue = document.getElementById('altitudeValue');
+        const speedValue = document.getElementById('speedValue');
+        const ammoValue = document.getElementById('ammoValue');
+        const scoreValue = document.getElementById('scoreValue');
+        const targetValue = document.getElementById('targetValue');
+        const timeValue = document.getElementById('timeValue');
+        const finalScore = document.getElementById('finalScore');
+        const finalTime = document.getElementById('finalTime');
+        const altitudeFill = document.getElementById('altitudeFill');
+        const speedFill = document.getElementById('speedFill');
+        const ammoFill = document.getElementById('ammoFill');
+        const missileCount = document.getElementById('missileCount');
+        const radarDisplay = document.querySelector('.radar-display');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        
+        // Mouse position
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        
+        // Create stars
+        function createStars() {
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 80}%`;
+                star.style.opacity = Math.random();
+                if (Math.random() > 0.8) {
+                    star.style.width = '3px';
+                    star.style.height = '3px';
+                    star.style.boxShadow = '0 0 3px 1px rgba(255, 255, 255, 0.8)';
+                }
+                skyBackground.appendChild(star);
+            }
+        }
+        
+        // Create clouds
+        function createClouds() {
+            for (let i = 0; i < 20; i++) {
+                const cloud = document.createElement('div');
+                cloud.classList.add('cloud');
+                cloud.style.left = `${Math.random() * 100}%`;
+                cloud.style.top = `${Math.random() * 40 + 10}%`;
+                cloud.style.width = `${Math.random() * 200 + 100}px`;
+                cloud.style.height = `${Math.random() * 80 + 40}px`;
+                cloud.style.opacity = Math.random() * 0.3 + 0.1;
+                simContainer.appendChild(cloud);
+            }
+        }
+        
+        // Target aircraft template (SVG)
+        const targetAircraftSVG = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+                <g transform="translate(50, 50) rotate(90)">
+                    <path d="M -5,40 L -5,-15 L 0,-40 L 5,-15 L 5,40 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <ellipse cx="0" cy="-15" rx="5" ry="10" fill="#a8d8e8" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -3,-18 L 3,-18 L 2,-8 L -2,-8 Z" fill="#3a4a5a" stroke="none"/>
+                    <path d="M 5,10 L 30,-5 L 30,10 L 5,20 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -5,10 L -30,-5 L -30,10 L -5,20 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -5,30 L -20,20 L -20,30 L -5,35 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M 5,30 L 20,20 L 20,30 L 5,35 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M 0,35 L 0,20 L 5,15 L 0,35 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <rect x="-3" y="35" width="6" height="5" fill="#a83232" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -3,-5 L 3,-5" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -4,5 L 4,5" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -4,15 L 4,15" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -4,25 L 4,25" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -5,0 L -8,-3 L -8,3 Z" fill="#1a1a1a" stroke="#1a7045" stroke-width="0.5"/>
+                    <path d="M 5,0 L 8,-3 L 8,3 Z" fill="#1a1a1a" stroke="#1a7045" stroke-width="0.5"/>
+                </g>
+            </svg>
+        `;
+        
+        // Create a target aircraft
+        function createTarget() {
+            const target = {
+                element: document.createElement('div'),
+                indicator: document.createElement('div'),
+                info: document.createElement('div'),
+                radarBlip: document.createElement('div'),
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * (window.innerHeight * 0.6) + (window.innerHeight * 0.2),
+                speed: Math.random() * 2 + 1,
+                altitude: Math.floor(Math.random() * 8000) + 2000,
+                direction: Math.random() * Math.PI * 2,
+                health: 100,
+                size: Math.random() * 0.5 + 0.7, // Scale factor
+                id: Date.now() + Math.random().toString(36).substring(2, 9)
+            };
+            
+            // Position target off-screen initially
+            const edge = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
+            switch (edge) {
+                case 0: // top
+                    target.x = Math.random() * window.innerWidth;
+                    target.y = -50;
+                    target.direction = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+                    break;
+                case 1: // right
+                    target.x = window.innerWidth + 50;
+                    target.y = Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2;
+                    target.direction = Math.PI + (Math.random() - 0.5) * 0.5;
+                    break;
+                case 2: // bottom
+                    target.x = Math.random() * window.innerWidth;
+                    target.y = window.innerHeight + 50;
+                    target.direction = -Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+                    break;
+                case 3: // left
+                    target.x = -50;
+                    target.y = Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2;
+                    target.direction = 0 + (Math.random() - 0.5) * 0.5;
+                    break;
+            }
+            
+            // Set up DOM elements
+            target.element.classList.add('aircraft');
+            target.element.style.width = `${40 * target.size}px`;
+            target.element.style.height = `${40 * target.size}px`;
+            target.element.style.left = `${target.x}px`;
+            target.element.style.top = `${target.y}px`;
+            target.element.innerHTML = targetAircraftSVG;
+            target.element.style.transform = `translate(-50%, -50%) rotate(${target.direction}rad)`;
+            
+            // Setup target indicator
+            target.indicator.classList.add('target-indicator');
+            
+            // Setup target info
+            target.info.classList.add('target-info');
+            target.info.textContent = `MIG-21 ALT:${target.altitude}`;
+            
+            // Setup radar blip
+            target.radarBlip.classList.add('radar-blip');
+            
+            // Append elements
+            target.element.appendChild(target.indicator);
+            target.element.appendChild(target.info);
+            aircraftContainer.appendChild(target.element);
+            radarDisplay.appendChild(target.radarBlip);
+            
+            return target;
+        }
+        
+        // Update radar blips
+        function updateRadarBlips() {
+            const radarWidth = radarDisplay.offsetWidth;
+            const radarHeight = radarDisplay.offsetHeight;
+            
+            // Scale factor from world to radar
+            const scaleX = radarWidth / window.innerWidth;
+            const scaleY = radarHeight / window.innerHeight;
+            
+            // Update each target's radar blip
+            gameState.targets.forEach(target => {
+                const blipX = target.x * scaleX;
+                const blipY = target.y * scaleY;
+                
+                // Constrain to radar bounds
+                const constrainedX = Math.max(0, Math.min(blipX, radarWidth));
+                const constrainedY = Math.max(0, Math.min(blipY, radarHeight));
+                
+                target.radarBlip.style.left = `${constrainedX}px`;
+                target.radarBlip.style.top = `${constrainedY}px`;
+                
+                // Flash the blip
+                if (gameState.radarActive && Math.random() > 0.7) {
+                    target.radarBlip.style.opacity = 1;
+                } else {
+                    target.radarBlip.style.opacity = 0.5;
+                }
+            });
+        }
+        
+        // Fire a bullet
+        function fireBullet() {
+            if (gameState.ammo <= 0) {
+                showMessage("OUT OF AMMO");
+                return;
+            }
+            
+            const bullet = {
+                element: document.createElement('div'),
+                x: mouseX,
+                y: mouseY,
+                direction: Math.random() * Math.PI * 2, // Slight spread
+                speed: 15,
+                damage: 10,
+                distance: 0,
+                maxDistance: 1000
+            };
+            
+            // Add some spread/inaccuracy
+            bullet.direction = bullet.direction % (Math.PI * 2);
+            
+            bullet.element.classList.add('bullet');
+            bullet.element.style.left = `${bullet.x}px`;
+            bullet.element.style.top = `${bullet.y}px`;
+            bullet.element.style.transform = `translate(-50%, -50%) rotate(${bullet.direction}rad)`;
+            
+            simContainer.appendChild(bullet.element);
+            gameState.bullets.push(bullet);
+            
+            // Decrease ammo
+            gameState.ammo--;
+            updateHUD();
+        }
+        
+        // Fire a missile
+        function fireMissile() {
+            if (gameState.missiles <= 0) {
+                showMessage("NO MISSILES");
+                return;
+            }
+            
+            // Check if we have a target lock
+            if (!gameState.targetLocked) {
+                showMessage("NO TARGET LOCK");
+                return;
+            }
+            
+            const missile = {
+                element: document.createElement('div'),
+                x: mouseX,
+                y: mouseY,
+                direction: 0,
+                speed: 5,
+                acceleration: 0.2,
+                maxSpeed: 20,
+                damage: 100,
+                target: gameState.targetLocked,
+                turning: 0.05, // Max turning rate per frame
+                distance: 0,
+                maxDistance: 2000
+            };
+            
+            // Calculate initial direction towards target
+            const dx = gameState.targetLocked.x - missile.x;
+            const dy = gameState.targetLocked.y - missile.y;
+            missile.direction = Math.atan2(dy, dx);
+            
+            missile.element.classList.add('missile');
+            missile.element.style.left = `${missile.x}px`;
+            missile.element.style.top = `${missile.y}px`;
+            missile.element.style.transform = `translate(-50%, -50%) rotate(${missile.direction}rad)`;
+            
+            simContainer.appendChild(missile.element);
+            gameState.missiles.push(missile);
+            
+            // Decrease missile count
+            gameState.missileCount--;
+            updateMissileDisplay();
+            showMessage("MISSILE LAUNCHED");
+        }
+        
+        // Create explosion
+        function createExplosion(x, y, size = 1) {
+            const explosion = {
+                element: document.createElement('div'),
+                x: x,
+                y: y,
+                age: 0,
+                maxAge: 30 // frames
+            };
+            
+            explosion.element.classList.add('explosion');
+            explosion.element.style.left = `${x}px`;
+            explosion.element.style.top = `${y}px`;
+            explosion.element.style.transform = `translate(-50%, -50%) scale(${size})`;
+            
+            simContainer.appendChild(explosion.element);
+            gameState.explosions.push(explosion);
+        }
+        
+        // Show a message
+        function showMessage(text) {
+            messageDisplay.textContent = text;
+            messageDisplay.classList.add('show');
+            
+            setTimeout(() => {
+                messageDisplay.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Check for collisions between bullets and targets
+        function checkCollisions() {
+            // Check bullets against targets
+            for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+                const bullet = gameState.bullets[i];
+                
+                for (let j = gameState.targets.length - 1; j >= 0; j--) {
+                    const target = gameState.targets[j];
+                    const targetSize = 20 * target.size;
+                    
+                    // Simple distance-based collision
+                    const dx = bullet.x - target.x;
+                    const dy = bullet.y - target.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < targetSize) {
+                        // Hit!
+                        target.health -= bullet.damage;
+                        
+                        // Check if target is destroyed
+                        if (target.health <= 0) {
+                            destroyTarget(target, j);
+                        } else {
+                            // Just show a small explosion
+                            createExplosion(bullet.x, bullet.y, 0.5);
+                        }
+                        
+                        // Remove bullet
+                        bullet.element.remove();
+                        gameState.bullets.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            
+            // Check missiles against targets
+            for (let i = gameState.missiles.length - 1; i >= 0; i--) {
+                const missile = gameState.missiles[i];
+                
+                // Skip if the target no longer exists
+                if (!missile.target || !missile.target.element.parentNode) {
+                    continue;
+                }
+                
+                const target = missile.target;
+                const targetSize = 20 * target.size;
+                
+                // Simple distance-based collision
+                const dx = missile.x - target.x;
+                const dy = missile.y - target.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < targetSize) {
+                    // Hit!
+                    target.health -= missile.damage;
+                    
+                    // Check if target is destroyed
+                    if (target.health <= 0) {
+                        const targetIndex = gameState.targets.findIndex(t => t.id === target.id);
+                        if (targetIndex !== -1) {
+                            destroyTarget(target, targetIndex);
+                        }
+                    }
+                    
+                    // Create explosion
+                    createExplosion(missile.x, missile.y, 1.0);
+                    
+                    // Remove missile
+                    missile.element.remove();
+                    gameState.missiles.splice(i, 1);
+                }
+            }
+        }
+        
+        // Destroy a target
+        function destroyTarget(target, index) {
+            // Create explosion
+            createExplosion(target.x, target.y, 1.5);
+            
+            // Clean up DOM elements
+            target.element.remove();
+            target.radarBlip.remove();
+            
+            // Remove from targets array
+            gameState.targets.splice(index, 1);
+            
+            // Update game state
+            gameState.score += 100;
+            gameState.targetsDestroyed++;
+            
+            // Update HUD
+            updateHUD();
+            
+            // Check for win condition
+            if (gameState.targetsDestroyed >= gameState.totalTargets) {
+                setTimeout(() => {
+                    endGame(true);
+                }, 2000);
+            } else {
+                showMessage("TARGET DESTROYED");
+            }
+            
+            // Reset target lock if this was our locked target
+            if (gameState.targetLocked === target) {
+                gameState.targetLocked = null;
+                cursor.classList.remove('targeting');
+                cursorLock.style.display = 'none';
+            }
+        }
+        
+        // Update HUD elements
+        function updateHUD() {
+            // Update values
+            altitudeValue.textContent = gameState.altitude;
+            speedValue.textContent = gameState.speed;
+            ammoValue.textContent = gameState.ammo;
+            scoreValue.textContent = gameState.score;
+            targetValue.textContent = `${gameState.targetsDestroyed}/${gameState.totalTargets}`;
+            
+            // Update progress bars
+            altitudeFill.style.width = `${(gameState.altitude / gameState.maxAltitude) * 100}%`;
+            speedFill.style.width = `${(gameState.speed / gameState.maxSpeed) * 100}%`;
+            ammoFill.style.width = `${(gameState.ammo / 500) * 100}%`;
+            
+            // Update ammo warning
+            if (gameState.ammo < 100) {
+                ammoFill.classList.add('low');
+            } else {
+                ammoFill.classList.remove('low');
+            }
+        }
+        
+        // Update missile display
+        function updateMissileDisplay() {
+            const missileIcons = missileCount.querySelectorAll('.missile-icon');
+            
+            for (let i = 0; i < missileIcons.length; i++) {
+                if (i < gameState.missileCount) {
+                    missileIcons[i].classList.remove('used');
+                } else {
+                    missileIcons[i].classList.add('used');
+                }
+            }
+        }
+        
+        // Update game time
+        function updateGameTime() {
+            gameState.gameTime++;
+            
+            // Format time as MM:SS
+            const minutes = Math.floor(gameState.gameTime / 60).toString().padStart(2, '0');
+            const seconds = (gameState.gameTime % 60).toString().padStart(2, '0');
+            
+            timeValue.textContent = `${minutes}:${seconds}`;
+        }
+        
+        // Initialize the game
+        function init() {
+            createStars();
+            createClouds();
+            
+            // Set up event listeners
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('click', handleClick);
+            document.addEventListener('contextmenu', handleRightClick);
+            document.addEventListener('keydown', handleKeyDown);
+            
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', restartGame);
+            
+            // Night mode toggle
+            let isNightMode = localStorage.getItem('night_mode') === 'true';
+            if (isNightMode) {
+                document.body.classList.add('night-mode');
+                modeIcon.textContent = '☽';
+            }
+            
+            nightModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('night-mode');
+                isNightMode = document.body.classList.contains('night-mode');
+                modeIcon.textContent = isNightMode ? '☽' : '☀';
+                localStorage.setItem('night_mode', isNightMode);
+            });
+            
+            // Initialize HUD
+            updateHUD();
+            updateMissileDisplay();
+        }
+        
+        // Start the game
+        function startGame() {
+            // Hide start screen
+            startScreen.style.display = 'none';
+            
+            // Reset game state
+            gameState.isRunning = true;
+            gameState.score = 0;
+            gameState.targetsDestroyed = 0;
+            gameState.ammo = 500;
+            gameState.missileCount = 4;
+            gameState.altitude = 5000;
+            gameState.speed = 450;
+            gameState.targets = [];
+            gameState.bullets = [];
+            gameState.missiles = [];
+            gameState.explosions = [];
+            gameState.targetLocked = null;
+            gameState.gameTime = 0;
+            
+            // Create initial targets
+            for (let i = 0; i < 3; i++) {
+                gameState.targets.push(createTarget());
+            }
+            
+            // Update HUD
+            updateHUD();
+            updateMissileDisplay();
+            
+            // Start game loop
+            requestAnimationFrame(gameLoop);
+            
+            // Start game timer
+            gameState.gameTimeInterval = setInterval(updateGameTime, 1000);
+            
+            // Show welcome message
+            showMessage("MISSION STARTED");
+        }
+        
+        // Restart the game
+        function restartGame() {
+            // Hide game over screen
+            gameOverScreen.style.display = 'none';
+            
+            // Start a new game
+            startGame();
+        }
+        
+        // End the game
+        function endGame(victory = false) {
+            // Stop game
+            gameState.isRunning = false;
+            clearInterval(gameState.gameTimeInterval);
+            
+            // Update game over screen
+            if (victory) {
+                gameOverTitle.textContent = "MISSION COMPLETE";
+                gameOverMessage.textContent = "You successfully eliminated all enemy aircraft!";
+                gameOverTitle.style.color = "#00ff00";
+            } else {
+                gameOverTitle.textContent = "MISSION FAILED";
+                gameOverMessage.textContent = "You were unable to complete the mission objectives.";
+                gameOverTitle.style.color = "#ff4500";
+            }
+            
+            finalScore.textContent = gameState.score;
+            
+            // Format time as MM:SS
+            const minutes = Math.floor(gameState.gameTime / 60).toString().padStart(2, '0');
+            const seconds = (gameState.gameTime % 60).toString().padStart(2, '0');
+            finalTime.textContent = `${minutes}:${seconds}`;
+            
+            // Show game over screen
+            gameOverScreen.style.display = 'flex';
+        }
+        
+        // Main game loop
+        function gameLoop() {
+            if (!gameState.isRunning) return;
+            
+            // Update targets
+            for (let i = gameState.targets.length - 1; i >= 0; i--) {
+                const target = gameState.targets[i];
+                
+                // Move target
+                target.x += Math.cos(target.direction) * target.speed;
+                target.y += Math.sin(target.direction) * target.speed;
+                
+                // Slightly change direction occasionally
+                if (Math.random() < 0.01) {
+                    target.direction += (Math.random() - 0.5) * 0.2;
+                }
+                
+                // Update target element position
+                target.element.style.left = `${target.x}px`;
+                target.element.style.top = `${target.y}px`;
+                target.element.style.transform = `translate(-50%, -50%) rotate(${target.direction}rad)`;
+                
+                // Check if target is off-screen for too long
+                if (target.x < -200 || target.x > window.innerWidth + 200 ||
+                    target.y < -200 || target.y > window.innerHeight + 200) {
+                    
+                    // Give the target a new position and direction
+                    const edge = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
+                    switch (edge) {
+                        case 0: // top
+                            target.x = Math.random() * window.innerWidth;
+                            target.y = -50;
+                            target.direction = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+                            break;
+                        case 1: // right
+                            target.x = window.innerWidth + 50;
+                            target.y = Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2;
+                            target.direction = Math.PI + (Math.random() - 0.5) * 0.5;
+                            break;
+                        case 2: // bottom
+                            target.x = Math.random() * window.innerWidth;
+                            target.y = window.innerHeight + 50;
+                            target.direction = -Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+                            break;
+                        case 3: // left
+                            target.x = -50;
+                            target.y = Math.random() * window.innerHeight * 0.6 + window.innerHeight * 0.2;
+                            target.direction = 0 + (Math.random() - 0.5) * 0.5;
+                            break;
+                    }
+                }
+                
+                // Check if this target is the locked target
+                if (gameState.targetLocked === target) {
+                    target.indicator.style.display = 'block';
+                    target.indicator.style.opacity = 1;
+                    target.info.style.display = 'block';
+                } else {
+                    // Check for potential target lock
+                    const dx = target.x - mouseX;
+                    const dy = target.y - mouseY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        // Show indicator when mouse is near
+                        target.indicator.style.display = 'block';
+                        target.indicator.style.opacity = 0.5;
+                        target.info.style.display = 'block';
+                    } else {
+                        target.indicator.style.display = 'none';
+                        target.info.style.display = 'none';
+                    }
+                }
+            }
+            
+            // Update bullets
+            for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+                const bullet = gameState.bullets[i];
+                
+                // Move bullet
+                bullet.x += Math.cos(bullet.direction) * bullet.speed;
+                bullet.y += Math.sin(bullet.direction) * bullet.speed;
+                bullet.distance += bullet.speed;
+                
+                // Update element position
+                bullet.element.style.left = `${bullet.x}px`;
+                bullet.element.style.top = `${bullet.y}px`;
+                
+                // Remove bullet if it's traveled too far
+                if (bullet.distance > bullet.maxDistance || 
+                    bullet.x < 0 || bullet.x > window.innerWidth ||
+                    bullet.y < 0 || bullet.y > window.innerHeight) {
+                    
+                    bullet.element.remove();
+                    gameState.bullets.splice(i, 1);
+                }
+            }
+            
+            // Update missiles
+            for (let i = gameState.missiles.length - 1; i >= 0; i--) {
+                const missile = gameState.missiles[i];
+                
+                // Check if target still exists
+                if (!missile.target || !missile.target.element.parentNode) {
+                    // No target, just keep going straight
+                    missile.x += Math.cos(missile.direction) * missile.speed;
+                    missile.y += Math.sin(missile.direction) * missile.speed;
+                } else {
+                    // Calculate direction to target
+                    const dx = missile.target.x - missile.x;
+                    const dy = missile.target.y - missile.y;
+                    const angleToTarget = Math.atan2(dy, dx);
+                    
+                    // Calculate angle difference
+                    let angleDiff = angleToTarget - missile.direction;
+                    
+                    // Normalize angle (-PI to PI)
+                    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+                    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                    
+                    // Turn towards target with limited turn rate
+                    if (Math.abs(angleDiff) > missile.turning) {
+                        missile.direction += Math.sign(angleDiff) * missile.turning;
+                    } else {
+                        missile.direction = angleToTarget;
+                    }
+                }
+                
+                // Accelerate
+                if (missile.speed < missile.maxSpeed) {
+                    missile.speed += missile.acceleration;
+                }
+                
+                // Move missile
+                missile.x += Math.cos(missile.direction) * missile.speed;
+                missile.y += Math.sin(missile.direction) * missile.speed;
+                missile.distance += missile.speed;
+                
+                // Update element position
+                missile.element.style.left = `${missile.x}px`;
+                missile.element.style.top = `${missile.y}px`;
+                missile.element.style.transform = `translate(-50%, -50%) rotate(${missile.direction}rad)`;
+                
+                // Remove missile if it's traveled too far
+                if (missile.distance > missile.maxDistance || 
+                    missile.x < 0 || missile.x > window.innerWidth ||
+                    missile.y < 0 || missile.y > window.innerHeight) {
+                    
+                    missile.element.remove();
+                    gameState.missiles.splice(i, 1);
+                }
+            }
+            
+            // Update explosions
+            for (let i = gameState.explosions.length - 1; i >= 0; i--) {
+                const explosion = gameState.explosions[i];
+                
+                explosion.age++;
+                
+                // Remove old explosions
+                if (explosion.age > explosion.maxAge) {
+                    explosion.element.remove();
+                    gameState.explosions.splice(i, 1);
+                }
+            }
+            
+            // Spawn new targets over time
+            if (gameState.targets.length < 5 && 
+                gameState.targetsDestroyed + gameState.targets.length < gameState.totalTargets &&
+                Math.random() < 0.01) {
+                gameState.targets.push(createTarget());
+            }
+            
+            // Update radar
+            updateRadarBlips();
+            
+            // Check for collisions
+            checkCollisions();
+            
+            // Continue the game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event Handlers
+        function handleMouseMove(e) {
+            // Update cursor position
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Move custom cursor
+            cursor.style.left = `${mouseX}px`;
+            cursor.style.top = `${mouseY}px`;
+            
+            // Check for target lock
+            let closestTarget = null;
+            let closestDistance = Infinity;
+            
+            gameState.targets.forEach(target => {
+                const dx = target.x - mouseX;
+                const dy = target.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 100 && distance < closestDistance) {
+                    closestDistance = distance;
+                    closestTarget = target;
+                }
+            });
+            
+            // Update target lock
+            if (closestTarget) {
+                gameState.targetLocked = closestTarget;
+                cursor.classList.add('targeting');
+                cursorLock.style.display = 'block';
+            } else {
+                gameState.targetLocked = null;
+                cursor.classList.remove('targeting');
+                cursorLock.style.display = 'none';
+            }
+        }
+        
+        function handleClick(e) {
+            if (!gameState.isRunning) return;
+            
+            // Left click fires gun
+            fireBullet();
+            
+            // Prevent default to avoid selecting text
+            e.preventDefault();
+        }
+        
+        function handleRightClick(e) {
+            if (!gameState.isRunning) return;
+            
+            // Right click fires missile
+            fireMissile();
+            
+            // Prevent context menu
+            e.preventDefault();
+        }
+        
+        function handleKeyDown(e) {
+            if (!gameState.isRunning) return;
+            
+            switch (e.key.toLowerCase()) {
+                case 'w':
+                    // Increase speed
+                    gameState.speed = Math.min(gameState.speed + 25, gameState.maxSpeed);
+                    updateHUD();
+                    break;
+                    
+                case 's':
+                    // Decrease speed
+                    gameState.speed = Math.max(gameState.speed - 25, 0);
+                    updateHUD();
+                    break;
+                    
+                case 'q':
+                    // Increase altitude
+                    gameState.altitude = Math.min(gameState.altitude + 500, gameState.maxAltitude);
+                    updateHUD();
+                    break;
+                    
+                case 'e':
+                    // Decrease altitude
+                    gameState.altitude = Math.max(gameState.altitude - 500, 0);
+                    updateHUD();
+                    break;
+                    
+                case 'r':
+                    // Toggle radar
+                    gameState.radarActive = !gameState.radarActive;
+                    radarDisplay.style.opacity = gameState.radarActive ? 1 : 0.3;
+                    showMessage(gameState.radarActive ? "RADAR ACTIVE" : "RADAR DISABLED");
+                    break;
+                    
+                case ' ':
+                    // Fire gun (space bar)
+                    fireBullet();
+                    break;
+            }
+        }
+        
+        // Initialize when the page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

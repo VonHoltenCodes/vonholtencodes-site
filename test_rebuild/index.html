@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VonHoltenCodes</title>
+    <link rel="icon" href="favicon-simple.svg" type="image/svg+xml">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/tabs-v2.css">
+    <link rel="stylesheet" href="css/bio-section.css">
+    <link rel="stylesheet" href="css/time-widgets.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/custom-cursor.css">
+    <link rel="stylesheet" href="css/background.css">
+    <link rel="stylesheet" href="css/night-mode-toggle.css">
+    <link rel="stylesheet" href="css/api-section.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-container">
+        <div class="hydraulic-background"></div>
+        <div class="scanlines"></div>
+        <div class="diagonal-stripes"></div>
+        <div class="circuit-lines"></div>
+    </div>
+    
+    <!-- Night Mode Toggle in Top Right -->
+    <div class="night-mode-toggle">
+        <div class="toggle-button">
+            <span class="toggle-icon toggle-sun">☀</span>
+            <span class="toggle-icon toggle-moon">☽</span>
+        </div>
+    </div>
+    <div class="bullet-hole-container"></div>
+    
+    <div class="container">
+        <!-- Include the modular header component -->
+        <div id="header-container">
+            <!-- The header.html content will be loaded here -->
+            <header class="site-header">
+                <a href="http://www.vonholtencodes.com" style="text-decoration: none; color: inherit;">
+                    <span class="thick">VonHolten</span><br>
+                    <span class="thick">Codes</span><br>
+                    <span class="thin">.com</span>
+                </a>
+                
+                <!-- 3D Rotating VH Logo -->
+                <div class="vh-logo-3d">
+                    <div class="logo-face front">
+                        VH
+                        <span class="bullet-hole bullet-hole-1"></span>
+                        <span class="bullet-hole bullet-hole-2"></span>
+                    </div>
+                    <div class="logo-face back">VH</div>
+                    <div class="logo-face right"></div>
+                    <div class="logo-face left"></div>
+                    <div class="logo-face top"></div>
+                    <div class="logo-face bottom"></div>
+                </div>
+            </header>
+        </div>
+        
+        <!-- Include the tabs navigation component -->
+        <div id="tabs-container">
+            <!-- The tabs.html content is included inline -->
+            <div class="tabs-container">
+                <nav class="tabs-nav">
+                    <a href="pages/apis/index.html" class="tab-link tab-apis">API's</a>
+                    <a href="pages/kids/index.html" class="tab-link tab-kids">Kids Links</a>
+                    <a href="pages/games/index.html" class="tab-link tab-games">Game Room</a>
+                    <a href="pages/creation/index.html" class="tab-link tab-creation">Creation Station</a>
+                    <a href="pages/mission/index.html" class="tab-link tab-mission">Mission Control</a>
+                </nav>
+                
+                <!-- Tab content placeholder (for index page only) -->
+                <div class="tab-content-placeholder">
+                    <!-- Bio Section Component -->
+                    <section class="bio-section">
+                        <div class="bio-content">
+                            Welcome to <strong>VonHoltenCodes.com</strong>, a free, ultra-retro playground designed for kids by me! 
+                            Built to spark curiosity, it's packed with <span class="bio-highlight">NASA</span> and <span class="bio-highlight">USGS</span> APIs, 
+                            weather updates, time trackers, jokes, and fun games. Explore safe, kid-friendly links and take charge in 
+                            <strong>Mission Control</strong>—a private, no-email-needed, one-way messaging system where you can share ideas, 
+                            suggest features, or tweak code. With an industrial machine vibe, this site is open to everyone, 
+                            always free, and all about inspiring young minds to create and explore!
+                        </div>
+                    </section>
+                    
+                    <!-- Time Widgets Component (Birthday Counter and World Clock) -->
+                    <div class="time-widgets-container">
+                        <!-- Birthday Counter Widget -->
+                        <div class="time-widget birthday-counter">
+                            <div class="widget-title">Age Counter</div>
+                            <div class="age-display" id="age-value">--</div>
+                            <div class="counter-units">
+                                <div class="counter-unit">
+                                    <div class="unit-value" id="days-value">00</div>
+                                    <div class="unit-label">Days</div>
+                                </div>
+                                <div class="counter-unit">
+                                    <div class="unit-value" id="hours-value">00</div>
+                                    <div class="unit-label">Hours</div>
+                                </div>
+                                <div class="counter-unit">
+                                    <div class="unit-value" id="minutes-value">00</div>
+                                    <div class="unit-label">Mins</div>
+                                </div>
+                                <div class="counter-unit">
+                                    <div class="unit-value" id="seconds-value">00</div>
+                                    <div class="unit-label">Secs</div>
+                                </div>
+                            </div>
+                            <div class="birthday-date">Since May 27, 1984 at 1:27pm CT</div>
+                        </div>
+                        
+                        <!-- World Clock Widget -->
+                        <div class="time-widget world-clock">
+                            <div class="widget-title">World Clock (Zulu Time)</div>
+                            <div class="clocks-container">
+                                <div class="clock">
+                                    <div class="clock-time" id="chicago-time">--:--:--Z</div>
+                                    <div class="clock-zone">Chicago</div>
+                                </div>
+                                <div class="clock">
+                                    <div class="clock-time" id="newyork-time">--:--:--Z</div>
+                                    <div class="clock-zone">New York</div>
+                                </div>
+                                <div class="clock">
+                                    <div class="clock-time" id="sandiego-time">--:--:--Z</div>
+                                    <div class="clock-zone">San Diego</div>
+                                </div>
+                                <div class="clock">
+                                    <div class="clock-time" id="tokyo-time">--:--:--Z</div>
+                                    <div class="clock-zone">Tokyo</div>
+                                </div>
+                                <div class="clock">
+                                    <div class="clock-time" id="bethlehem-time">--:--:--Z</div>
+                                    <div class="clock-zone">Bethlehem</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content removed as it's no longer needed for the production site -->
+        <main>
+            <!-- Empty main tag to maintain structure - content will be accessed through tabs -->
+        </main>
+        
+        <!-- Simple Footer Component -->
+        <footer class="site-footer">
+            <div class="copyright">Created by VonHoltenCodes 2025</div>
+        </footer>
+    </div>
+    
+    <script src="js/main.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/time-widgets.js"></script>
+    <script src="js/custom-cursor.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/night-mode-toggle.js"></script>
+    <script src="js/api-section.js"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API's - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/tabs-v2.css">
+    <link rel="stylesheet" href="../../css/footer.css">
+    <link rel="stylesheet" href="../../css/custom-cursor.css">
+    <link rel="stylesheet" href="../../css/background.css">
+    <link rel="stylesheet" href="../../css/night-mode-toggle.css">
+    <link rel="stylesheet" href="../../css/api-section.css">
+    
+    <!-- Leaflet CSS and JS for USGS Earthquake Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-container">
+        <div class="hydraulic-background"></div>
+        <div class="scanlines"></div>
+        <div class="diagonal-stripes"></div>
+        <div class="circuit-lines"></div>
+    </div>
+    
+    <!-- Night Mode Toggle in Top Right -->
+    <div class="night-mode-toggle">
+        <div class="toggle-button">
+            <span class="toggle-icon toggle-sun">☀</span>
+            <span class="toggle-icon toggle-moon">☽</span>
+        </div>
+    </div>
+    <div class="bullet-hole-container"></div>
+    
+    <div class="container">
+        <!-- Header (will be identical across all pages) -->
+        <div id="header-container">
+            <header class="site-header">
+                <a href="http://www.vonholtencodes.com" style="text-decoration: none; color: inherit;">
+                    <span class="thick">VonHolten</span><br>
+                    <span class="thick">Codes</span><br>
+                    <span class="thin">.com</span>
+                </a>
+                
+                <!-- 3D Rotating VH Logo -->
+                <div class="vh-logo-3d">
+                    <div class="logo-face front">
+                        VH
+                        <span class="bullet-hole bullet-hole-1"></span>
+                        <span class="bullet-hole bullet-hole-2"></span>
+                    </div>
+                    <div class="logo-face back">VH</div>
+                    <div class="logo-face right"></div>
+                    <div class="logo-face left"></div>
+                    <div class="logo-face top"></div>
+                    <div class="logo-face bottom"></div>
+                </div>
+            </header>
+        </div>
+        
+        <!-- Tabs Navigation (will be identical across all pages) -->
+        <div id="tabs-container">
+            <div class="tabs-container">
+                <nav class="tabs-nav">
+                    <a href="../apis/index.html" class="tab-link tab-apis active">API's</a>
+                    <a href="../kids/index.html" class="tab-link tab-kids">Kids Links</a>
+                    <a href="../games/index.html" class="tab-link tab-games">Game Room</a>
+                    <a href="../creation/index.html" class="tab-link tab-creation">Creation Station</a>
+                    <a href="../mission/index.html" class="tab-link tab-mission">Mission Control</a>
+                </nav>
+            </div>
+        </div>
+        
+        
+        <!-- API Section Introduction -->
+        <section class="api-section-intro">
+            <h2>Interactive API Integrations</h2>
+            <p>
+                Explore real-time data from various APIs including NASA space information, USGS earthquake mapping,
+                weather forecasts, and even joke generators. These interactive tools connect you with up-to-date
+                information and fun content from around the web.
+            </p>
+        </section>
+        
+        <!-- API Grid Section -->
+        <div class="api-grid">
+            <!-- NASA API Card -->
+            <div class="api-card nasa">
+                <div class="api-card-header">
+                    <div class="api-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50">
+                            <circle cx="25" cy="25" r="20" fill="#0B3D91"/>
+                            <path d="M41.4 20.5c-1 1.5-2 3-2.9 4.6-1.6 2.6-3.1 5.3-4.4 8.1-.4 1-1 1.6-2.1 1.7-.7.1-1.4.1-2.1.1-2.1 0-4.3 0-6.4-.2-.9-.1-1.4-.5-1.6-1.4-.3-1.6-.8-3.2-1-4.8-.2-1.2-.2-2.4-.2-3.6 0-1.6.2-3.3.5-4.9.2-1.2.7-1.7 1.9-2 3.3-.6 6.7-.9 10.1-.9 2.1 0 4.3.1 6.4.3 1 .1 1.6.5 1.8 1.5.1.5 0 1-.1 1.5z" fill="#FFF"/>
+                            <path d="M19.4 21.9c-.6.6-1 1.4-1.2 2.2-.5 1.8-.8 3.7-.9 5.6-.1 1.9.1 3.8.5 5.7.2.9.9 1.5 1.8 1.6 1.8.2 3.6.3 5.4.3 1.8 0 3.6-.1 5.4-.3.9-.1 1.6-.7 1.8-1.6.4-1.9.6-3.8.5-5.7-.1-1.9-.4-3.8-.9-5.6-.2-.8-.7-1.6-1.2-2.2-1.2-1.4-3-2.1-4.8-2.1-1.8 0-3.6.7-4.8 2.1z" fill="#FC3D21"/>
+                            <path d="M18.3 34.9c-.2-.1-.3-.3-.4-.5-.1-.3-.1-.6 0-.9.1-.5.4-.8.8-1.1.4-.3.9-.5 1.4-.7 1.5-.6 3-1 4.6-1.3 1.2-.2 2.4-.3 3.6-.2.9 0 1.8.1 2.7.3 1.1.2 2.2.5 3.2 1 .4.2.8.3 1.1.6.5.3.8.8.9 1.3.1.3 0 .6-.1.9-.1.2-.3.4-.5.5-1.4.8-3 1.4-4.6 1.7-1.5.3-3.1.5-4.6.5-1.9 0-3.8-.3-5.6-.8-1-.3-1.9-.7-2.7-1.3z" fill="#FFF"/>
+                        </svg>
+                    </div>
+                    <div class="api-card-title">
+                        <h3>NASA Space Data</h3>
+                        <div>Explore the cosmos</div>
+                    </div>
+                </div>
+                <div class="api-card-content">
+                    <div class="api-description">
+                        Access NASA's vast collection of space data, including the Astronomy Picture of the Day (APOD), Mars rover photos, and information about near-Earth objects.
+                    </div>
+                    <ul class="api-feature-list">
+                        <li>Daily astronomy pictures with expert explanations</li>
+                        <li>Latest photos from Mars rovers</li>
+                        <li>Earth observation images</li>
+                        <li>Near-Earth object tracking</li>
+                    </ul>
+                </div>
+                <div class="api-card-footer">
+                    <button id="nasa-api-button" class="api-button">Explore Space</button>
+                </div>
+            </div>
+            
+            <!-- USGS API Card -->
+            <div class="api-card usgs">
+                <div class="api-card-header">
+                    <div class="api-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50">
+                            <path d="M25 2C12.3 2 2 12.3 2 25s10.3 23 23 23 23-10.3 23-23S37.7 2 25 2zm0 42c-10.5 0-19-8.5-19-19S14.5 6 25 6s19 8.5 19 19-8.5 19-19 19z" fill="#E74C3C"/>
+                            <path d="M25 9c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm0 28c-6.6 0-12-5.4-12-12s5.4-12 12-12 12 5.4 12 12-5.4 12-12 12z" fill="#E74C3C"/>
+                            <circle cx="25" cy="25" r="6" fill="#E74C3C"/>
+                            <path d="M25 15v-6M25 41v-6M15 25H9M41 25h-6" fill="none" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M18 18l-4-4M32 32l-4-4M18 32l-4 4M32 18l-4 4" fill="none" stroke="#E74C3C" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="api-card-title">
+                        <h3>USGS Earthquake Monitor</h3>
+                        <div>Real-time seismic activity</div>
+                    </div>
+                </div>
+                <div class="api-card-content">
+                    <div class="api-description">
+                        Track earthquakes happening around the world in real-time with data from the United States Geological Survey (USGS), including magnitude, location, and depth.
+                    </div>
+                    <ul class="api-feature-list">
+                        <li>Interactive retro-styled map visualization</li>
+                        <li>Real-time earthquake monitoring</li>
+                        <li>Zoomable heat map with detailed seismic data</li>
+                        <li>Filter by time period (hour, day, week, month)</li>
+                    </ul>
+                </div>
+                <div class="api-card-footer">
+                    <button id="usgs-api-button" class="api-button">View Earthquakes</button>
+                </div>
+            </div>
+            
+            <!-- The Joker API Card -->
+            <div class="api-card joker">
+                <div class="api-card-header">
+                    <div class="api-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50">
+                            <circle cx="25" cy="25" r="23" fill="#9B59B6"/>
+                            <path d="M35 20c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4zM23 20c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4z" fill="#FFF"/>
+                            <path d="M35 33c0 5.5-4.5 10-10 10s-10-4.5-10-10h20z" fill="#FFF"/>
+                            <path d="M32 33h-14c0-3.9 3.1-7 7-7s7 3.1 7 7z" fill="#9B59B6"/>
+                        </svg>
+                    </div>
+                    <div class="api-card-title">
+                        <h3>The Joker</h3>
+                        <div>Kid-friendly jokes</div>
+                    </div>
+                </div>
+                <div class="api-card-content">
+                    <div class="api-description">
+                        Enjoy a laugh with our collection of kid-friendly jokes pulled from the JokeAPI. All jokes are screened to ensure they're appropriate for children.
+                    </div>
+                    <ul class="api-feature-list">
+                        <li>Family-friendly jokes in various categories</li>
+                        <li>Programming jokes for young coders</li>
+                        <li>Puns, general jokes, and seasonal themes</li>
+                        <li>Child-safe content (explicit content filtered)</li>
+                    </ul>
+                </div>
+                <div class="api-card-footer">
+                    <button id="joker-api-button" class="api-button">Get a Joke</button>
+                </div>
+            </div>
+            
+            <!-- Weather API Card -->
+            <div class="api-card weather">
+                <div class="api-card-header">
+                    <div class="api-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="50" height="50">
+                            <path d="M36 30c3.9 0 7-3.1 7-7s-3.1-7-7-7c-.7 0-1.4.1-2 .3-1.2-3.6-4.5-6.3-8.5-6.3-5 0-9 4-9 9 0 .5 0 1 .1 1.5-3.2.9-5.6 3.9-5.6 7.5 0 4.4 3.6 8 8 8h17c4.4 0 8-3.6 8-8 0-4.1-3.1-7.4-7-7.9v.9z" fill="#3498DB"/>
+                            <circle cx="36" cy="16" r="6" fill="#F1C40F"/>
+                            <path d="M14 30c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2s-.9-2-2-2H16c-1.1 0-2 .9-2 2zM15 35c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2s-.9-2-2-2H17c-1.1 0-2 .9-2 2zM17 39c-1.1 0-2 .9-2 2s.9 2 2 2h10c1.1 0 2-.9 2-2s-.9-2-2-2H17z" fill="#BDC3C7"/>
+                        </svg>
+                    </div>
+                    <div class="api-card-title">
+                        <h3>Sky King</h3>
+                        <div>Real-time weather data</div>
+                    </div>
+                </div>
+                <div class="api-card-content">
+                    <div class="api-description">
+                        Get the current weather conditions for any city worldwide using the OpenWeatherMap API. View temperature, conditions, humidity, and more.
+                    </div>
+                    <form class="weather-form" id="weather-form">
+                        <div class="weather-input-group">
+                            <input type="text" id="weather-city" class="weather-input" placeholder="Enter city name" required>
+                            <button type="submit" class="weather-search-btn">Search</button>
+                        </div>
+                    </form>
+                    <div class="weather-result" id="weather-result">
+                        <div class="weather-prompt">Enter a city name to get current weather</div>
+                    </div>
+                </div>
+                <div class="api-card-footer">
+                    <span class="api-note">Data provided by WeatherBit & Open-Meteo</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Simple Footer Component -->
+        <footer class="site-footer">
+            <div class="copyright">Created by VonHoltenCodes 2025</div>
+        </footer>
+    </div>
+    
+    <script src="../../js/main.js"></script>
+    <script src="../../js/header.js"></script>
+    <script src="../../js/tabs.js"></script>
+    <script src="../../js/custom-cursor.js"></script>
+    <script src="../../js/background.js"></script>
+    <script src="../../js/night-mode-toggle.js"></script>
+    <script src="../../js/api-section.js"></script>
+</body>
+</html>
