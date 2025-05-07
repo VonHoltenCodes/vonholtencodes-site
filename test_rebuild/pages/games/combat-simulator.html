@@ -1209,7 +1209,8 @@
                 
                 for (let j = gameState.targets.length - 1; j >= 0; j--) {
                     const target = gameState.targets[j];
-                    const targetSize = 20 * target.size;
+                    // Increased hit zone by 200% (3x larger) for easier targeting
+                    const targetSize = 20 * target.size * 3;
                     
                     // Simple distance-based collision
                     const dx = bullet.x - target.x;
@@ -1246,7 +1247,8 @@
                 }
                 
                 const target = missile.target;
-                const targetSize = 20 * target.size;
+                // Increased hit zone by 200% (3x larger) for easier targeting 
+                const targetSize = 20 * target.size * 3;
                 
                 // Simple distance-based collision
                 const dx = missile.x - target.x;
