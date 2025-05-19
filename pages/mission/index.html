@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/tabs-v2.css">
+    <link rel="stylesheet" href="../../css/footer.css">
+    <link rel="stylesheet" href="../../css/custom-cursor.css">
+    <link rel="stylesheet" href="../../css/background.css">
+    <link rel="stylesheet" href="../../css/night-mode-toggle.css">
+    <link rel="stylesheet" href="../../css/mission-control.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-container">
+        <div class="hydraulic-background"></div>
+        <div class="scanlines"></div>
+        <div class="diagonal-stripes"></div>
+        <div class="circuit-lines"></div>
+    </div>
+    
+    <!-- Night Mode Toggle in Top Right -->
+    <div class="night-mode-toggle">
+        <div class="toggle-button">
+            <span class="toggle-icon toggle-sun">☀</span>
+            <span class="toggle-icon toggle-moon">☽</span>
+        </div>
+    </div>
+    <div class="bullet-hole-container"></div>
+    
+    <div class="container">
+        <!-- Header (will be identical across all pages) -->
+        <div id="header-container">
+            <header class="site-header">
+                <a href="http://www.vonholtencodes.com" style="text-decoration: none; color: inherit;">
+                    <span class="thick">VonHolten</span><br>
+                    <span class="thick">Codes</span><br>
+                    <span class="thin">.com</span>
+                </a>
+                
+                <!-- 3D Rotating VH Logo -->
+                <div class="vh-logo-3d">
+                    <div class="logo-face front">
+                        VH
+                        <span class="bullet-hole bullet-hole-1"></span>
+                        <span class="bullet-hole bullet-hole-2"></span>
+                    </div>
+                    <div class="logo-face back">VH</div>
+                    <div class="logo-face right"></div>
+                    <div class="logo-face left"></div>
+                    <div class="logo-face top"></div>
+                    <div class="logo-face bottom"></div>
+                </div>
+            </header>
+        </div>
+        
+        <!-- Tabs Navigation (will be identical across all pages) -->
+        <div id="tabs-container">
+            <div class="tabs-container">
+                <nav class="tabs-nav">
+                    <a href="../apis/index.html" class="tab-link tab-apis">API's</a>
+                    <a href="../kids/index.html" class="tab-link tab-kids">Kids Links</a>
+                    <a href="../games/index.html" class="tab-link tab-games">Game Room</a>
+                    <a href="../creation/index.html" class="tab-link tab-creation">Creation Station</a>
+                    <a href="../mission/index.html" class="tab-link tab-mission active">Mission Control</a>
+                </nav>
+            </div>
+        </div>
+        
+        
+        <!-- Page-specific content -->
+        <main>
+            <section class="page-content">
+                <div class="mission-intro">
+                    <h2>MISSION CONTROL CENTER</h2>
+                    <p>Welcome to Mission Control, the hub for communication and code collaboration. This is where you can share ideas, suggest tweaks, or send messages to the VonHoltenCodes team. All messages are one-way and private - no email required!</p>
+                </div>
+                
+                <div class="mission-container">
+                    <div class="mission-links">
+                        <!-- Mission Control -->
+                        <a href="../../../mission_control.php" class="mission-card" target="_blank">
+                            <div class="icon-container">
+                                <div class="pixel-icon">
+                                    <!-- Mission Control Pixel Art -->
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #0088FF"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #D83A00"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: #FF4500"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Mission Control</div>
+                                <div class="card-description">Send ideas, code tweaks, and direct messages to the VonHoltenCodes team</div>
+                            </div>
+                        </a>
+                        
+                        <!-- Message Status -->
+                        <a href="../../../mission_control_message_alert.html" class="mission-card" target="_blank">
+                            <div class="icon-container">
+                                <div class="pixel-icon">
+                                    <!-- Message Alert Pixel Art -->
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FFFFFF"></div>
+                                        <div class="pixel" style="background-color: #FF0000"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Message Status</div>
+                                <div class="card-description">Check for new messages and alerts in the Mission Control system</div>
+                            </div>
+                        </a>
+                        
+                        <!-- Register Access -->
+                        <a href="../../../mission_register.php" class="mission-card" target="_blank">
+                            <div class="icon-container">
+                                <div class="pixel-icon">
+                                    <!-- Key Pixel Art -->
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                    <div class="pixel-row">
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #D4AF37"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: #FFD700"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                        <div class="pixel" style="background-color: transparent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">Register Access</div>
+                                <div class="card-description">Create your own Mission Control callsign and access code</div>
+                            </div>
+                        </a>
+                        
+                        <!-- GitHub Repository -->
+                        <a href="https://github.com/VonHoltenCodes/vonholtencodes-site" class="mission-card github-card" target="_blank">
+                            <div class="icon-container">
+                                <svg class="github-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                                </svg>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">GitHub Repository</div>
+                                <div class="card-description">View the source code, contribute to the project, or fork your own version</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Simple Footer Component -->
+        <footer class="site-footer">
+            <div class="copyright">Created by VonHoltenCodes 2025</div>
+        </footer>
+    </div>
+    
+    <script src="../../js/main.js"></script>
+    <script src="../../js/header.js"></script>
+    <script src="../../js/tabs.js"></script>
+    <script src="../../js/custom-cursor.js"></script>
+    <script src="../../js/background.js"></script>
+    <script src="../../js/night-mode-toggle.js"></script>
+</body>
+</html>

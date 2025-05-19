@@ -1,0 +1,52 @@
+/* 
+ * Footer styles for VonHoltenCodes site
+ */
+
+.site-footer {
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    text-align: center;
+    margin-top: 2rem;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid var(--accent-color);
+}
+
+.site-footer::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary-color);
+    transform: rotate(45deg) translate(10px, 10px);
+    z-index: 1;
+}
+
+.copyright {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Night mode adjustments */
+body.night-mode .site-footer {
+    border-top-color: #00ff00;
+}
+
+body.night-mode .copyright {
+    color: #00ff00;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .site-footer {
+        padding: 0.8rem;
+    }
+    
+    .copyright {
+        font-size: 0.8rem;
+    }
+}

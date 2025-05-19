@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --primary-hover: #ff6a33;
+            --accent-color: #ff8c00;
+            --background-color: #000000;
+            --box-bg-color: rgba(0, 0, 0, 0.7);
+            --text-color: #ffffff;
+        }
+        
+        body.night-mode {
+            --primary-color: #00ff00;
+            --primary-hover: #66ff66;
+            --accent-color: #00cc00;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle, #111 1px, transparent 1px);
+            background-size: 15px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23ff4500' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%23ff4500'/%3E%3Cline x1='12' y1='2' x2='12' y2='4' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='12' y1='20' x2='12' y2='22' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='4' y2='12' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='20' y1='12' x2='22' y2='12' stroke='%23ff4500' stroke-width='2'/%3E%3C/svg%3E"), auto;
+        }
+        
+        body.night-mode {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%2300ff00' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%2300ff00'/%3E%3Cline x1='12' y1='2' x2='12' y2='4' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='12' y1='20' x2='12' y2='22' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='4' y2='12' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='20' y1='12' x2='22' y2='12' stroke='%2300ff00' stroke-width='2'/%3E%3C/svg%3E"), auto;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--primary-color);
+            margin-top: 0;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+        }
+        
+        body.night-mode h1 {
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: var(--box-bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .score {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .topic {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .hangman-display {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .hangman-figure {
+            width: 200px;
+            height: 250px;
+            border: 2px solid var(--primary-color);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .figure-part {
+            display: none;
+        }
+        
+        .figure-container {
+            position: relative;
+            width: 70%;
+            height: 80%;
+        }
+        
+        .gallows {
+            stroke: #8B4513;
+            stroke-width: 4;
+        }
+        
+        .figure-body {
+            stroke: var(--text-color);
+            stroke-width: 3;
+            fill: transparent;
+        }
+        
+        .figure-head {
+            fill: var(--text-color);
+        }
+        
+        .figure-face {
+            stroke: black;
+            stroke-width: 1;
+            fill: transparent;
+        }
+        
+        .word-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .word-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .letter-box {
+            width: 40px;
+            height: 40px;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .hint-container {
+            margin-top: 10px;
+            text-align: center;
+            font-style: italic;
+            color: #aaa;
+        }
+        
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .key {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .key:hover:not(.used) {
+            background-color: rgba(255, 69, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        body.night-mode .key:hover:not(.used) {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+        
+        .key.used {
+            opacity: 0.3;
+            cursor: default;
+        }
+        
+        .key.correct {
+            background-color: rgba(0, 128, 0, 0.5);
+            border-color: #00ff00;
+        }
+        
+        .key.wrong {
+            background-color: rgba(128, 0, 0, 0.5);
+            border-color: #ff0000;
+        }
+        
+        .message-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .message {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .sub-message {
+            font-size: 18px;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .new-game-btn {
+            padding: 12px 24px;
+            background: none;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .new-game-btn:hover {
+            background-color: var(--primary-color);
+            color: #000;
+            transform: translateY(-2px);
+        }
+        
+        body.night-mode .new-game-btn:hover {
+            box-shadow: 0 3px 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .night-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: none;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover {
+            background-color: var(--primary-color);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(255, 69, 0, 0.3);
+        }
+        
+        body.night-mode .back-button:hover {
+            box-shadow: 0 3px 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .hangman-display {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .letter-box {
+                width: 30px;
+                height: 30px;
+                font-size: 18px;
+            }
+            
+            .key {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HANGMAN GAME</h1>
+            <button class="night-mode-toggle" id="nightModeToggle">
+                <span id="modeIcon">☀</span>
+            </button>
+        </div>
+        
+        <div class="game-container">
+            <div class="game-header">
+                <div class="score">Score: <span id="scoreValue">0</span></div>
+                <div class="topic">Topic: <span id="topicValue">ANIMALS</span></div>
+            </div>
+            
+            <div class="hangman-display">
+                <div class="hangman-figure">
+                    <svg class="figure-container" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Gallows (always visible) -->
+                        <line x1="40" y1="220" x2="160" y2="220" class="gallows" />
+                        <line x1="60" y1="220" x2="60" y2="40" class="gallows" />
+                        <line x1="60" y1="40" x2="120" y2="40" class="gallows" />
+                        <line x1="120" y1="40" x2="120" y2="60" class="gallows" />
+                        
+                        <!-- Figure parts (display as wrong guesses increase) -->
+                        <!-- Base figure elements -->
+                        <circle id="part1" cx="120" cy="80" r="20" class="figure-part figure-head" />
+                        <line id="part2" x1="120" y1="100" x2="120" y2="150" class="figure-part figure-body" />
+                        <line id="part3" x1="120" y1="110" x2="90" y2="130" class="figure-part figure-body" />
+                        <line id="part4" x1="120" y1="110" x2="150" y2="130" class="figure-part figure-body" />
+                        <line id="part5" x1="120" y1="150" x2="100" y2="180" class="figure-part figure-body" />
+                        <line id="part6" x1="120" y1="150" x2="140" y2="180" class="figure-part figure-body" />
+                        
+                        <!-- Additional parts (smile face, hands, feet, fingers, toes) -->
+                        <path id="part7" d="M 110 75 C 112 70, 128 70, 130 75" class="figure-part figure-face" />
+                        <circle id="part8" cx="110" cy="75" r="3" class="figure-part figure-face" />
+                        <circle id="part9" cx="130" cy="75" r="3" class="figure-part figure-face" />
+                        <circle id="part10" cx="90" cy="130" r="5" class="figure-part figure-body" />
+                        <circle id="part11" cx="150" cy="130" r="5" class="figure-part figure-body" />
+                        <circle id="part12" cx="100" cy="180" r="5" class="figure-part figure-body" />
+                        <circle id="part13" cx="140" cy="180" r="5" class="figure-part figure-body" />
+                        <line id="part14" x1="87" y1="125" x2="83" y2="123" class="figure-part figure-body" />
+                        <line id="part15" x1="87" y1="130" x2="82" y2="130" class="figure-part figure-body" />
+                        <line id="part16" x1="87" y1="135" x2="83" y2="137" class="figure-part figure-body" />
+                        <line id="part17" x1="153" y1="125" x2="157" y2="123" class="figure-part figure-body" />
+                        <line id="part18" x1="153" y1="130" x2="158" y2="130" class="figure-part figure-body" />
+                        <line id="part19" x1="153" y1="135" x2="157" y2="137" class="figure-part figure-body" />
+                        <line id="part20" x1="97" y1="183" x2="94" y2="188" class="figure-part figure-body" />
+                        <line id="part21" x1="100" y1="185" x2="100" y2="190" class="figure-part figure-body" />
+                        <line id="part22" x1="103" y1="183" x2="106" y2="188" class="figure-part figure-body" />
+                        <line id="part23" x1="137" y1="183" x2="134" y2="188" class="figure-part figure-body" />
+                        <line id="part24" x1="140" y1="185" x2="140" y2="190" class="figure-part figure-body" />
+                        <line id="part25" x1="143" y1="183" x2="146" y2="188" class="figure-part figure-body" />
+                    </svg>
+                </div>
+                
+                <div class="word-container">
+                    <div class="word-display" id="wordDisplay">
+                        <!-- Letter boxes will be generated by JavaScript -->
+                    </div>
+                    <div class="hint-container" id="hintContainer">
+                        <!-- Hint will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <div class="key" data-key="q">q</div>
+                    <div class="key" data-key="w">w</div>
+                    <div class="key" data-key="e">e</div>
+                    <div class="key" data-key="r">r</div>
+                    <div class="key" data-key="t">t</div>
+                    <div class="key" data-key="y">y</div>
+                    <div class="key" data-key="u">u</div>
+                    <div class="key" data-key="i">i</div>
+                    <div class="key" data-key="o">o</div>
+                    <div class="key" data-key="p">p</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" data-key="a">a</div>
+                    <div class="key" data-key="s">s</div>
+                    <div class="key" data-key="d">d</div>
+                    <div class="key" data-key="f">f</div>
+                    <div class="key" data-key="g">g</div>
+                    <div class="key" data-key="h">h</div>
+                    <div class="key" data-key="j">j</div>
+                    <div class="key" data-key="k">k</div>
+                    <div class="key" data-key="l">l</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" data-key="z">z</div>
+                    <div class="key" data-key="x">x</div>
+                    <div class="key" data-key="c">c</div>
+                    <div class="key" data-key="v">v</div>
+                    <div class="key" data-key="b">b</div>
+                    <div class="key" data-key="n">n</div>
+                    <div class="key" data-key="m">m</div>
+                </div>
+            </div>
+            
+            <div class="message-container" id="messageContainer">
+                <div class="message" id="message">YOU WIN!</div>
+                <div class="sub-message" id="subMessage">The word was: ELEPHANT</div>
+                <button class="new-game-btn" id="newGameBtn">PLAY AGAIN</button>
+            </div>
+        </div>
+        
+        <a href="index.html" class="back-button">← Back to Game Room</a>
+    </div>
+    
+    <script>
+        // Game configuration
+        const maxWrongGuesses = 25; // Number of body parts (guaranteed to win)
+        let score = 0;
+        let currentWord = '';
+        let currentHint = '';
+        let currentTopic = '';
+        let guessedLetters = new Set();
+        let wrongGuesses = 0;
+        
+        // DOM Elements
+        const scoreValue = document.getElementById('scoreValue');
+        const topicValue = document.getElementById('topicValue');
+        const wordDisplay = document.getElementById('wordDisplay');
+        const hintContainer = document.getElementById('hintContainer');
+        const messageContainer = document.getElementById('messageContainer');
+        const message = document.getElementById('message');
+        const subMessage = document.getElementById('subMessage');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const keys = document.querySelectorAll('.key');
+        
+        // Night Mode Toggle
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        
+        // Word topics with hint
+        const wordTopics = {
+            ANIMALS: [
+                { word: 'ELEPHANT', hint: 'Has a long trunk' },
+                { word: 'DOLPHIN', hint: 'Smart marine mammal' },
+                { word: 'TIGER', hint: 'Striped big cat' },
+                { word: 'PENGUIN', hint: 'Flightless bird that swims' },
+                { word: 'GIRAFFE', hint: 'Has a very long neck' },
+                { word: 'KANGAROO', hint: 'Hops and has a pouch' },
+                { word: 'ZEBRA', hint: 'Has black and white stripes' },
+                { word: 'KOALA', hint: 'Eats eucalyptus leaves' },
+                { word: 'MONKEY', hint: 'Swings in trees' },
+                { word: 'EAGLE', hint: 'Bird of prey' }
+            ],
+            SPACE: [
+                { word: 'PLANET', hint: 'Like Earth or Mars' },
+                { word: 'ROCKET', hint: 'Takes astronauts to space' },
+                { word: 'GALAXY', hint: 'Collection of stars' },
+                { word: 'MOON', hint: 'Earth has one' },
+                { word: 'COMET', hint: 'Ice ball with a tail' },
+                { word: 'ASTRONAUT', hint: 'Person who goes to space' },
+                { word: 'STAR', hint: 'Twinkles in the night sky' },
+                { word: 'ALIEN', hint: 'Might live on other planets' },
+                { word: 'METEOR', hint: 'Shooting star' },
+                { word: 'ORBIT', hint: 'Path around a planet or star' }
+            ],
+            FOODS: [
+                { word: 'PIZZA', hint: 'Round with toppings' },
+                { word: 'APPLE', hint: 'Fruit that keeps the doctor away' },
+                { word: 'COOKIE', hint: 'Sweet baked treat' },
+                { word: 'HAMBURGER', hint: 'Popular sandwich' },
+                { word: 'ICECREAM', hint: 'Cold dessert' },
+                { word: 'BANANA', hint: 'Yellow curved fruit' },
+                { word: 'PASTA', hint: 'Italian noodles' },
+                { word: 'TACO', hint: 'Mexican folded food' },
+                { word: 'PANCAKE', hint: 'Breakfast with syrup' },
+                { word: 'CARROT', hint: 'Orange vegetable' }
+            ],
+            SPORTS: [
+                { word: 'BASEBALL', hint: 'Played with a bat and ball' },
+                { word: 'SOCCER', hint: 'Kick a ball into a goal' },
+                { word: 'BASKETBALL', hint: 'Shoot into a hoop' },
+                { word: 'SWIMMING', hint: 'Moving through water' },
+                { word: 'TENNIS', hint: 'Hit a ball over a net' },
+                { word: 'FOOTBALL', hint: 'Played on a gridiron' },
+                { word: 'HOCKEY', hint: 'Played on ice with sticks' },
+                { word: 'GOLF', hint: 'Small ball into a hole' },
+                { word: 'SKATEBOARD', hint: 'Riding on wheels' },
+                { word: 'VOLLEYBALL', hint: 'Team game over a net' }
+            ],
+            SCHOOL: [
+                { word: 'TEACHER', hint: 'Leads the classroom' },
+                { word: 'PENCIL', hint: 'Writing tool' },
+                { word: 'NOTEBOOK', hint: 'For taking notes' },
+                { word: 'BACKPACK', hint: 'Carries school supplies' },
+                { word: 'SCIENCE', hint: 'Study of natural world' },
+                { word: 'RECESS', hint: 'Break time' },
+                { word: 'LIBRARY', hint: 'Where books are kept' },
+                { word: 'HOMEWORK', hint: 'Assignments to do at home' },
+                { word: 'STUDENT', hint: 'Person learning' },
+                { word: 'DESK', hint: 'Where students sit' }
+            ]
+        };
+        
+        // Initialize the game
+        function initGame() {
+            // Check for night mode preference
+            let isNightMode = localStorage.getItem('night_mode') === 'true';
+            if (isNightMode) {
+                document.body.classList.add('night-mode');
+                modeIcon.textContent = '☽';
+            }
+            
+            // Start a new game
+            startNewGame();
+            
+            // Event listeners
+            keys.forEach(key => {
+                key.addEventListener('click', () => {
+                    handleGuess(key.dataset.key);
+                });
+            });
+            
+            newGameBtn.addEventListener('click', startNewGame);
+            
+            // Keyboard events
+            document.addEventListener('keydown', e => {
+                if (/^[a-z]$/.test(e.key)) {
+                    handleGuess(e.key);
+                }
+            });
+            
+            // Toggle night mode
+            nightModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('night-mode');
+                isNightMode = document.body.classList.contains('night-mode');
+                modeIcon.textContent = isNightMode ? '☽' : '☀';
+                localStorage.setItem('night_mode', isNightMode);
+            });
+        }
+        
+        // Start a new game
+        function startNewGame() {
+            // Reset game state
+            guessedLetters = new Set();
+            wrongGuesses = 0;
+            
+            // Hide all figure parts
+            for (let i = 1; i <= maxWrongGuesses; i++) {
+                document.getElementById(`part${i}`).style.display = 'none';
+            }
+            
+            // Reset keyboard
+            keys.forEach(key => {
+                key.classList.remove('used', 'correct', 'wrong');
+            });
+            
+            // Hide message
+            messageContainer.style.display = 'none';
+            
+            // Pick a random topic
+            const topics = Object.keys(wordTopics);
+            currentTopic = topics[Math.floor(Math.random() * topics.length)];
+            topicValue.textContent = currentTopic;
+            
+            // Pick a random word and hint
+            const wordObj = wordTopics[currentTopic][Math.floor(Math.random() * wordTopics[currentTopic].length)];
+            currentWord = wordObj.word;
+            currentHint = wordObj.hint;
+            
+            // Display hint
+            hintContainer.textContent = `Hint: ${currentHint}`;
+            
+            // Update word display
+            updateWordDisplay();
+        }
+        
+        // Update the word display with correctly guessed letters
+        function updateWordDisplay() {
+            wordDisplay.innerHTML = '';
+            
+            for (const char of currentWord) {
+                const letterBox = document.createElement('div');
+                letterBox.classList.add('letter-box');
+                
+                if (guessedLetters.has(char.toLowerCase()) || char === ' ') {
+                    letterBox.textContent = char;
+                }
+                
+                wordDisplay.appendChild(letterBox);
+            }
+        }
+        
+        // Handle a letter guess
+        function handleGuess(letter) {
+            if (guessedLetters.has(letter) || messageContainer.style.display === 'flex') {
+                return;
+            }
+            
+            guessedLetters.add(letter);
+            const key = document.querySelector(`.key[data-key="${letter}"]`);
+            key.classList.add('used');
+            
+            if (currentWord.toLowerCase().includes(letter)) {
+                // Correct guess
+                key.classList.add('correct');
+                updateWordDisplay();
+                
+                // Check for win
+                if (isWordGuessed()) {
+                    handleWin();
+                }
+            } else {
+                // Wrong guess
+                key.classList.add('wrong');
+                wrongGuesses++;
+                updateFigure();
+                
+                // Check for lose (this won't trigger with our configuration)
+                if (wrongGuesses >= maxWrongGuesses) {
+                    handleLose();
+                }
+            }
+        }
+        
+        // Update the hangman figure
+        function updateFigure() {
+            if (wrongGuesses <= maxWrongGuesses) {
+                document.getElementById(`part${wrongGuesses}`).style.display = 'block';
+            }
+        }
+        
+        // Check if the word is completely guessed
+        function isWordGuessed() {
+            return [...currentWord.toLowerCase()].every(char => 
+                char === ' ' || guessedLetters.has(char));
+        }
+        
+        // Handle win
+        function handleWin() {
+            score += 1;
+            scoreValue.textContent = score;
+            
+            message.textContent = 'YOU WIN!';
+            subMessage.textContent = `The word was: ${currentWord}`;
+            message.style.color = '#00ff00';
+            messageContainer.style.display = 'flex';
+        }
+        
+        // Handle lose (won't trigger with our configuration)
+        function handleLose() {
+            message.textContent = 'YOU TRIED!';
+            subMessage.textContent = `The word was: ${currentWord}`;
+            message.style.color = '#ff4500';
+            messageContainer.style.display = 'flex';
+        }
+        
+        // Initialize when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

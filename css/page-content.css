@@ -1,0 +1,112 @@
+/* 
+ * Page content styles for VonHoltenCodes site
+ * Styling for the content area of each tab page
+ */
+
+.page-content {
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.page-content h1 {
+    color: var(--accent-color);
+    font-size: 2rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.content-placeholder {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px dashed rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.content-placeholder h3 {
+    color: var(--accent-color);
+    margin-top: 0;
+}
+
+/* API's page specific styles */
+body.page-apis .content-placeholder {
+    border-color: rgba(255, 69, 0, 0.3);
+}
+
+/* Kids Links page specific styles */
+body.page-kids .content-placeholder {
+    border-color: rgba(30, 144, 255, 0.3);
+}
+
+/* Game Room page specific styles */
+body.page-games .content-placeholder {
+    border-color: rgba(255, 110, 199, 0.3);
+}
+
+/* Creation Station page specific styles */
+body.page-creation .content-placeholder {
+    border-color: rgba(255, 165, 0, 0.3);
+}
+
+/* Mission Control page specific styles */
+body.page-mission .content-placeholder {
+    border-color: rgba(50, 205, 50, 0.3);
+}
+
+/* Item grid for content */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.content-item {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.content-item h3 {
+    color: var(--accent-color);
+    margin-top: 0;
+    font-size: 1.3rem;
+}
+
+.content-item p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-content {
+        padding: 1.5rem;
+    }
+    
+    .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content h1 {
+        font-size: 1.6rem;
+    }
+    
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}

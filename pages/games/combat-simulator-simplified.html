@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combat Simulator (Easy Mode) - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --primary-hover: #ff6a33;
+            --accent-color: #ff8c00;
+            --background-color: #000000;
+            --text-color: #00ff00;
+            --hud-color: rgba(0, 255, 0, 0.8);
+            --warning-color: #ff4500;
+            --target-color: #2da866;
+            --target-stroke: #1a7045;
+            --cockpit-color: #a8d8e8;
+        }
+        
+        body.night-mode {
+            --primary-color: #00ff00;
+            --primary-hover: #66ff66;
+            --accent-color: #00cc00;
+            --text-color: #00ff00;
+            --hud-color: rgba(0, 255, 0, 0.8);
+            --warning-color: #ff4500;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: var(--text-color);
+            height: 100vh;
+            position: relative;
+            cursor: default; /* Allow default cursor to appear when necessary */
+        }
+        
+        /* Custom cursor (F-14 Tomcat HUD style) */
+        #custom-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none; /* This is needed for the cursor to pass clicks through */
+            z-index: 9999;
+            background: transparent;
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+            box-sizing: border-box;
+            transform: translate(-50%, -50%); /* Center the click point */
+            transition: all 0.05s ease;
+        }
+        
+        #custom-cursor::before,
+        #custom-cursor::after {
+            content: '';
+            position: absolute;
+            background: var(--text-color);
+        }
+        
+        #custom-cursor::before {
+            width: 2px;
+            height: 24px;
+            top: 8px;
+            left: 19px;
+        }
+        
+        #custom-cursor::after {
+            width: 24px;
+            height: 2px;
+            left: 8px;
+            top: 19px;
+        }
+        
+        #custom-cursor .tick {
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: var(--text-color);
+        }
+        
+        #custom-cursor .tick:nth-child(1) { top: 0; left: 19px; }
+        #custom-cursor .tick:nth-child(2) { bottom: 0; left: 19px; }
+        #custom-cursor .tick:nth-child(3) { left: 0; top: 19px; }
+        #custom-cursor .tick:nth-child(4) { right: 0; top: 19px; }
+        
+        /* Targeting mode */
+        #custom-cursor.targeting {
+            border-color: var(--warning-color);
+        }
+        
+        #custom-cursor.targeting::before,
+        #custom-cursor.targeting::after,
+        #custom-cursor.targeting .tick {
+            background: var(--warning-color);
+        }
+        
+        #custom-cursor .target-lock {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border: 2px dashed var(--warning-color);
+            border-radius: 50%;
+            top: -5px;
+            left: -5px;
+            opacity: 0;
+            animation: blink 0.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        
+        #sim-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #001122;
+        }
+        
+        /* Sky background with stars */
+        .sky-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #001133 0%, #003366 100%);
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #fff;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        
+        /* Ground */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background: linear-gradient(to bottom, #1a3300 0%, #105510 100%);
+            z-index: 4;
+        }
+        
+        /* Ground grid pattern */
+        .ground-grid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: bottom;
+            z-index: 5;
+        }
+        
+        /* Targets */
+        .aircraft-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+        
+        .aircraft {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            cursor: pointer !important; /* Force pointer cursor */
+            transition: transform 0.2s ease;
+            /* Ensure aircraft can be clicked */
+            pointer-events: auto !important;
+        }
+        
+        .aircraft:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .target-indicator {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 3px dashed var(--warning-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.9;
+            z-index: 9;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            background-color: rgba(255, 69, 0, 0.1); /* Add slight background for better targeting */
+        }
+        
+        /* Explosions */
+        .explosion {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            animation: explosion 0.5s forwards;
+        }
+        
+        @keyframes explosion {
+            0% { 
+                width: 1px; 
+                height: 1px; 
+                background-color: white;
+                box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8);
+            }
+            25% { 
+                width: 30px; 
+                height: 30px; 
+                background-color: yellow;
+                box-shadow: 0 0 20px 10px rgba(255, 165, 0, 0.8);
+            }
+            50% { 
+                width: 60px; 
+                height: 60px; 
+                background-color: orange;
+                box-shadow: 0 0 30px 15px rgba(255, 69, 0, 0.8);
+            }
+            75% { 
+                width: 80px; 
+                height: 80px; 
+                background-color: red;
+                box-shadow: 0 0 40px 20px rgba(139, 0, 0, 0.8);
+            }
+            100% { 
+                width: 100px; 
+                height: 100px; 
+                background-color: rgba(139, 0, 0, 0);
+                box-shadow: 0 0 50px 25px rgba(139, 0, 0, 0);
+            }
+        }
+        
+        /* HUD Elements */
+        .hud-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            color: var(--hud-color);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .hud-frame {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            right: 50px;
+            bottom: 50px;
+            border: 1px solid var(--hud-color);
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--hud-color);
+            opacity: 0.5;
+        }
+        
+        .hud-corners {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hud-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--hud-color);
+            border-style: solid;
+            border-width: 0;
+        }
+        
+        .top-left {
+            top: 50px;
+            left: 50px;
+            border-top-width: 1px;
+            border-left-width: 1px;
+        }
+        
+        .top-right {
+            top: 50px;
+            right: 50px;
+            border-top-width: 1px;
+            border-right-width: 1px;
+        }
+        
+        .bottom-left {
+            bottom: 50px;
+            left: 50px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+        }
+        
+        .bottom-right {
+            bottom: 50px;
+            right: 50px;
+            border-bottom-width: 1px;
+            border-right-width: 1px;
+        }
+        
+        .hud-panel {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--hud-color);
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        .hud-panel h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--hud-color);
+        }
+        
+        .altitude-panel {
+            top: 70px;
+            left: 70px;
+            width: 120px;
+        }
+        
+        .weapons-panel {
+            top: 70px;
+            right: 70px;
+            width: 120px;
+        }
+        
+        .radar-panel {
+            bottom: 70px;
+            left: 70px;
+            width: 180px;
+            height: 150px;
+        }
+        
+        .stats-panel {
+            bottom: 70px;
+            right: 70px;
+            width: 120px;
+        }
+        
+        .radar-display {
+            width: 160px;
+            height: 100px;
+            background-color: rgba(0, 30, 0, 0.7);
+            border: 1px solid var(--hud-color);
+            border-radius: 3px;
+            margin-top: 10px;
+            position: relative;
+        }
+        
+        .radar-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+        
+        .radar-center {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: var(--hud-color);
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 160px solid rgba(0, 255, 0, 0.1);
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            animation: radar-sweep 4s linear infinite;
+        }
+        
+        @keyframes radar-sweep {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+        
+        .radar-blip {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--warning-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .altitude-display, .speed-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .altitude-bar, .speed-bar {
+            height: 10px;
+            background-color: rgba(0, 255, 0, 0.3);
+            border: 1px solid var(--hud-color);
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        .altitude-fill, .speed-fill {
+            height: 100%;
+            background-color: var(--hud-color);
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+        
+        .ammo-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .ammo-bar {
+            height: 10px;
+            background-color: rgba(0, 255, 0, 0.3);
+            border: 1px solid var(--hud-color);
+            border-radius: 2px;
+            margin-top: 5px;
+        }
+        
+        .ammo-fill {
+            height: 100%;
+            background-color: var(--hud-color);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .missile-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .missile-count {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .missile-icon {
+            width: 10px;
+            height: 10px;
+            background-color: var(--hud-color);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            margin-top: 5px;
+        }
+        
+        .score-display, .target-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        /* Game status overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+        
+        .overlay h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-align: center;
+        }
+        
+        .overlay p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .overlay button {
+            background: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .night-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 150;
+        }
+        
+        .return-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: transparent;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 150;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .return-button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Message display */
+        .message-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-color);
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 90;
+            text-shadow: 0 0 10px var(--hud-color);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .message-display.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .hud-panel {
+                padding: 5px;
+            }
+            
+            .altitude-panel, .weapons-panel, .stats-panel {
+                width: 100px;
+            }
+            
+            .radar-panel {
+                width: 150px;
+                height: 120px;
+            }
+            
+            .radar-display {
+                width: 130px;
+                height: 80px;
+            }
+            
+            .hud-panel h3 {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor">
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="tick"></div>
+        <div class="target-lock"></div>
+    </div>
+    
+    <!-- Night Mode Toggle -->
+    <button class="night-mode-toggle" id="nightModeToggle">
+        <span id="modeIcon">☀</span>
+    </button>
+    
+    <!-- Return Button -->
+    <a href="index.html" class="return-button">
+        <span class="return-icon">←</span>
+        <span>RETURN</span>
+    </a>
+    
+    <!-- Main Simulator Container -->
+    <div id="sim-container">
+        <div class="sky-background"></div>
+        <!-- Stars will be dynamically added -->
+        <div class="ground"></div>
+        <div class="ground-grid"></div>
+        
+        <!-- Aircraft Container -->
+        <div class="aircraft-container" id="aircraftContainer"></div>
+        
+        <!-- HUD Elements -->
+        <div class="hud-container">
+            <div class="hud-frame"></div>
+            <div class="hud-corners">
+                <div class="hud-corner top-left"></div>
+                <div class="hud-corner top-right"></div>
+                <div class="hud-corner bottom-left"></div>
+                <div class="hud-corner bottom-right"></div>
+            </div>
+            
+            <!-- Altitude Panel -->
+            <div class="hud-panel altitude-panel">
+                <h3>Navigation</h3>
+                <div class="altitude-display">
+                    <span>ALT:</span>
+                    <span id="altitudeValue">5000</span>
+                </div>
+                <div class="altitude-bar">
+                    <div class="altitude-fill" id="altitudeFill"></div>
+                </div>
+                <div class="speed-display">
+                    <span>SPD:</span>
+                    <span id="speedValue">450</span>
+                </div>
+                <div class="speed-bar">
+                    <div class="speed-fill" id="speedFill"></div>
+                </div>
+            </div>
+            
+            <!-- Weapons Panel -->
+            <div class="hud-panel weapons-panel">
+                <h3>Weapons</h3>
+                <div class="ammo-display">
+                    <span>GUNS:</span>
+                    <span id="ammoValue">500</span>
+                </div>
+                <div class="ammo-bar">
+                    <div class="ammo-fill" id="ammoFill"></div>
+                </div>
+                <div class="missile-display">
+                    <span>MSSL:</span>
+                    <div class="missile-count" id="missileCount">
+                        <div class="missile-icon"></div>
+                        <div class="missile-icon"></div>
+                        <div class="missile-icon"></div>
+                        <div class="missile-icon"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Radar Panel -->
+            <div class="hud-panel radar-panel">
+                <h3>Radar</h3>
+                <div class="radar-display">
+                    <div class="radar-grid"></div>
+                    <div class="radar-center"></div>
+                    <div class="radar-sweep"></div>
+                    <!-- Radar blips will be added dynamically -->
+                </div>
+            </div>
+            
+            <!-- Stats Panel -->
+            <div class="hud-panel stats-panel">
+                <h3>Mission</h3>
+                <div class="score-display">
+                    <span>SCORE:</span>
+                    <span id="scoreValue">0</span>
+                </div>
+                <div class="target-display">
+                    <span>TARGETS:</span>
+                    <span id="targetValue">0/5</span>
+                </div>
+                <div class="target-display">
+                    <span>TIME:</span>
+                    <span id="timeValue">00:00</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Message Display -->
+        <div class="message-display" id="messageDisplay"></div>
+        
+        <!-- Start Screen -->
+        <div class="overlay" id="startScreen">
+            <h2>COMBAT SIMULATOR</h2>
+            <p>Welcome to the Fighter Jet Combat Simulator! Just click directly on the enemy aircraft to destroy them. It's super easy!</p>
+            <button id="startBtn">START MISSION</button>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div class="overlay" id="gameOverScreen" style="display: none;">
+            <h2 id="gameOverTitle">MISSION COMPLETE</h2>
+            <p id="gameOverMessage">You successfully completed the mission!</p>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Time: <span id="finalTime">00:00</span></p>
+            <button id="restartBtn">RESTART MISSION</button>
+        </div>
+    </div>
+    
+    <script>
+        // Game state
+        const gameState = {
+            isRunning: false,
+            score: 0,
+            targetsDestroyed: 0,
+            totalTargets: 5,
+            gameTime: 0,
+            gameTimeInterval: null,
+            nightMode: false,
+            targets: []
+        };
+        
+        // DOM Elements
+        const cursor = document.getElementById('custom-cursor');
+        const aircraftContainer = document.getElementById('aircraftContainer');
+        const simContainer = document.getElementById('sim-container');
+        const skyBackground = document.querySelector('.sky-background');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const messageDisplay = document.getElementById('messageDisplay');
+        const scoreValue = document.getElementById('scoreValue');
+        const targetValue = document.getElementById('targetValue');
+        const timeValue = document.getElementById('timeValue');
+        const finalScore = document.getElementById('finalScore');
+        const finalTime = document.getElementById('finalTime');
+        const altitudeValue = document.getElementById('altitudeValue');
+        const speedValue = document.getElementById('speedValue');
+        const ammoValue = document.getElementById('ammoValue');
+        const altitudeFill = document.getElementById('altitudeFill');
+        const speedFill = document.getElementById('speedFill');
+        const ammoFill = document.getElementById('ammoFill');
+        const missileCount = document.getElementById('missileCount');
+        const radarDisplay = document.querySelector('.radar-display');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        
+        // Mouse position
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        
+        // Target aircraft template (SVG)
+        const targetAircraftSVG = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+                <g transform="translate(50, 50) rotate(90)">
+                    <path d="M -5,40 L -5,-15 L 0,-40 L 5,-15 L 5,40 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <ellipse cx="0" cy="-15" rx="5" ry="10" fill="#a8d8e8" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -3,-18 L 3,-18 L 2,-8 L -2,-8 Z" fill="#3a4a5a" stroke="none"/>
+                    <path d="M 5,10 L 30,-5 L 30,10 L 5,20 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -5,10 L -30,-5 L -30,10 L -5,20 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -5,30 L -20,20 L -20,30 L -5,35 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M 5,30 L 20,20 L 20,30 L 5,35 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M 0,35 L 0,20 L 5,15 L 0,35 Z" fill="#2da866" stroke="#1a7045" stroke-width="1"/>
+                    <rect x="-3" y="35" width="6" height="5" fill="#a83232" stroke="#1a7045" stroke-width="1"/>
+                    <path d="M -3,-5 L 3,-5" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -4,5 L 4,5" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -4,15 L 4,15" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -4,25 L 4,25" stroke="#1a7045" stroke-width="0.5" fill="none"/>
+                    <path d="M -5,0 L -8,-3 L -8,3 Z" fill="#1a1a1a" stroke="#1a7045" stroke-width="0.5"/>
+                    <path d="M 5,0 L 8,-3 L 8,3 Z" fill="#1a1a1a" stroke="#1a7045" stroke-width="0.5"/>
+                </g>
+            </svg>
+        `;
+        
+        // Create stars
+        function createStars() {
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 80}%`;
+                star.style.opacity = Math.random();
+                if (Math.random() > 0.8) {
+                    star.style.width = '3px';
+                    star.style.height = '3px';
+                    star.style.boxShadow = '0 0 3px 1px rgba(255, 255, 255, 0.8)';
+                }
+                skyBackground.appendChild(star);
+            }
+        }
+        
+        // Create a target aircraft
+        function createTarget() {
+            const x = Math.random() * (window.innerWidth - 200) + 100; // Keep away from edges
+            const y = Math.random() * (window.innerHeight * 0.6) + 100; // Keep in sky area
+            
+            // Create target elements
+            const targetElement = document.createElement('div');
+            targetElement.classList.add('aircraft');
+            
+            // Create indicator
+            const indicator = document.createElement('div');
+            indicator.classList.add('target-indicator');
+            
+            // Create radar blip
+            const radarBlip = document.createElement('div');
+            radarBlip.classList.add('radar-blip');
+            
+            // Set up target object
+            const target = {
+                element: targetElement,
+                indicator: indicator,
+                radarBlip: radarBlip,
+                x: x,
+                y: y,
+                id: Date.now() + Math.random()
+            };
+            
+            // Position elements
+            target.element.style.left = `${x}px`;
+            target.element.style.top = `${y}px`;
+            target.element.innerHTML = targetAircraftSVG;
+            
+            const rotation = Math.random() * 360;
+            target.element.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+            
+            // Add indicator
+            target.indicator.style.left = `${x}px`;
+            target.indicator.style.top = `${y}px`;
+            
+            // Add click event with high priority
+            target.element.addEventListener('click', (event) => {
+                event.stopPropagation(); // Stop event from propagating
+                if (!gameState.isRunning) return;
+                destroyTarget(target);
+            }, true); // Use capturing phase to ensure event fires
+            
+            // Add a mouse down event as backup
+            target.element.addEventListener('mousedown', (event) => {
+                event.stopPropagation();
+                if (!gameState.isRunning) return;
+                destroyTarget(target);
+            }, true);
+            
+            // Also add click events to the target indicator (the circle around the aircraft)
+            target.indicator.style.cursor = "pointer";
+            target.indicator.style.pointerEvents = "auto";
+            
+            target.indicator.addEventListener('click', (event) => {
+                event.stopPropagation();
+                if (!gameState.isRunning) return;
+                destroyTarget(target);
+            }, true);
+            
+            target.indicator.addEventListener('mousedown', (event) => {
+                event.stopPropagation();
+                if (!gameState.isRunning) return;
+                destroyTarget(target);
+            }, true);
+            
+            // Add elements to containers
+            aircraftContainer.appendChild(target.element);
+            aircraftContainer.appendChild(target.indicator);
+            radarDisplay.appendChild(target.radarBlip);
+            
+            // Update radar blip position
+            updateRadarBlip(target);
+            
+            // Add to game state
+            gameState.targets.push(target);
+            
+            return target;
+        }
+        
+        // Update radar blip position
+        function updateRadarBlip(target) {
+            const radarWidth = radarDisplay.offsetWidth;
+            const radarHeight = radarDisplay.offsetHeight;
+            
+            // Scale factor from world to radar
+            const scaleX = radarWidth / window.innerWidth;
+            const scaleY = radarHeight / window.innerHeight;
+            
+            // Calculate position
+            const blipX = target.x * scaleX;
+            const blipY = target.y * scaleY;
+            
+            // Set position
+            target.radarBlip.style.left = `${Math.min(radarWidth, Math.max(0, blipX))}px`;
+            target.radarBlip.style.top = `${Math.min(radarHeight, Math.max(0, blipY))}px`;
+        }
+        
+        // Destroy a target
+        function destroyTarget(target) {
+            // Create explosion
+            createExplosion(target.x, target.y, 1.5);
+            
+            // Play sound effect (if we had one)
+            
+            // Remove target elements
+            target.element.remove();
+            target.indicator.remove();
+            target.radarBlip.remove();
+            
+            // Remove from game state
+            const index = gameState.targets.findIndex(t => t.id === target.id);
+            if (index !== -1) {
+                gameState.targets.splice(index, 1);
+            }
+            
+            // Update score and counters
+            gameState.score += 100;
+            gameState.targetsDestroyed++;
+            
+            // Update HUD
+            updateHUD();
+            
+            // Show message
+            showMessage("TARGET DESTROYED");
+            
+            // Check for win condition
+            if (gameState.targetsDestroyed >= gameState.totalTargets) {
+                setTimeout(() => {
+                    endGame(true);
+                }, 2000);
+            } else if (gameState.targets.length < 2) {
+                // Create a new target if needed
+                setTimeout(createTarget, Math.random() * 1000 + 500);
+            }
+        }
+        
+        // Create explosion
+        function createExplosion(x, y, size = 1) {
+            const explosion = document.createElement('div');
+            explosion.classList.add('explosion');
+            explosion.style.left = `${x}px`;
+            explosion.style.top = `${y}px`;
+            explosion.style.transform = `translate(-50%, -50%) scale(${size})`;
+            
+            simContainer.appendChild(explosion);
+            
+            // Remove explosion after animation completes
+            setTimeout(() => {
+                explosion.remove();
+            }, 500);
+        }
+        
+        // Show a message
+        function showMessage(text) {
+            messageDisplay.textContent = text;
+            messageDisplay.classList.add('show');
+            
+            setTimeout(() => {
+                messageDisplay.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Update HUD elements
+        function updateHUD() {
+            // Update displays
+            scoreValue.textContent = gameState.score;
+            targetValue.textContent = `${gameState.targetsDestroyed}/${gameState.totalTargets}`;
+            
+            // These values don't change in simplified version but we'll keep them for looks
+            altitudeValue.textContent = "5000";
+            speedValue.textContent = "450";
+            ammoValue.textContent = "999";
+            altitudeFill.style.width = "50%";
+            speedFill.style.width = "50%";
+            ammoFill.style.width = "100%";
+        }
+        
+        // Update game time
+        function updateGameTime() {
+            gameState.gameTime++;
+            
+            // Format time as MM:SS
+            const minutes = Math.floor(gameState.gameTime / 60).toString().padStart(2, '0');
+            const seconds = (gameState.gameTime % 60).toString().padStart(2, '0');
+            
+            timeValue.textContent = `${minutes}:${seconds}`;
+        }
+        
+        // Initialize the game
+        function init() {
+            createStars();
+            
+            // Set up event listeners
+            document.addEventListener('mousemove', handleMouseMove);
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', restartGame);
+            
+            // Night mode toggle
+            let isNightMode = localStorage.getItem('night_mode') === 'true';
+            if (isNightMode) {
+                document.body.classList.add('night-mode');
+                modeIcon.textContent = '☽';
+            }
+            
+            nightModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('night-mode');
+                isNightMode = document.body.classList.contains('night-mode');
+                modeIcon.textContent = isNightMode ? '☽' : '☀';
+                localStorage.setItem('night_mode', isNightMode);
+            });
+            
+            // Initialize HUD
+            updateHUD();
+        }
+        
+        // Handle mouse movement
+        function handleMouseMove(e) {
+            // Update cursor position
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Move custom cursor
+            cursor.style.left = `${mouseX}px`;
+            cursor.style.top = `${mouseY}px`;
+            
+            // Check if mouse is near any target
+            let nearTarget = false;
+            
+            gameState.targets.forEach(target => {
+                const dx = mouseX - target.x;
+                const dy = mouseY - target.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 50) {
+                    nearTarget = true;
+                    cursor.classList.add('targeting');
+                    cursor.querySelector('.target-lock').style.opacity = 1;
+                    
+                    // Add pointer cursor to indicate target is clickable
+                    target.element.style.cursor = "pointer";
+                }
+            });
+            
+            // Reset cursor if not near any target
+            if (!nearTarget) {
+                cursor.classList.remove('targeting');
+                cursor.querySelector('.target-lock').style.opacity = 0;
+            }
+        }
+        
+        // Start the game
+        function startGame() {
+            // Hide start screen
+            startScreen.style.display = 'none';
+            
+            // Reset game state
+            gameState.isRunning = true;
+            gameState.score = 0;
+            gameState.targetsDestroyed = 0;
+            gameState.gameTime = 0;
+            
+            // Clear any existing targets
+            gameState.targets.forEach(target => {
+                target.element.remove();
+                target.indicator.remove();
+                target.radarBlip.remove();
+            });
+            gameState.targets = [];
+            
+            // Update HUD
+            updateHUD();
+            
+            // Create initial targets
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => createTarget(), i * 500);
+            }
+            
+            // Start game timer
+            gameState.gameTimeInterval = setInterval(updateGameTime, 1000);
+            
+            // Show welcome message
+            showMessage("MISSION STARTED");
+        }
+        
+        // Restart the game
+        function restartGame() {
+            // Hide game over screen
+            gameOverScreen.style.display = 'none';
+            
+            // Start new game
+            startGame();
+        }
+        
+        // End the game
+        function endGame(victory = true) {
+            // Stop game
+            gameState.isRunning = false;
+            clearInterval(gameState.gameTimeInterval);
+            
+            // Update game over screen
+            if (victory) {
+                gameOverTitle.textContent = "MISSION COMPLETE";
+                gameOverMessage.textContent = "You successfully eliminated all enemy aircraft!";
+                gameOverTitle.style.color = "#00ff00";
+            } else {
+                gameOverTitle.textContent = "MISSION FAILED";
+                gameOverMessage.textContent = "You were unable to complete the mission objectives.";
+                gameOverTitle.style.color = "#ff4500";
+            }
+            
+            finalScore.textContent = gameState.score;
+            
+            // Format time as MM:SS
+            const minutes = Math.floor(gameState.gameTime / 60).toString().padStart(2, '0');
+            const seconds = (gameState.gameTime % 60).toString().padStart(2, '0');
+            finalTime.textContent = `${minutes}:${seconds}`;
+            
+            // Show game over screen
+            gameOverScreen.style.display = 'flex';
+        }
+        
+        // Initialize when the page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

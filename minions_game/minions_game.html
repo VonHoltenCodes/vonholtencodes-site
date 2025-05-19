@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minions Escape Game - VonHoltenCodes</title>
+    <style>
+        :root {
+            --primary-color: #ffd700;  /* Yellow */
+            --accent-color: #800080;   /* Neon Purple */
+            --canvas-color: #87ceeb;   /* Cyan */
+            --sky-color: #1c2526;      /* Dark Blue */
+            --text-color: #ffffff;     /* White */
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--sky-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: var(--primary-color);
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 1rem auto;
+        }
+        
+        .instructions {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            max-width: 800px;
+        }
+        
+        .instructions h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .instructions ul {
+            margin-left: 1.5rem;
+        }
+        
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 1rem;
+        }
+        
+        .control-group {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .control-group h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        
+        iframe {
+            border: none;
+            width: 100%;
+            height: 600px;
+            max-height: 80vh;
+            box-shadow: 0 0 20px rgba(128, 0, 128, 0.7);
+        }
+        
+        .back-button {
+            background-color: var(--primary-color);
+            color: black;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 0 10px var(--accent-color);
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            color: var(--text-color);
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .overlay h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--accent-color);
+            font-size: 3rem;
+        }
+        
+        .overlay p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .overlay button {
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.2s;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+        
+        .overlay button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                margin: 0.5rem 0;
+                min-width: 100%;
+            }
+            
+            .game {
+                height: 75vh;
+            }
+            
+            .overlay h1 {
+                font-size: 2rem;
+            }
+            
+            .overlay p {
+                font-size: 1.2rem;
+            }
+            
+            .overlay button {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Minions Escape Game</h1>
+    </header>
+    
+    <main>
+        <div class="instructions">
+            <h2>Game Objective</h2>
+            <p>Help our Minion hero escape from the building and rescue Gru and the girls! Jump through window frames, avoid or defeat gremlins, and reach the final boss!</p>
+            
+            <h2>Instructions</h2>
+            <ul>
+                <li>Navigate through 3 increasingly difficult levels</li>
+                <li>Jump through the window frames to avoid taking damage</li>
+                <li>Shoot your fart gun at enemies to defeat them</li>
+                <li>Collect power-ups to restore health</li>
+                <li>Defeat the final boss to win the game</li>
+            </ul>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>Desktop Controls</h3>
+                <ul>
+                    <li>Arrow Left/Right: Move</li>
+                    <li>Arrow Up or Space: Jump</li>
+                    <li>Space: Shoot fart gun</li>
+                </ul>
+            </div>
+            
+            <div class="control-group">
+                <h3>Mobile Controls</h3>
+                <ul>
+                    <li>Tap: Jump</li>
+                    <li>Double Tap: Shoot fart gun</li>
+                    <li>Swipe Left/Right: Move</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="game-container">
+            <!-- Game Canvas (directly embedded instead of iframe) -->
+            <div class="game" style="position: relative; width: 800px; height: 600px; max-width: 100%;">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                
+                <div id="gameOver" class="overlay">
+                    <h1>Game Over!</h1>
+                    <p>Minions got too dizzy!</p>
+                    <button id="restartButton">Play Again</button>
+                </div>
+                
+                <div id="winScreen" class="overlay">
+                    <h1>Mission Complete!</h1>
+                    <p>Gru and the girls are saved!</p>
+                    <button id="playAgainButton">Play Again</button>
+                </div>
+            </div>
+            
+            <!-- Game Scripts -->
+            <script src="js/rendering.js"></script>
+            <script src="js/player.js"></script>
+            <script src="js/enemies.js"></script>
+            <script src="js/obstacles.js"></script>
+            <script src="js/levels.js"></script>
+            <script src="js/game.js"></script>
+        </div>
+        
+        <a href="../index.html" class="back-button">Back to Main Site</a>
+    </main>
+
+    <!-- Prevent page scrolling with game controls -->
+    <script>
+        window.addEventListener('keydown', function(e) {
+            // Prevent scrolling with arrow keys and space
+            if(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.code) > -1 || 
+               ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) > -1) {
+                e.preventDefault();
+            }
+        }, false);
+    </script>
+</body>
+</html>

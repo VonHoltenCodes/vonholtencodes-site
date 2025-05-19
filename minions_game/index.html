@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minions Escape Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Loading screen styles */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #12142b;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+            pointer-events: none; /* This ensures loading screen doesn't block interactions once hidden */
+        }
+        
+        .loader-title {
+            color: #ffde00;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        .loader-container {
+            width: 80%;
+            max-width: 300px;
+            background-color: #444;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loader-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #ffde00;
+            transition: width 0.1s linear;
+        }
+        
+        .loader-percentage {
+            color: #fff;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .loader-minion {
+            width: 60px;
+            height: 60px;
+            background-color: #ffde00;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loader-minion::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            top: 15px;
+            left: 15px;
+            border: 2px solid #333;
+        }
+        
+        .loader-minion::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: #333;
+            border-radius: 50%;
+            top: 24px;
+            left: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loader-minion"></div>
+        <div class="loader-title">Loading Minions Game...</div>
+        <div class="loader-container">
+            <div class="loader-bar" id="loaderBar"></div>
+        </div>
+        <div class="loader-percentage" id="loaderPercentage">0%</div>
+    </div>
+
+    <div class="game">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="gameOver" class="overlay">
+            <h1>Game Over!</h1>
+            <p>Minions got too dizzy!</p>
+            <button id="restartButton">Play Again</button>
+        </div>
+        
+        <div id="winScreen" class="overlay">
+            <h1>BOSS DEFEATED!</h1>
+            <p>You saved the minions, defeated the evil boss,<br>and rescued Gru and the girls!</p>
+            <button id="playAgainButton">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Loading Manager Script -->
+    <script>
+        // Loading manager to show progress
+        // Only initialize loading screen when not in an iframe
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loaderBar = document.getElementById('loaderBar');
+            const loaderPercentage = document.getElementById('loaderPercentage');
+            
+            // Check if we're in an iframe
+            const isInIframe = window.self !== window.top;
+            
+            // If we're in an iframe, hide the loading screen immediately
+            if (isInIframe) {
+                loadingScreen.style.display = 'none';
+                return;
+            }
+            
+            // Total number of resources to load
+            const totalResources = 6; // JS files + CSS + main HTML
+            let loadedResources = 0;
+            
+            // Simulate resource loading (this will be visible to the user and spread over time)
+            function updateProgress() {
+                loadedResources++;
+                const progress = Math.min(Math.round((loadedResources / totalResources) * 100), 100);
+                loaderBar.style.width = progress + '%';
+                loaderPercentage.textContent = progress + '%';
+                
+                // When all resources are loaded
+                if (progress >= 100) {
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = '0';
+                        
+                        // Remove from DOM after fade out
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 500);
+                    }, 200);
+                }
+            }
+            
+            // Simulate loading times for different resources to reach 100% (for visual effect)
+            setTimeout(updateProgress, 100);  // Resource 1 - faster load
+            setTimeout(updateProgress, 200);  // Resource 2
+            setTimeout(updateProgress, 400);  // Resource 3
+            setTimeout(updateProgress, 600);  // Resource 4
+            setTimeout(updateProgress, 800);  // Resource 5
+            setTimeout(updateProgress, 1000); // Resource 6
+            setTimeout(updateProgress, 1500); // Final resource - complete loading
+        });
+    </script>
+
+    <!-- Game Scripts -->
+    <script src="js/rendering.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/obstacles.js"></script>
+    <script src="js/levels.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

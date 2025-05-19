@@ -1,0 +1,142 @@
+/* 
+ * Industrial-style tabs for VonHoltenCodes site
+ * Features tabs with cut-off bottom right corners
+ */
+
+.tabs-container {
+    margin: 1rem 0 2rem 0;
+    position: relative;
+}
+
+.tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0;
+    margin-bottom: 0;
+    transition: border-color 0.3s ease;
+}
+
+body.night-mode .tabs-nav {
+    border-bottom-color: var(--night-accent-color);
+}
+
+.tab-link {
+    display: block;
+    padding: 0.8rem 2rem;
+    margin-bottom: -2px;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+    border-top: 2px solid;
+    border-left: 2px solid;
+    border-right: 2px solid;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+/* Cut-off bottom right corner effect - consistent neutral color */
+.tab-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #333; /* Neutral color for all tabs */
+    transform: rotate(45deg) translate(10px, 10px);
+    z-index: 1;
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode .tab-link::after {
+    background-color: #222; /* Darker in night mode */
+}
+
+/* Consistent tab styling - all tabs now use the same neutral color */
+.tab-apis, .tab-kids, .tab-games, .tab-creation, .tab-mission {
+    background-color: #444;
+    border-color: #666;
+}
+
+/* Active tab state - improved contrast */
+.tab-link.active {
+    background-color: #555; /* Slightly lighter than inactive tabs */
+    color: #fff;
+    padding-bottom: calc(0.8rem + 2px);
+    box-shadow: 0 -4px 15px rgba(255, 255, 255, 0.15);
+    z-index: 2;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5); /* Subtle glow for active tab */
+}
+
+.tab-link:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+/* Consistent hover and active state for all tabs */
+.tab-apis:hover, .tab-apis.active,
+.tab-kids:hover, .tab-kids.active,
+.tab-games:hover, .tab-games.active,
+.tab-creation:hover, .tab-creation.active,
+.tab-mission:hover, .tab-mission.active {
+    box-shadow: 0 -4px 15px rgba(200, 200, 200, 0.3);
+}
+
+/* Tab content placeholder */
+.tab-content-placeholder {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--accent-color);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+body.night-mode .tab-content-placeholder {
+    border-color: var(--night-accent-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tabs-nav {
+        justify-content: center;
+    }
+    
+    .tab-link {
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+@media (max-width: 580px) {
+    .tabs-nav {
+        flex-direction: column;
+        border-bottom: none;
+        gap: 0.8rem;
+    }
+    
+    .tab-link {
+        border: 2px solid;
+        border-radius: 8px;
+        margin-bottom: 0;
+    }
+    
+    .tab-link::after {
+        transform: rotate(45deg) translate(14px, 14px);
+    }
+    
+    .tab-link.active {
+        padding-bottom: 0.8rem;
+    }
+}

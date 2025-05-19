@@ -1,0 +1,33 @@
+.visitor-counter-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #4caf50;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #4caf50;
+    font-family: 'Courier New', monospace;
+    z-index: 100;
+}
+
+.night-mode .visitor-counter-widget {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #66bb6a;
+}
+
+.counter-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.counter-label {
+    font-size: 14px;
+}
+
+.counter-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #66bb6a;
+}

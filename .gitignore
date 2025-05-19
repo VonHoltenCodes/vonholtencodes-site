@@ -1,0 +1,61 @@
+# Configuration files with sensitive data
+inc/config.php
+admin_secure.php
+visitor_counter_secure.php
+
+# Secure data directory (should never be in web root)
+/secure_data/
+*.json
+
+# Authentication files
+.htpasswd
+.htaccess
+
+# Test files
+test_*.php
+test_*.html
+security_check.php
+
+# User-generated content
+/data/avatars/*
+!/data/avatars/.gitkeep
+
+# Logs
+*.log
+/logs/
+
+# Backup files
+*.backup
+*.bak
+*~
+*.swp
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.idea/
+.vscode/
+*.sublime*
+nbproject/
+
+# Temporary files
+*.tmp
+*.temp
+/temp/
+/tmp/
+/cache/
+
+# Deployment scripts
+deploy.sh
+deploy-*.sh
+
+# Server-specific files
+php.ini
+.user.ini
+
+# Keep template files
+!*.template.php
+!config.template.php

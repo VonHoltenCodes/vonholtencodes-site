@@ -1,0 +1,200 @@
+/* 
+ * Time widgets styles for VonHoltenCodes site
+ * Birthday counter and World clock components
+ */
+
+.time-widgets-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Common styles for time widgets */
+.time-widget {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    min-height: 160px;
+    transition: border-left-color 0.3s ease;
+}
+
+.time-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+}
+
+.time-widget::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary-color);
+    transform: rotate(45deg) translate(10px, 10px);
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode .time-widget::after {
+    background-color: var(--night-primary-color);
+}
+
+.widget-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+/* Birthday counter styles */
+.birthday-counter {
+    border-left: 3px solid #ff6ec7; /* Pink */
+}
+
+.birthday-counter::before {
+    background: linear-gradient(90deg, #ff6ec7, transparent);
+}
+
+.age-display {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ff6ec7;
+    margin-bottom: 0.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+.counter-units {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.counter-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.unit-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: rgba(255, 110, 199, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    min-width: 45px;
+    text-align: center;
+}
+
+.unit-label {
+    font-size: 0.7rem;
+    color: #ccc;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+}
+
+.birthday-date {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* World clock styles */
+.world-clock {
+    border-left: 3px solid #1e90ff; /* Bright Blue */
+}
+
+.world-clock::before {
+    background: linear-gradient(90deg, #1e90ff, transparent);
+}
+
+.clocks-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.8rem;
+    width: 100%;
+}
+
+.clock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.clock-time {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: rgba(30, 144, 255, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    min-width: 100px;
+    text-align: center;
+}
+
+.clock-zone {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin-top: 0.3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .time-widgets-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .time-widget {
+        padding: 1.2rem;
+    }
+    
+    .age-display {
+        font-size: 2rem;
+    }
+    
+    .unit-value {
+        font-size: 1.2rem;
+        min-width: 35px;
+    }
+    
+    .clocks-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Night mode adjustments */
+body.night-mode .birthday-counter {
+    border-left-color: #ff6ec7;
+}
+
+body.night-mode .world-clock {
+    border-left-color: #1e90ff;
+}
+
+body.night-mode .age-display {
+    color: #ff6ec7;
+}
+
+body.night-mode .unit-value {
+    background-color: rgba(255, 110, 199, 0.15);
+}
+
+body.night-mode .clock-time {
+    background-color: rgba(30, 144, 255, 0.15);
+}

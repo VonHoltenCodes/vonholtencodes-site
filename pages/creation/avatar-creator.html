@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Creator - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --primary-color: #ff8c00;
+            --primary-hover: #ffa642;
+            --accent-color: #ff4500;
+            --background-color: #000000;
+            --box-bg-color: rgba(0, 0, 0, 0.7);
+            --text-color: #ffffff;
+        }
+        
+        body.night-mode {
+            --primary-color: #00ff00;
+            --primary-hover: #66ff66;
+            --accent-color: #00cc00;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle, #111 1px, transparent 1px);
+            background-size: 15px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23ff4500' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%23ff4500'/%3E%3Cline x1='12' y1='2' x2='12' y2='4' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='12' y1='20' x2='12' y2='22' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='4' y2='12' stroke='%23ff4500' stroke-width='2'/%3E%3Cline x1='20' y1='12' x2='22' y2='12' stroke='%23ff4500' stroke-width='2'/%3E%3C/svg%3E"), auto;
+        }
+        
+        body.night-mode {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%2300ff00' stroke-width='2' fill='none'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%2300ff00'/%3E%3Cline x1='12' y1='2' x2='12' y2='4' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='12' y1='20' x2='12' y2='22' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='2' y1='12' x2='4' y2='12' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='20' y1='12' x2='22' y2='12' stroke='%2300ff00' stroke-width='2'/%3E%3C/svg%3E"), auto;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            margin-top: 0;
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+        
+        body.night-mode h1 {
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: var(--box-bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .avatar-display {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .avatar-svg {
+            width: 220px;
+            height: 220px;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-svg * {
+            transition: fill 0.3s ease;
+        }
+        
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 250px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+            padding: 15px;
+        }
+        
+        .control-panel h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+        
+        .option-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .option-button {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            padding: 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option-button:hover {
+            background-color: rgba(255, 140, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        body.night-mode .option-button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+        
+        .option-button.active {
+            background-color: var(--primary-color);
+            color: #000;
+            font-weight: bold;
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .color-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 2px solid var(--text-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        .color-option.active {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .back-button, .action-button {
+            margin-top: 30px;
+            margin-right: 10px;
+            padding: 10px 20px;
+            background: none;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover, .action-button:hover {
+            background-color: var(--primary-color);
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(255, 140, 0, 0.3);
+        }
+        
+        body.night-mode .back-button:hover, 
+        body.night-mode .action-button:hover {
+            box-shadow: 0 3px 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .avatar-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .status-message.success {
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00cc00;
+            opacity: 1;
+        }
+        
+        .status-message.error {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #cc0000;
+            opacity: 1;
+        }
+        
+        .night-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .avatar-container {
+                padding: 15px;
+            }
+            
+            .avatar-display {
+                height: 250px;
+            }
+            
+            .avatar-svg {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .controls-container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                min-width: 100%;
+            }
+            
+            .option-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AVATAR CREATOR</h1>
+            <button class="night-mode-toggle" id="nightModeToggle">
+                <span id="modeIcon">☀</span>
+            </button>
+        </div>
+        
+        <div class="avatar-container">
+            <div class="avatar-display">
+                <svg class="avatar-svg" id="avatarSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Head shape -->
+                    <circle id="head" cx="100" cy="100" r="80" fill="#FFD699"/>
+                    
+                    <!-- Eyes group -->
+                    <g id="eyes">
+                        <!-- Default eyes (normal) -->
+                        <circle id="leftEye" cx="70" cy="85" r="10" fill="white"/>
+                        <circle id="rightEye" cx="130" cy="85" r="10" fill="white"/>
+                        <circle id="leftPupil" cx="70" cy="85" r="5" fill="black"/>
+                        <circle id="rightPupil" cx="130" cy="85" r="5" fill="black"/>
+                    </g>
+                    
+                    <!-- Mouth group -->
+                    <g id="mouth">
+                        <!-- Default mouth (smile) -->
+                        <path id="mouthPath" d="M 65 120 Q 100 145, 135 120" stroke="black" stroke-width="3" fill="none"/>
+                    </g>
+                    
+                    <!-- Accessories group (empty by default) -->
+                    <g id="accessories"></g>
+                </svg>
+            </div>
+            
+            <div class="controls-container">
+                <!-- Face Shape Panel -->
+                <div class="control-panel">
+                    <h3>Face Shape</h3>
+                    <div class="option-buttons" id="faceShapeButtons">
+                        <button class="option-button active" data-shape="circle">Circle</button>
+                        <button class="option-button" data-shape="square">Square</button>
+                        <button class="option-button" data-shape="diamond">Diamond</button>
+                    </div>
+                    
+                    <h3 style="margin-top: 20px;">Face Color</h3>
+                    <div class="color-options" id="faceColorOptions">
+                        <div class="color-option active" style="background-color: #FFD699;" data-color="#FFD699"></div>
+                        <div class="color-option" style="background-color: #F5C181;" data-color="#F5C181"></div>
+                        <div class="color-option" style="background-color: #E0AC69;" data-color="#E0AC69"></div>
+                        <div class="color-option" style="background-color: #C68642;" data-color="#C68642"></div>
+                        <div class="color-option" style="background-color: #A67C52;" data-color="#A67C52"></div>
+                        <div class="color-option" style="background-color: #FFC0CB;" data-color="#FFC0CB"></div>
+                        <div class="color-option" style="background-color: #ADD8E6;" data-color="#ADD8E6"></div>
+                        <div class="color-option" style="background-color: #98FB98;" data-color="#98FB98"></div>
+                    </div>
+                </div>
+                
+                <!-- Eyes Panel -->
+                <div class="control-panel">
+                    <h3>Eyes</h3>
+                    <div class="option-buttons" id="eyesButtons">
+                        <button class="option-button active" data-eyes="normal">Normal</button>
+                        <button class="option-button" data-eyes="happy">Happy</button>
+                        <button class="option-button" data-eyes="star">Star</button>
+                        <button class="option-button" data-eyes="round">Round</button>
+                        <button class="option-button" data-eyes="sleepy">Sleepy</button>
+                        <button class="option-button" data-eyes="glasses">Glasses</button>
+                    </div>
+                </div>
+                
+                <!-- Mouth Panel -->
+                <div class="control-panel">
+                    <h3>Mouth</h3>
+                    <div class="option-buttons" id="mouthButtons">
+                        <button class="option-button active" data-mouth="smile">Smile</button>
+                        <button class="option-button" data-mouth="grin">Grin</button>
+                        <button class="option-button" data-mouth="open">Open</button>
+                        <button class="option-button" data-mouth="surprise">Surprise</button>
+                        <button class="option-button" data-mouth="straight">Straight</button>
+                        <button class="option-button" data-mouth="sad">Sad</button>
+                    </div>
+                </div>
+                
+                <!-- Accessories Panel -->
+                <div class="control-panel">
+                    <h3>Accessories</h3>
+                    <div class="option-buttons" id="accessoriesButtons">
+                        <button class="option-button active" data-accessory="none">None</button>
+                        <button class="option-button" data-accessory="hat">Hat</button>
+                        <button class="option-button" data-accessory="crown">Crown</button>
+                        <button class="option-button" data-accessory="bow">Bow</button>
+                        <button class="option-button" data-accessory="flower">Flower</button>
+                        <button class="option-button" data-accessory="bowtie">Bowtie</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="avatar-buttons">
+            <button id="saveButton" class="action-button">Save Avatar</button>
+            <button id="loadButton" class="action-button">Load Saved Avatar</button>
+            <a href="index.html" class="back-button">← Back to Creation Station</a>
+        </div>
+        
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const avatarSvg = document.getElementById('avatarSvg');
+        const head = document.getElementById('head');
+        const eyesGroup = document.getElementById('eyes');
+        const mouthGroup = document.getElementById('mouth');
+        const mouthPath = document.getElementById('mouthPath');
+        const accessoriesGroup = document.getElementById('accessories');
+        
+        // Control buttons
+        const faceShapeButtons = document.getElementById('faceShapeButtons');
+        const faceColorOptions = document.getElementById('faceColorOptions');
+        const eyesButtons = document.getElementById('eyesButtons');
+        const mouthButtons = document.getElementById('mouthButtons');
+        const accessoriesButtons = document.getElementById('accessoriesButtons');
+        
+        // Save/Load buttons
+        const saveButton = document.getElementById('saveButton');
+        const loadButton = document.getElementById('loadButton');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        // Night Mode Toggle
+        const nightModeToggle = document.getElementById('nightModeToggle');
+        const modeIcon = document.getElementById('modeIcon');
+        
+        // Current settings
+        let currentSettings = {
+            faceShape: 'circle',
+            faceColor: '#FFD699',
+            eyes: 'normal',
+            mouth: 'smile',
+            accessory: 'none'
+        };
+        
+        // Check for night mode preference
+        let isNightMode = localStorage.getItem('night_mode') === 'true';
+        if (isNightMode) {
+            document.body.classList.add('night-mode');
+            modeIcon.textContent = '☽';
+        }
+        
+        // Toggle night mode
+        nightModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('night-mode');
+            isNightMode = document.body.classList.contains('night-mode');
+            modeIcon.textContent = isNightMode ? '☽' : '☀';
+            localStorage.setItem('night_mode', isNightMode);
+        });
+        
+        // Initialize the avatar with default settings
+        updateAvatar();
+        
+        // Face Shape Buttons Event Listeners
+        faceShapeButtons.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Update active state
+                faceShapeButtons.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Update current settings
+                currentSettings.faceShape = e.target.dataset.shape;
+                updateAvatar();
+            });
+        });
+        
+        // Face Color Options Event Listeners
+        faceColorOptions.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                // Update active state
+                faceColorOptions.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Update current settings
+                currentSettings.faceColor = e.target.dataset.color;
+                updateAvatar();
+            });
+        });
+        
+        // Eyes Buttons Event Listeners
+        eyesButtons.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Update active state
+                eyesButtons.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Update current settings
+                currentSettings.eyes = e.target.dataset.eyes;
+                updateAvatar();
+            });
+        });
+        
+        // Mouth Buttons Event Listeners
+        mouthButtons.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Update active state
+                mouthButtons.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Update current settings
+                currentSettings.mouth = e.target.dataset.mouth;
+                updateAvatar();
+            });
+        });
+        
+        // Accessories Buttons Event Listeners
+        accessoriesButtons.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Update active state
+                accessoriesButtons.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Update current settings
+                currentSettings.accessory = e.target.dataset.accessory;
+                updateAvatar();
+            });
+        });
+        
+        // Update the avatar based on current settings
+        function updateAvatar() {
+            // Update face shape
+            updateFaceShape();
+            
+            // Update face color
+            head.setAttribute('fill', currentSettings.faceColor);
+            
+            // Update eyes
+            updateEyes();
+            
+            // Update mouth
+            updateMouth();
+            
+            // Update accessories
+            updateAccessories();
+        }
+        
+        // Update face shape
+        function updateFaceShape() {
+            // Get the existing head element
+            const existingHead = document.getElementById('head');
+            
+            // Create new head element based on shape
+            let newHead;
+            
+            switch (currentSettings.faceShape) {
+                case 'circle':
+                    newHead = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    newHead.setAttribute('id', 'head');
+                    newHead.setAttribute('cx', '100');
+                    newHead.setAttribute('cy', '100');
+                    newHead.setAttribute('r', '80');
+                    newHead.setAttribute('fill', currentSettings.faceColor);
+                    break;
+                    
+                case 'square':
+                    newHead = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    newHead.setAttribute('id', 'head');
+                    newHead.setAttribute('x', '30');
+                    newHead.setAttribute('y', '30');
+                    newHead.setAttribute('width', '140');
+                    newHead.setAttribute('height', '140');
+                    newHead.setAttribute('rx', '20');
+                    newHead.setAttribute('ry', '20');
+                    newHead.setAttribute('fill', currentSettings.faceColor);
+                    break;
+                    
+                case 'diamond':
+                    newHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    newHead.setAttribute('id', 'head');
+                    newHead.setAttribute('points', '100,20 180,100 100,180 20,100');
+                    newHead.setAttribute('fill', currentSettings.faceColor);
+                    break;
+            }
+            
+            // Replace the existing head with the new one
+            if (existingHead) {
+                avatarSvg.replaceChild(newHead, existingHead);
+            } else {
+                // Fallback in case the head element is missing
+                const firstChild = avatarSvg.firstChild;
+                avatarSvg.insertBefore(newHead, firstChild);
+            }
+        }
+        
+        // Update eyes
+        function updateEyes() {
+            // Clear existing eyes
+            while (eyesGroup.firstChild) {
+                eyesGroup.removeChild(eyesGroup.firstChild);
+            }
+            
+            switch (currentSettings.eyes) {
+                case 'normal':
+                    // Left eye
+                    const leftEye = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    leftEye.setAttribute('cx', '70');
+                    leftEye.setAttribute('cy', '85');
+                    leftEye.setAttribute('r', '10');
+                    leftEye.setAttribute('fill', 'white');
+                    eyesGroup.appendChild(leftEye);
+                    
+                    // Right eye
+                    const rightEye = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    rightEye.setAttribute('cx', '130');
+                    rightEye.setAttribute('cy', '85');
+                    rightEye.setAttribute('r', '10');
+                    rightEye.setAttribute('fill', 'white');
+                    eyesGroup.appendChild(rightEye);
+                    
+                    // Left pupil
+                    const leftPupil = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    leftPupil.setAttribute('cx', '70');
+                    leftPupil.setAttribute('cy', '85');
+                    leftPupil.setAttribute('r', '5');
+                    leftPupil.setAttribute('fill', 'black');
+                    eyesGroup.appendChild(leftPupil);
+                    
+                    // Right pupil
+                    const rightPupil = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    rightPupil.setAttribute('cx', '130');
+                    rightPupil.setAttribute('cy', '85');
+                    rightPupil.setAttribute('r', '5');
+                    rightPupil.setAttribute('fill', 'black');
+                    eyesGroup.appendChild(rightPupil);
+                    break;
+                    
+                case 'happy':
+                    // Left eye (curved line)
+                    const leftHappyEye = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    leftHappyEye.setAttribute('d', 'M 60 80 Q 70 70, 80 80');
+                    leftHappyEye.setAttribute('stroke', 'black');
+                    leftHappyEye.setAttribute('stroke-width', '3');
+                    leftHappyEye.setAttribute('fill', 'none');
+                    eyesGroup.appendChild(leftHappyEye);
+                    
+                    // Right eye (curved line)
+                    const rightHappyEye = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    rightHappyEye.setAttribute('d', 'M 120 80 Q 130 70, 140 80');
+                    rightHappyEye.setAttribute('stroke', 'black');
+                    rightHappyEye.setAttribute('stroke-width', '3');
+                    rightHappyEye.setAttribute('fill', 'none');
+                    eyesGroup.appendChild(rightHappyEye);
+                    break;
+                    
+                case 'star':
+                    // Left star eye
+                    const leftStarEye = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    leftStarEye.setAttribute('points', '70,75 75,85 65,85 75,90 70,100 80,92 90,100 85,90 95,85 85,85 80,75');
+                    leftStarEye.setAttribute('fill', 'gold');
+                    eyesGroup.appendChild(leftStarEye);
+                    
+                    // Right star eye
+                    const rightStarEye = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    rightStarEye.setAttribute('points', '130,75 135,85 125,85 135,90 130,100 140,92 150,100 145,90 155,85 145,85 140,75');
+                    rightStarEye.setAttribute('fill', 'gold');
+                    eyesGroup.appendChild(rightStarEye);
+                    break;
+                    
+                case 'round':
+                    // Left eye (large round)
+                    const leftRoundEye = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    leftRoundEye.setAttribute('cx', '70');
+                    leftRoundEye.setAttribute('cy', '85');
+                    leftRoundEye.setAttribute('r', '15');
+                    leftRoundEye.setAttribute('fill', 'white');
+                    leftRoundEye.setAttribute('stroke', 'black');
+                    leftRoundEye.setAttribute('stroke-width', '2');
+                    eyesGroup.appendChild(leftRoundEye);
+                    
+                    // Left pupil
+                    const leftRoundPupil = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    leftRoundPupil.setAttribute('cx', '70');
+                    leftRoundPupil.setAttribute('cy', '85');
+                    leftRoundPupil.setAttribute('r', '8');
+                    leftRoundPupil.setAttribute('fill', 'black');
+                    eyesGroup.appendChild(leftRoundPupil);
+                    
+                    // Right eye (large round)
+                    const rightRoundEye = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    rightRoundEye.setAttribute('cx', '130');
+                    rightRoundEye.setAttribute('cy', '85');
+                    rightRoundEye.setAttribute('r', '15');
+                    rightRoundEye.setAttribute('fill', 'white');
+                    rightRoundEye.setAttribute('stroke', 'black');
+                    rightRoundEye.setAttribute('stroke-width', '2');
+                    eyesGroup.appendChild(rightRoundEye);
+                    
+                    // Right pupil
+                    const rightRoundPupil = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    rightRoundPupil.setAttribute('cx', '130');
+                    rightRoundPupil.setAttribute('cy', '85');
+                    rightRoundPupil.setAttribute('r', '8');
+                    rightRoundPupil.setAttribute('fill', 'black');
+                    eyesGroup.appendChild(rightRoundPupil);
+                    break;
+                    
+                case 'sleepy':
+                    // Left sleepy eye
+                    const leftSleepyEye = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    leftSleepyEye.setAttribute('x1', '60');
+                    leftSleepyEye.setAttribute('y1', '85');
+                    leftSleepyEye.setAttribute('x2', '80');
+                    leftSleepyEye.setAttribute('y2', '85');
+                    leftSleepyEye.setAttribute('stroke', 'black');
+                    leftSleepyEye.setAttribute('stroke-width', '3');
+                    eyesGroup.appendChild(leftSleepyEye);
+                    
+                    // Right sleepy eye
+                    const rightSleepyEye = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    rightSleepyEye.setAttribute('x1', '120');
+                    rightSleepyEye.setAttribute('y1', '85');
+                    rightSleepyEye.setAttribute('x2', '140');
+                    rightSleepyEye.setAttribute('y2', '85');
+                    rightSleepyEye.setAttribute('stroke', 'black');
+                    rightSleepyEye.setAttribute('stroke-width', '3');
+                    eyesGroup.appendChild(rightSleepyEye);
+                    
+                    // Left Z
+                    const leftZ = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    leftZ.setAttribute('x', '85');
+                    leftZ.setAttribute('y', '75');
+                    leftZ.setAttribute('font-size', '15');
+                    leftZ.textContent = 'z';
+                    eyesGroup.appendChild(leftZ);
+                    
+                    // Right Z
+                    const rightZ = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    rightZ.setAttribute('x', '145');
+                    rightZ.setAttribute('y', '75');
+                    rightZ.setAttribute('font-size', '15');
+                    rightZ.textContent = 'z';
+                    eyesGroup.appendChild(rightZ);
+                    break;
+                    
+                case 'glasses':
+                    // Left glasses frame
+                    const leftGlasses = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    leftGlasses.setAttribute('cx', '70');
+                    leftGlasses.setAttribute('cy', '85');
+                    leftGlasses.setAttribute('r', '15');
+                    leftGlasses.setAttribute('fill', 'none');
+                    leftGlasses.setAttribute('stroke', 'black');
+                    leftGlasses.setAttribute('stroke-width', '3');
+                    eyesGroup.appendChild(leftGlasses);
+                    
+                    // Right glasses frame
+                    const rightGlasses = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    rightGlasses.setAttribute('cx', '130');
+                    rightGlasses.setAttribute('cy', '85');
+                    rightGlasses.setAttribute('r', '15');
+                    rightGlasses.setAttribute('fill', 'none');
+                    rightGlasses.setAttribute('stroke', 'black');
+                    rightGlasses.setAttribute('stroke-width', '3');
+                    eyesGroup.appendChild(rightGlasses);
+                    
+                    // Bridge between glasses
+                    const glassesBridge = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    glassesBridge.setAttribute('x1', '85');
+                    glassesBridge.setAttribute('y1', '85');
+                    glassesBridge.setAttribute('x2', '115');
+                    glassesBridge.setAttribute('y2', '85');
+                    glassesBridge.setAttribute('stroke', 'black');
+                    glassesBridge.setAttribute('stroke-width', '3');
+                    eyesGroup.appendChild(glassesBridge);
+                    
+                    // Left temple (arm)
+                    const leftTemple = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    leftTemple.setAttribute('x1', '55');
+                    leftTemple.setAttribute('y1', '85');
+                    leftTemple.setAttribute('x2', '40');
+                    leftTemple.setAttribute('y2', '75');
+                    leftTemple.setAttribute('stroke', 'black');
+                    leftTemple.setAttribute('stroke-width', '2');
+                    eyesGroup.appendChild(leftTemple);
+                    
+                    // Right temple (arm)
+                    const rightTemple = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    rightTemple.setAttribute('x1', '145');
+                    rightTemple.setAttribute('y1', '85');
+                    rightTemple.setAttribute('x2', '160');
+                    rightTemple.setAttribute('y2', '75');
+                    rightTemple.setAttribute('stroke', 'black');
+                    rightTemple.setAttribute('stroke-width', '2');
+                    eyesGroup.appendChild(rightTemple);
+                    
+                    // Left pupil
+                    const leftGlassesPupil = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    leftGlassesPupil.setAttribute('cx', '70');
+                    leftGlassesPupil.setAttribute('cy', '85');
+                    leftGlassesPupil.setAttribute('r', '5');
+                    leftGlassesPupil.setAttribute('fill', 'black');
+                    eyesGroup.appendChild(leftGlassesPupil);
+                    
+                    // Right pupil
+                    const rightGlassesPupil = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    rightGlassesPupil.setAttribute('cx', '130');
+                    rightGlassesPupil.setAttribute('cy', '85');
+                    rightGlassesPupil.setAttribute('r', '5');
+                    rightGlassesPupil.setAttribute('fill', 'black');
+                    eyesGroup.appendChild(rightGlassesPupil);
+                    break;
+            }
+        }
+        
+        // Update mouth
+        function updateMouth() {
+            // Clear existing mouth
+            while (mouthGroup.firstChild) {
+                mouthGroup.removeChild(mouthGroup.firstChild);
+            }
+            
+            switch (currentSettings.mouth) {
+                case 'smile':
+                    // Curved smile
+                    const smile = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    smile.setAttribute('d', 'M 65 120 Q 100 145, 135 120');
+                    smile.setAttribute('stroke', 'black');
+                    smile.setAttribute('stroke-width', '3');
+                    smile.setAttribute('fill', 'none');
+                    mouthGroup.appendChild(smile);
+                    break;
+                    
+                case 'grin':
+                    // Grin with teeth
+                    const grin = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    grin.setAttribute('d', 'M 65 120 Q 100 145, 135 120 Q 100 135, 65 120 Z');
+                    grin.setAttribute('stroke', 'black');
+                    grin.setAttribute('stroke-width', '2');
+                    grin.setAttribute('fill', 'white');
+                    mouthGroup.appendChild(grin);
+                    
+                    // Teeth line
+                    const teethLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    teethLine.setAttribute('x1', '75');
+                    teethLine.setAttribute('y1', '127');
+                    teethLine.setAttribute('x2', '125');
+                    teethLine.setAttribute('y2', '127');
+                    teethLine.setAttribute('stroke', 'black');
+                    teethLine.setAttribute('stroke-width', '1');
+                    mouthGroup.appendChild(teethLine);
+                    break;
+                    
+                case 'open':
+                    // Open mouth (ellipse)
+                    const openMouth = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    openMouth.setAttribute('cx', '100');
+                    openMouth.setAttribute('cy', '125');
+                    openMouth.setAttribute('rx', '20');
+                    openMouth.setAttribute('ry', '15');
+                    openMouth.setAttribute('fill', 'black');
+                    mouthGroup.appendChild(openMouth);
+                    break;
+                    
+                case 'surprise':
+                    // Surprised mouth (small circle)
+                    const surpriseMouth = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    surpriseMouth.setAttribute('cx', '100');
+                    surpriseMouth.setAttribute('cy', '125');
+                    surpriseMouth.setAttribute('r', '10');
+                    surpriseMouth.setAttribute('fill', 'black');
+                    mouthGroup.appendChild(surpriseMouth);
+                    break;
+                    
+                case 'straight':
+                    // Straight line mouth
+                    const straightMouth = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    straightMouth.setAttribute('x1', '70');
+                    straightMouth.setAttribute('y1', '125');
+                    straightMouth.setAttribute('x2', '130');
+                    straightMouth.setAttribute('y2', '125');
+                    straightMouth.setAttribute('stroke', 'black');
+                    straightMouth.setAttribute('stroke-width', '3');
+                    mouthGroup.appendChild(straightMouth);
+                    break;
+                    
+                case 'sad':
+                    // Sad mouth (inverted curve)
+                    const sadMouth = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    sadMouth.setAttribute('d', 'M 65 130 Q 100 115, 135 130');
+                    sadMouth.setAttribute('stroke', 'black');
+                    sadMouth.setAttribute('stroke-width', '3');
+                    sadMouth.setAttribute('fill', 'none');
+                    mouthGroup.appendChild(sadMouth);
+                    break;
+            }
+        }
+        
+        // Event listeners for save and load buttons
+        saveButton.addEventListener('click', saveAvatar);
+        loadButton.addEventListener('click', loadAvatar);
+        
+        // Save avatar to server using IP
+        async function saveAvatar() {
+            try {
+                // Show saving message
+                showStatusMessage('Saving your avatar...', false);
+                
+                // Send data to server
+                const response = await fetch('save-avatar.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(currentSettings)
+                });
+                
+                // Parse response
+                const result = await response.json();
+                
+                // Show success or error message
+                showStatusMessage(result.message, result.success);
+            } catch (error) {
+                console.error('Error saving avatar:', error);
+                showStatusMessage('Error saving avatar: ' + error.message, false);
+            }
+        }
+        
+        // Load avatar from server using IP
+        async function loadAvatar() {
+            try {
+                // Show loading message
+                showStatusMessage('Loading your saved avatar...', false);
+                
+                // Get data from server
+                const response = await fetch('save-avatar.php');
+                
+                // Parse response
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    // Update current settings
+                    currentSettings = result.data;
+                    
+                    // Update UI to match loaded settings
+                    updateUIFromSettings();
+                    
+                    // Update the avatar
+                    updateAvatar();
+                    
+                    // Show success message
+                    showStatusMessage(result.message, true);
+                } else {
+                    // Show error message
+                    showStatusMessage(result.message, false);
+                }
+            } catch (error) {
+                console.error('Error loading avatar:', error);
+                showStatusMessage('Error loading avatar: ' + error.message, false);
+            }
+        }
+        
+        // Show status message
+        function showStatusMessage(message, isSuccess) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message';
+            
+            if (isSuccess !== false) {
+                statusMessage.classList.add('success');
+            } else {
+                statusMessage.classList.add('error');
+            }
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                statusMessage.style.opacity = '0';
+            }, 5000);
+        }
+        
+        // Update UI elements to match loaded settings
+        function updateUIFromSettings() {
+            // Update face shape buttons
+            faceShapeButtons.querySelectorAll('.option-button').forEach(button => {
+                button.classList.remove('active');
+                if (button.dataset.shape === currentSettings.faceShape) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // Update face color options
+            faceColorOptions.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.color === currentSettings.faceColor) {
+                    option.classList.add('active');
+                }
+            });
+            
+            // Update eyes buttons
+            eyesButtons.querySelectorAll('.option-button').forEach(button => {
+                button.classList.remove('active');
+                if (button.dataset.eyes === currentSettings.eyes) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // Update mouth buttons
+            mouthButtons.querySelectorAll('.option-button').forEach(button => {
+                button.classList.remove('active');
+                if (button.dataset.mouth === currentSettings.mouth) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // Update accessories buttons
+            accessoriesButtons.querySelectorAll('.option-button').forEach(button => {
+                button.classList.remove('active');
+                if (button.dataset.accessory === currentSettings.accessory) {
+                    button.classList.add('active');
+                }
+            });
+        }
+        
+        // Update accessories
+        function updateAccessories() {
+            // Clear existing accessories
+            while (accessoriesGroup.firstChild) {
+                accessoriesGroup.removeChild(accessoriesGroup.firstChild);
+            }
+            
+            switch (currentSettings.accessory) {
+                case 'none':
+                    // No accessories
+                    break;
+                    
+                case 'hat':
+                    // Top hat
+                    const hatBrim = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    hatBrim.setAttribute('x', '60');
+                    hatBrim.setAttribute('y', '35');
+                    hatBrim.setAttribute('width', '80');
+                    hatBrim.setAttribute('height', '5');
+                    hatBrim.setAttribute('fill', 'black');
+                    accessoriesGroup.appendChild(hatBrim);
+                    
+                    const hatTop = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    hatTop.setAttribute('x', '70');
+                    hatTop.setAttribute('y', '15');
+                    hatTop.setAttribute('width', '60');
+                    hatTop.setAttribute('height', '20');
+                    hatTop.setAttribute('fill', 'black');
+                    accessoriesGroup.appendChild(hatTop);
+                    
+                    const hatBand = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    hatBand.setAttribute('x', '70');
+                    hatBand.setAttribute('y', '25');
+                    hatBand.setAttribute('width', '60');
+                    hatBand.setAttribute('height', '5');
+                    hatBand.setAttribute('fill', 'red');
+                    accessoriesGroup.appendChild(hatBand);
+                    break;
+                    
+                case 'crown':
+                    // Crown
+                    const crownBase = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    crownBase.setAttribute('x', '60');
+                    crownBase.setAttribute('y', '25');
+                    crownBase.setAttribute('width', '80');
+                    crownBase.setAttribute('height', '15');
+                    crownBase.setAttribute('fill', 'gold');
+                    accessoriesGroup.appendChild(crownBase);
+                    
+                    const crownPoints = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    crownPoints.setAttribute('points', '60,25 75,10 90,25 100,5 110,25 125,10 140,25');
+                    crownPoints.setAttribute('fill', 'gold');
+                    accessoriesGroup.appendChild(crownPoints);
+                    
+                    // Crown jewels
+                    const jewel1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    jewel1.setAttribute('cx', '75');
+                    jewel1.setAttribute('cy', '30');
+                    jewel1.setAttribute('r', '5');
+                    jewel1.setAttribute('fill', 'red');
+                    accessoriesGroup.appendChild(jewel1);
+                    
+                    const jewel2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    jewel2.setAttribute('cx', '100');
+                    jewel2.setAttribute('cy', '30');
+                    jewel2.setAttribute('r', '5');
+                    jewel2.setAttribute('fill', 'blue');
+                    accessoriesGroup.appendChild(jewel2);
+                    
+                    const jewel3 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    jewel3.setAttribute('cx', '125');
+                    jewel3.setAttribute('cy', '30');
+                    jewel3.setAttribute('r', '5');
+                    jewel3.setAttribute('fill', 'green');
+                    accessoriesGroup.appendChild(jewel3);
+                    break;
+                    
+                case 'bow':
+                    // Hair bow
+                    const bowLeft = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    bowLeft.setAttribute('cx', '80');
+                    bowLeft.setAttribute('cy', '25');
+                    bowLeft.setAttribute('rx', '15');
+                    bowLeft.setAttribute('ry', '10');
+                    bowLeft.setAttribute('fill', 'pink');
+                    bowLeft.setAttribute('transform', 'rotate(-30, 80, 25)');
+                    accessoriesGroup.appendChild(bowLeft);
+                    
+                    const bowRight = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    bowRight.setAttribute('cx', '120');
+                    bowRight.setAttribute('cy', '25');
+                    bowRight.setAttribute('rx', '15');
+                    bowRight.setAttribute('ry', '10');
+                    bowRight.setAttribute('fill', 'pink');
+                    bowRight.setAttribute('transform', 'rotate(30, 120, 25)');
+                    accessoriesGroup.appendChild(bowRight);
+                    
+                    const bowCenter = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    bowCenter.setAttribute('cx', '100');
+                    bowCenter.setAttribute('cy', '25');
+                    bowCenter.setAttribute('r', '7');
+                    bowCenter.setAttribute('fill', 'pink');
+                    accessoriesGroup.appendChild(bowCenter);
+                    break;
+                    
+                case 'flower':
+                    // Flower on head
+                    const flowerCenter = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    flowerCenter.setAttribute('cx', '130');
+                    flowerCenter.setAttribute('cy', '30');
+                    flowerCenter.setAttribute('r', '7');
+                    flowerCenter.setAttribute('fill', 'yellow');
+                    accessoriesGroup.appendChild(flowerCenter);
+                    
+                    // Flower petals
+                    const colors = ['red', 'orange', 'pink', 'purple', 'magenta'];
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (i * 72) * Math.PI / 180;
+                        const petal = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                        petal.setAttribute('cx', 130 + 12 * Math.cos(angle));
+                        petal.setAttribute('cy', 30 + 12 * Math.sin(angle));
+                        petal.setAttribute('rx', '8');
+                        petal.setAttribute('ry', '6');
+                        petal.setAttribute('fill', colors[i]);
+                        petal.setAttribute('transform', `rotate(${i * 72 + 90}, ${130 + 12 * Math.cos(angle)}, ${30 + 12 * Math.sin(angle)})`);
+                        accessoriesGroup.appendChild(petal);
+                    }
+                    
+                    // Stem
+                    const stem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    stem.setAttribute('d', 'M 130 37 C 140 50, 120 60, 120 70');
+                    stem.setAttribute('stroke', 'green');
+                    stem.setAttribute('stroke-width', '3');
+                    stem.setAttribute('fill', 'none');
+                    accessoriesGroup.appendChild(stem);
+                    
+                    // Leaf
+                    const leaf = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    leaf.setAttribute('d', 'M 125 55 Q 135 45, 145 55 Q 135 65, 125 55 Z');
+                    leaf.setAttribute('fill', 'green');
+                    accessoriesGroup.appendChild(leaf);
+                    break;
+                    
+                case 'bowtie':
+                    // Bowtie
+                    const bowtieMid = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    bowtieMid.setAttribute('x', '95');
+                    bowtieMid.setAttribute('y', '150');
+                    bowtieMid.setAttribute('width', '10');
+                    bowtieMid.setAttribute('height', '10');
+                    bowtieMid.setAttribute('fill', 'black');
+                    accessoriesGroup.appendChild(bowtieMid);
+                    
+                    const bowtieLeft = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    bowtieLeft.setAttribute('points', '75,145 95,150 95,160 75,165');
+                    bowtieLeft.setAttribute('fill', 'red');
+                    accessoriesGroup.appendChild(bowtieLeft);
+                    
+                    const bowtieRight = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    bowtieRight.setAttribute('points', '105,150 125,145 125,165 105,160');
+                    bowtieRight.setAttribute('fill', 'red');
+                    accessoriesGroup.appendChild(bowtieRight);
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

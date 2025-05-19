@@ -1,0 +1,160 @@
+/* 
+ * Custom crosshair cursor for VonHoltenCodes site
+ */
+
+/* Hide default cursor when custom cursor is enabled */
+body.custom-cursor {
+    cursor: none !important;
+}
+
+/* Elements should still show appropriate cursors for usability */
+body.custom-cursor a,
+body.custom-cursor button,
+body.custom-cursor input,
+body.custom-cursor select,
+body.custom-cursor .clickable {
+    cursor: none !important;
+}
+
+/* Main crosshair cursor */
+.cursor-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.crosshair {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+    pointer-events: none;
+    transition: transform 0.05s ease;
+    z-index: 9999;
+}
+
+/* Crosshair lines */
+.crosshair-horizontal,
+.crosshair-vertical {
+    position: absolute;
+    background-color: var(--accent-color);
+    pointer-events: none;
+}
+
+.crosshair-horizontal {
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.crosshair-vertical {
+    width: 2px;
+    height: 100%;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+}
+
+/* Center dot */
+.crosshair-center {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--accent-color);
+    border-radius: 50%;
+}
+
+/* Corner brackets */
+.crosshair-corner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--accent-color);
+}
+
+.crosshair-top-left {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+}
+
+.crosshair-top-right {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+}
+
+.crosshair-bottom-left {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+}
+
+.crosshair-bottom-right {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+}
+
+/* Click animation */
+@keyframes click-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.crosshair-click {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.crosshair-click.active {
+    animation: click-pulse 0.3s ease-out forwards;
+}
+
+/* Night mode adjustments */
+body.night-mode .crosshair-horizontal,
+body.night-mode .crosshair-vertical,
+body.night-mode .crosshair-center {
+    background-color: #00ff00;
+}
+
+body.night-mode .crosshair-corner,
+body.night-mode .crosshair-click {
+    border-color: #00ff00;
+}
+
+/* Hide on mobile/touch devices */
+@media (max-width: 768px) {
+    .cursor-container {
+        display: none;
+    }
+}

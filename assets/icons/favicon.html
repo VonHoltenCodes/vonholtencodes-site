@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VH Favicon Generator</title>
+  <style>
+    canvas {
+      border: 1px solid #000;
+      margin: 20px;
+    }
+    button {
+      margin: 20px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>VH Favicon Generator</h1>
+  <canvas id="faviconCanvas" width="32" height="32"></canvas>
+  <br>
+  <button id="downloadBtn">Download Favicon</button>
+
+  <script>
+    // Get the canvas and context
+    const canvas = document.getElementById('faviconCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Draw favicon
+    function drawFavicon() {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Background (black)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, 32, 32);
+      
+      // Border (orange)
+      ctx.strokeStyle = '#ff4500';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(2, 2, 28, 28);
+      
+      // VH text
+      ctx.fillStyle = '#ff4500';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('VH', 16, 16);
+    }
+    
+    // Draw initial favicon
+    drawFavicon();
+    
+    // Download functionality
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      const link = document.createElement('a');
+      link.download = 'favicon.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+/* 
+ * Bio section styles for VonHoltenCodes site
+ * Contains the site introduction and mission statement
+ */
+
+.bio-section {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0 2rem 0;
+    position: relative;
+    border-left: 4px solid var(--accent-color);
+    transition: border-left-color 0.3s ease;
+}
+
+.bio-content {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.bio-content strong {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.bio-content em {
+    font-style: italic;
+    opacity: 0.9;
+}
+
+.bio-highlight {
+    color: #00ffff; /* Cyan highlight color */
+    font-weight: bold;
+}
+
+.bio-section::before {
+    content: 'MISSION BRIEFING';
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background-color: var(--primary-color);
+    padding: 0 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+body.night-mode .bio-section::before {
+    background-color: var(--night-primary-color);
+}
+
+.bio-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode .bio-section::after {
+    background-color: var(--night-primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .bio-section {
+        padding: 1.2rem;
+        margin: 0.8rem 0 1.5rem 0;
+    }
+    
+    .bio-content {
+        font-size: 0.9rem;
+    }
+}
+
+/* Night mode adjustments */
+body.night-mode .bio-section {
+    border-left-color: #00ff00;
+}
+
+body.night-mode .bio-section::before {
+    color: #00ff00;
+}
+
+body.night-mode .bio-highlight {
+    color: #00ffaa;
+}

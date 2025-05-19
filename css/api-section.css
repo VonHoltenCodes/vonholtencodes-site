@@ -1,0 +1,1114 @@
+/* 
+ * API Section CSS for VonHoltenCodes site
+ * Styles for the API grid and individual API cards
+ */
+
+.api-section-intro {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0 2rem 0;
+    position: relative;
+    border-left: 4px solid var(--accent-color);
+    transition: border-left-color 0.3s ease;
+}
+
+body.night-mode .api-section-intro {
+    border-left-color: var(--night-accent-color);
+}
+
+.api-section-intro h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+body.night-mode .api-section-intro h2 {
+    color: var(--night-accent-color);
+}
+
+.api-section-intro p {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* API grid layout */
+.api-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Individual API cards */
+.api-card {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.api-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* API-specific colors */
+.api-card.nasa {
+    border-color: #ff4500; /* Red-Orange */
+}
+
+.api-card.usgs {
+    border-color: #e74c3c; /* Red */
+}
+
+.api-card.joker {
+    border-color: #9b59b6; /* Purple */
+}
+
+.api-card.weather {
+    border-color: #3498db; /* Blue */
+}
+
+/* Card header with icon */
+.api-card-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.api-icon img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.api-card-title {
+    flex: 1;
+}
+
+.api-card-title h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+}
+
+/* NASA specific */
+.api-card.nasa h3 {
+    color: #ff4500;
+}
+
+/* USGS specific */
+.api-card.usgs h3 {
+    color: #e74c3c;
+}
+
+/* Joker specific */
+.api-card.joker h3 {
+    color: #9b59b6;
+}
+
+/* Weather specific */
+.api-card.weather h3 {
+    color: #3498db;
+}
+
+/* Card content */
+.api-card-content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.api-description {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.api-feature-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.api-feature-list li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.9rem;
+}
+
+.api-feature-list li:before {
+    content: '•';
+    position: absolute;
+    left: 0.5rem;
+}
+
+/* NASA specific */
+.api-card.nasa .api-feature-list li:before {
+    color: #ff4500;
+}
+
+/* USGS specific */
+.api-card.usgs .api-feature-list li:before {
+    color: #e74c3c;
+}
+
+/* Joker specific */
+.api-card.joker .api-feature-list li:before {
+    color: #9b59b6;
+}
+
+/* Weather specific */
+.api-card.weather .api-feature-list li:before {
+    color: #3498db;
+}
+
+/* Card footer with button */
+.api-card-footer {
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.api-card.nasa .api-button {
+    background-color: #ff4500;
+}
+
+.api-card.nasa .api-button:hover {
+    background-color: #ff6a33;
+}
+
+.api-card.usgs .api-button {
+    background-color: #e74c3c;
+}
+
+.api-card.usgs .api-button:hover {
+    background-color: #ed6a5e;
+}
+
+.api-card.joker .api-button {
+    background-color: #9b59b6;
+}
+
+.api-card.joker .api-button:hover {
+    background-color: #a87bc7;
+}
+
+.api-card.weather .api-button {
+    background-color: #3498db;
+}
+
+.api-card.weather .api-button:hover {
+    background-color: #5aace3;
+}
+
+/* Weather form styles */
+.weather-form {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.weather-input-group {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.weather-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px 0 0 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.weather-search-btn {
+    padding: 0.5rem 1rem;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.weather-search-btn:hover {
+    background-color: #5aace3;
+}
+
+/* Weather display styles */
+.weather-result {
+    text-align: center;
+    min-height: 100px;
+}
+
+.weather-city {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.weather-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.weather-temp {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.weather-description {
+    margin-bottom: 1rem;
+    text-transform: capitalize;
+}
+
+.weather-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.weather-loading, .weather-error, .weather-prompt {
+    padding: 1rem;
+    text-align: center;
+}
+
+.weather-error {
+    color: #e74c3c;
+}
+
+.weather-prompt {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-radius: 4px;
+    border: 1px dashed #3498db;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+body.night-mode .weather-prompt {
+    background-color: rgba(0, 255, 0, 0.05);
+    border: 1px dashed #00ff00;
+}
+
+/* API modal styles */
+.api-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: none;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.api-modal-content {
+    position: relative;
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: rgba(20, 20, 20, 0.7);
+    border-radius: 8px;
+    padding: 20px;
+    color: #fff;
+}
+
+.api-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.api-modal-close:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+body.night-mode .api-modal-close {
+    color: var(--night-accent-color);
+}
+
+body.night-mode .api-modal-content {
+    background-color: rgba(10, 15, 20, 0.7);
+}
+
+/* Night mode API button styles */
+body.night-mode .api-card.nasa .api-button {
+    background-color: #00ff00;
+}
+
+body.night-mode .api-card.nasa .api-button:hover {
+    background-color: #00cc00;
+}
+
+body.night-mode .api-card.usgs .api-button {
+    background-color: #00ff00;
+}
+
+body.night-mode .api-card.usgs .api-button:hover {
+    background-color: #00cc00;
+}
+
+body.night-mode .api-card.joker .api-button {
+    background-color: #00ff00;
+}
+
+body.night-mode .api-card.joker .api-button:hover {
+    background-color: #00cc00;
+}
+
+body.night-mode .api-card.weather .api-button {
+    background-color: #00ff00;
+}
+
+body.night-mode .api-card.weather .api-button:hover {
+    background-color: #00cc00;
+}
+
+body.night-mode .weather-search-btn {
+    background-color: #00ff00;
+}
+
+body.night-mode .weather-search-btn:hover {
+    background-color: #00cc00;
+}
+
+/* API modal specific styles */
+.usgs-period-selector {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.usgs-period {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.usgs-period.active {
+    background-color: #e74c3c;
+    border: 2px solid #fff;
+}
+
+.usgs-earthquake-list {
+    margin: 20px 0;
+}
+
+.usgs-earthquake-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 10px;
+}
+
+.usgs-magnitude {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.usgs-details {
+    flex: 1;
+}
+
+.usgs-place {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.usgs-time {
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.usgs-link {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.usgs-footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+/* Joke modal styles */
+.joke-container {
+    background-color: rgba(155, 89, 182, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.joke-text {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.joke-setup {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.joke-delivery {
+    font-size: 1.2em;
+    color: #2ecc71;
+    font-style: italic;
+}
+
+.joke-category {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #9b59b6;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.joke-categories {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.joke-category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.joke-category-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.joke-category-button.active {
+    background-color: #9b59b6;
+    border: 2px solid #fff;
+}
+
+.joke-button {
+    background-color: #9b59b6;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    display: block;
+    margin: 0 auto;
+}
+
+.joke-button:hover {
+    background-color: #8e44ad;
+}
+
+/* NASA modal styles */
+.nasa-date {
+    font-style: italic;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+/* API note */
+.api-note {
+    font-size: 0.8rem;
+    color: #999;
+    font-style: italic;
+}
+
+/* Loading spinner */
+.api-loading {
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+.api-loading::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid #ccc;
+    border-top-color: var(--accent-color);
+    animation: api-spin 1s infinite linear;
+    margin: 20px auto 0;
+}
+
+@keyframes api-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error message */
+.api-error {
+    color: #e74c3c;
+    text-align: center;
+    padding: 15px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+/* USGS Earthquake Map Styles */
+#earthquake-map {
+    width: 100%;
+    height: 60vh;
+    border-radius: 0px;
+    margin: 0;
+    background-color: #112;
+    position: relative;
+    z-index: 1;
+}
+
+body.night-mode #earthquake-map {
+    background-color: #001100;
+}
+
+.earthquake-map-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    border: 2px solid #e74c3c;
+    border-radius: 8px;
+    padding: 30px 0 0 0;
+    background-color: #111;
+    overflow: hidden;
+}
+
+body.night-mode .earthquake-map-container {
+    border-color: #00ff00;
+    background-color: #001100;
+}
+
+/* Map header */
+.map-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #e74c3c;
+    color: #000;
+    padding: 5px 10px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-align: center;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body.night-mode .map-header {
+    background-color: #00ff00;
+}
+
+.map-header-text {
+    display: inline-block;
+    letter-spacing: 1px;
+}
+
+.map-header-blinker {
+    display: inline-block;
+    animation: blink 1s steps(2) infinite;
+    margin-left: 5px;
+}
+
+@keyframes blink {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Map corners */
+.map-corner {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-color: #e74c3c;
+    z-index: 2;
+}
+
+body.night-mode .map-corner {
+    border-color: #00ff00;
+}
+
+.top-left {
+    top: 30px;
+    left: 0;
+    border-top: 2px solid;
+    border-left: 2px solid;
+}
+
+.top-right {
+    top: 30px;
+    right: 0;
+    border-top: 2px solid;
+    border-right: 2px solid;
+}
+
+.bottom-left {
+    bottom: 0;
+    left: 0;
+    border-bottom: 2px solid;
+    border-left: 2px solid;
+}
+
+.bottom-right {
+    bottom: 0;
+    right: 0;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+}
+
+/* Map grid overlay */
+.map-overlay-grid {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 30px);
+    background-image: linear-gradient(rgba(231, 76, 60, 0.05) 1px, transparent 1px),
+                     linear-gradient(90deg, rgba(231, 76, 60, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+body.night-mode .map-overlay-grid {
+    background-image: linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+                     linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px);
+}
+
+.earthquake-controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 15px 0;
+    border: 2px solid #444;
+    padding: 5px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #222;
+}
+
+.earthquake-time-control {
+    background-color: #333;
+    color: #ccc;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 0;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border: 1px solid #555;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+
+.earthquake-time-control:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e74c3c, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+body.night-mode .earthquake-time-control:before {
+    background: linear-gradient(to right, transparent, #00ff00, transparent);
+}
+
+.earthquake-time-control:hover {
+    color: #fff;
+}
+
+.earthquake-time-control:hover:before {
+    opacity: 1;
+}
+
+.earthquake-time-control.active {
+    background-color: #e74c3c;
+    color: #fff;
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+body.night-mode .earthquake-time-control.active {
+    background-color: #00ff00;
+    color: #000;
+    border-color: #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    text-shadow: none;
+}
+
+.earthquake-count {
+    text-align: center;
+    margin: 15px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border: 1px solid #444;
+    background-color: #222;
+    color: #e74c3c;
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    letter-spacing: 1px;
+}
+
+body.night-mode .earthquake-count {
+    color: #00ff00;
+}
+
+.earthquake-legend {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 12px;
+    border-radius: 0;
+    position: absolute;
+    bottom: 40px;
+    right: 15px;
+    z-index: 1000;
+    border: 2px solid #e74c3c;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+body.night-mode .earthquake-legend {
+    border-color: #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.earthquake-legend h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #e74c3c;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+    border-bottom: 1px dashed #e74c3c;
+    padding-bottom: 5px;
+}
+
+body.night-mode .earthquake-legend h4 {
+    color: #00ff00;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    border-bottom-color: #00ff00;
+}
+
+.magnitude-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.magnitude-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.pulse-animation {
+    animation: legendPulse 2s infinite;
+}
+
+@keyframes legendPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+/* Custom tooltip */
+.earthquake-tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #e74c3c;
+    border-radius: 0;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    padding: 5px 10px;
+    white-space: nowrap;
+}
+
+body.night-mode .earthquake-tooltip {
+    border-color: #00ff00;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.leaflet-popup-content-wrapper {
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    border-radius: 0;
+    border: 2px solid #e74c3c;
+}
+
+body.night-mode .leaflet-popup-content-wrapper {
+    border-color: #00ff00;
+}
+
+.leaflet-popup-tip {
+    background-color: #e74c3c;
+}
+
+body.night-mode .leaflet-popup-tip {
+    background-color: #00ff00;
+}
+
+.earthquake-info {
+    padding: 10px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.8);
+    max-width: 250px;
+}
+
+.earthquake-info h4 {
+    margin: 0 0 5px 0;
+    color: #e74c3c;
+    font-size: 1rem;
+}
+
+body.night-mode .earthquake-info h4 {
+    color: #00ff00;
+}
+
+.earthquake-info p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.earthquake-info a {
+    color: #e74c3c;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+body.night-mode .earthquake-info a {
+    color: #00ff00;
+}
+
+.earthquake-info a:hover {
+    text-decoration: underline;
+}
+
+/* Custom map tiles for retro look */
+.leaflet-tile {
+    filter: brightness(0.8) saturate(0.7) invert(0.1);
+}
+
+body.night-mode .leaflet-tile {
+    filter: brightness(0.5) saturate(0.4) invert(0.2) hue-rotate(180deg);
+}
+
+.leaflet-control-zoom {
+    border: 1px solid #e74c3c !important;
+}
+
+body.night-mode .leaflet-control-zoom {
+    border-color: #00ff00 !important;
+}
+
+.leaflet-control-zoom a {
+    background-color: #222 !important;
+    color: #e74c3c !important;
+}
+
+body.night-mode .leaflet-control-zoom a {
+    color: #00ff00 !important;
+}
+
+.leaflet-control-attribution {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    color: #999 !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 0.7rem !important;
+}
+
+.earthquake-count {
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+    color: #ccc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .api-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .api-card-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .api-icon {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .weather-details {
+        grid-template-columns: 1fr;
+    }
+    
+    #earthquake-map {
+        height: 50vh;
+    }
+    
+    .earthquake-legend {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin: 10px auto;
+        max-width: 200px;
+        z-index: 1001;
+    }
+    
+    .earthquake-controls {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .magnitude-item span {
+        font-size: 0.75rem;
+    }
+    
+    .map-header-text {
+        font-size: 0.8rem;
+    }
+}
+
+/* Additional styles for better visibility on smaller screens */
+@media (max-width: 480px) {
+    .earthquake-time-control {
+        padding: 10px 5px;
+        font-size: 0.75rem;
+    }
+    
+    .earthquake-count {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    
+    .magnitude-item {
+        margin-bottom: 4px;
+    }
+    
+    .magnitude-color {
+        width: 12px;
+        height: 12px;
+        margin-right: 8px;
+    }
+    
+    .earthquake-legend h4 {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    
+    .map-header {
+        padding: 3px 5px;
+    }
+    
+    .map-corner {
+        width: 10px;
+        height: 10px;
+    }
+}
