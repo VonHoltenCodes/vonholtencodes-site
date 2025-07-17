@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRT Test Patterns - VonHoltenCodes</title>
+    <link rel="stylesheet" href="css/generator.css">
+    <link rel="icon" href="../favicon-simple.svg" type="image/svg+xml">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Control Panel -->
+        <aside class="control-panel">
+            <div class="logo">
+                <div class="logo-text">VonHolten<span>Codes</span></div>
+                <div class="logo-sub">CRT TEST PATTERNS</div>
+            </div>
+            
+            <!-- Navigation -->
+            <section class="control-section">
+                <a href="../index.html" class="back-btn" style="display: inline-block; padding: 10px; background: #00ff41; color: #000; text-decoration: none; border-radius: 3px; margin-bottom: 10px; font-weight: bold;">← Back to VonHoltenCodes</a>
+            </section>
+            
+            <!-- Pattern Type Selection -->
+            <section class="control-section">
+                <h3>Pattern Type</h3>
+                <select id="patternType" class="control-select">
+                    <option value="grid">Grid</option>
+                    <option value="colorBars">Color Bars</option>
+                    <option value="circles">Circles</option>
+                    <option value="gradient">Gradient</option>
+                    <option value="checkerboard">Checkerboard</option>
+                    <option value="lines">Lines</option>
+                    <option value="dots">Dot Matrix</option>
+                    <option value="custom">Custom</option>
+                    <option value="hdr-gradient">HDR Gradient</option>
+                    <option value="hdr-color-volume">HDR Color Volume</option>
+                </select>
+            </section>
+            
+            <!-- Color Controls -->
+            <section class="control-section">
+                <h3>Colors</h3>
+                <div class="color-controls">
+                    <div class="color-input-group">
+                        <label>Primary</label>
+                        <input type="color" id="primaryColor" value="#00ff41">
+                        <input type="text" id="primaryHex" value="#00ff41" class="hex-input">
+                    </div>
+                    <div class="color-input-group">
+                        <label>Secondary</label>
+                        <input type="color" id="secondaryColor" value="#ff00ff">
+                        <input type="text" id="secondaryHex" value="#ff00ff" class="hex-input">
+                    </div>
+                    <div class="color-input-group">
+                        <label>Background</label>
+                        <input type="color" id="bgColor" value="#000000">
+                        <input type="text" id="bgHex" value="#000000" class="hex-input">
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Pattern Parameters -->
+            <section class="control-section">
+                <h3>Parameters</h3>
+                <div class="parameter-controls">
+                    <div class="slider-group">
+                        <label>Size <span id="sizeValue">20</span>px</label>
+                        <input type="range" id="patternSize" min="1" max="200" value="20" class="slider">
+                    </div>
+                    <div class="slider-group">
+                        <label>Spacing <span id="spacingValue">0</span>px</label>
+                        <input type="range" id="patternSpacing" min="0" max="100" value="0" class="slider">
+                    </div>
+                    <div class="slider-group">
+                        <label>Line Width <span id="lineWidthValue">1</span>px</label>
+                        <input type="range" id="lineWidth" min="1" max="20" value="1" class="slider">
+                    </div>
+                    <div class="slider-group">
+                        <label>Rotation <span id="rotationValue">0</span>°</label>
+                        <input type="range" id="rotation" min="0" max="360" value="0" class="slider">
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Presets -->
+            <section class="control-section">
+                <h3>Presets</h3>
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-preset="convergence">Convergence</button>
+                    <button class="preset-btn" data-preset="focus">Focus</button>
+                    <button class="preset-btn" data-preset="linearity">Linearity</button>
+                    <button class="preset-btn" data-preset="purity">Purity</button>
+                    <button class="preset-btn" data-preset="smpte">SMPTE Bars</button>
+                    <button class="preset-btn" data-preset="pluge">PLUGE</button>
+                    <button class="preset-btn" data-preset="hdr-gradient">HDR Test</button>
+                    <button class="preset-btn" data-preset="hdr-color-volume">HDR Colors</button>
+                </div>
+            </section>
+            
+            <!-- HDR Settings -->
+            <section class="control-section" id="hdrSection" style="display: none;">
+                <h3>HDR Settings</h3>
+                <div class="parameter-controls">
+                    <div class="slider-group">
+                        <label>Peak Brightness <span id="peakNitsValue">1000</span> nits</label>
+                        <input type="range" id="peakNits" min="100" max="10000" value="1000" step="100" class="slider">
+                    </div>
+                    <div class="slider-group">
+                        <label>Color Space</label>
+                        <select id="colorSpace" class="control-select">
+                            <option value="srgb">sRGB</option>
+                            <option value="p3">Display P3</option>
+                            <option value="rec2020">Rec.2020</option>
+                        </select>
+                    </div>
+                    <div class="color-input-group">
+                        <label>HDR Mode</label>
+                        <select id="hdrMode" class="control-select">
+                            <option value="hdr10">HDR10</option>
+                            <option value="hdr10plus">HDR10+</option>
+                            <option value="dolby">Dolby Vision</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Export Options -->
+            <section class="control-section">
+                <h3>Export</h3>
+                <div class="export-buttons">
+                    <button id="exportPNG" class="export-btn">Export as PNG</button>
+                    <button id="exportSVG" class="export-btn">Export as SVG</button>
+                    <button id="shareURL" class="export-btn">Share URL</button>
+                    <button id="savePreset" class="export-btn">Save Preset</button>
+                    <button id="exportProfile" class="export-btn">Export Color Profile</button>
+                </div>
+            </section>
+            
+            <!-- Settings -->
+            <section class="control-section">
+                <h3>Canvas Settings</h3>
+                <div class="canvas-settings">
+                    <select id="canvasSize" class="control-select">
+                        <option value="window">Fit Window</option>
+                        <option value="640x480">640×480 (VGA)</option>
+                        <option value="800x600">800×600 (SVGA)</option>
+                        <option value="1024x768">1024×768 (XGA)</option>
+                        <option value="1920x1080">1920×1080 (Full HD)</option>
+                        <option value="3840x2160">3840×2160 (4K)</option>
+                        <option value="custom">Custom Size</option>
+                    </select>
+                    <div id="customSizeInputs" class="custom-size" style="display: none;">
+                        <input type="number" id="customWidth" placeholder="Width" min="1" max="7680">
+                        <span>×</span>
+                        <input type="number" id="customHeight" placeholder="Height" min="1" max="4320">
+                    </div>
+                </div>
+            </section>
+        </aside>
+        
+        <!-- Canvas Area -->
+        <main class="canvas-area">
+            <div class="canvas-toolbar">
+                <button id="fullscreenBtn" class="toolbar-btn" title="Fullscreen">⛶</button>
+                <button id="gridToggle" class="toolbar-btn" title="Toggle Grid">⊞</button>
+                <button id="zoomIn" class="toolbar-btn" title="Zoom In">+</button>
+                <button id="zoomOut" class="toolbar-btn" title="Zoom Out">−</button>
+                <button id="resetZoom" class="toolbar-btn" title="Reset Zoom">⊙</button>
+                <span class="zoom-level">100%</span>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="patternCanvas"></canvas>
+                <div class="canvas-overlay" id="gridOverlay" style="display: none;"></div>
+            </div>
+            
+            <div class="canvas-info">
+                <span id="canvasResolution">1024×768</span>
+                <span id="mousePosition">X: 0, Y: 0</span>
+                <span id="fps">60 FPS</span>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Share Pattern</h2>
+            <p>Copy this URL to share your pattern:</p>
+            <input type="text" id="shareURLInput" class="share-input" readonly>
+            <button id="copyURLBtn" class="btn">Copy to Clipboard</button>
+            <button id="closeModal" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/patterns.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

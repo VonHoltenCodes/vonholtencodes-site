@@ -1,0 +1,25 @@
+/* reduced_glow.css */
+.glow-effect {
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3), 0 0 10px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+.neon-button {
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+.neon-text {
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+/* Reduce animation intensity */
+@keyframes pulse-reduced {
+  0% { opacity: 0.8; }
+  50% { opacity: 0.95; }
+  100% { opacity: 0.8; }
+}
+
+.animated-glow {
+  animation: pulse-reduced 3s infinite ease-in-out;
+}

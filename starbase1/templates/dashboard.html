@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - System Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/starbase.css') }}?v={{ version }}">
+</head>
+<body>
+    <!-- Windows 95 Main Window -->
+    <div class="main-window">
+        <!-- Title Bar -->
+        <div class="window-title-bar">
+            <span>🖥️ {{ app_name }} - System Monitor</span>
+            <div class="window-controls">
+                <div class="window-button">_</div>
+                <div class="window-button">□</div>
+                <div class="window-button">×</div>
+            </div>
+        </div>
+
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <div class="menu-item">File</div>
+            <div class="menu-item">View</div>
+            <div class="menu-item">Options</div>
+            <div class="menu-item">Help</div>
+        </div>
+
+        <!-- Window Content -->
+        <div class="window-content">
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- CPU & Memory Panel -->
+                <div class="win95-panel">
+                    <div class="panel-header">
+                        <span class="icon icon-computer"></span>
+                        CPU & Memory
+                    </div>
+                    <div class="panel-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">CPU Model:</span>
+                                <span class="info-value" id="cpuModel">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">CPU Usage:</span>
+                                <span class="info-value" id="cpuUsage">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">CPU Speed:</span>
+                                <span class="info-value" id="cpuSpeed">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Memory Used:</span>
+                                <span class="info-value" id="memoryUsed">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Memory Total:</span>
+                                <span class="info-value" id="memoryTotal">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Memory %:</span>
+                                <span class="info-value" id="memoryPercent">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperatures & Hardware Panel -->
+                <div class="win95-panel">
+                    <div class="panel-header">
+                        <span class="icon icon-temperature"></span>
+                        Temps & Hardware
+                    </div>
+                    <div class="panel-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">CPU Temp:</span>
+                                <span class="info-value status-error" id="cpuTemp">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">System Temp:</span>
+                                <span class="info-value status-error" id="systemTemp">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">BIOS Vendor:</span>
+                                <span class="info-value" id="biosVendor">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">BIOS Version:</span>
+                                <span class="info-value" id="biosVersion">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Motherboard:</span>
+                                <span class="info-value" id="motherboard">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Drives:</span>
+                                <span class="info-value" id="driveCount">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Users Panel -->
+                <div class="win95-panel">
+                    <div class="panel-header">
+                        <span class="icon icon-security"></span>
+                        Active Users <span id="userCount">(0)</span>
+                    </div>
+                    <div class="panel-content">
+                        <div class="win95-listview" id="userList">
+                            <div class="loading">Loading user data...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Events Panel -->
+                <div class="win95-panel">
+                    <div class="panel-header">
+                        <span class="icon icon-security"></span>
+                        Security Events
+                    </div>
+                    <div class="panel-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Failed Logins:</span>
+                                <span class="info-value status-error" id="failedLogins">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Last Failed:</span>
+                                <span class="info-value" id="lastFailure">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Status Panel -->
+                <div class="win95-panel">
+                    <div class="panel-header">
+                        <span class="icon icon-service"></span>
+                        Service Status
+                    </div>
+                    <div class="panel-content">
+                        <div class="win95-listview" id="servicesList">
+                            <div class="loading">Loading service data...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage & Network Panel -->
+                <div class="win95-panel">
+                    <div class="panel-header">
+                        <span class="icon icon-disk"></span>
+                        Storage & Network
+                    </div>
+                    <div class="panel-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Disk Used:</span>
+                                <span class="info-value" id="diskUsage">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Disk Free:</span>
+                                <span class="info-value" id="diskFree">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Network In:</span>
+                                <span class="info-value" id="networkIn">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Network Out:</span>
+                                <span class="info-value" id="networkOut">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Boot Time:</span>
+                                <span class="info-value" id="bootTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Uptime:</span>
+                                <span class="info-value" id="uptime">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Health Summary -->
+            <div class="health-summary">
+                <div class="health-status" id="overallHealth">
+                    System Status: Loading...
+                </div>
+                <div class="health-details" id="healthDetails">
+                    <span>Services: -/-</span>
+                    <span>Users: -</span>
+                    <span>Security: -</span>
+                    <span>CPU: -%</span>
+                    <span>Memory: -%</span>
+                    <span id="lastUpdate">Last Updated: -</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-panel">Ready</div>
+            <div class="status-panel">
+                Status: <span class="status-good" id="systemStatus">Online</span>
+            </div>
+            <div class="status-panel">
+                Refresh: {{ refresh_interval // 1000 }}s
+            </div>
+            <div class="status-panel" id="connectionStatus">Connected</div>
+        </div>
+    </div>
+
+    <!-- Windows 95 Taskbar -->
+    <div class="taskbar">
+        <div class="start-button">
+            🪟 Start
+        </div>
+        <div class="taskbar-clock" id="currentTime">
+            Loading...
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v={{ version }}"></script>
+</body>
+</html>

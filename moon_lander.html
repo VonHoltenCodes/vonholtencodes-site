@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Lander Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', monospace;
+        }
+        #gameCanvas {
+            border: 2px solid white;
+        }
+        #controls {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        #restart {
+            background: #333;
+            color: white;
+            border: 2px solid white;
+            padding: 5px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h3>MOON LANDER</h3>
+        <p>Use ← → to rotate and ↑ for thrust</p>
+        <p>Land gently (speed &lt; 2) to succeed</p>
+        <button id="restart">RESTART MISSION</button>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const restartBtn = document.getElementById('restart');
+
+        // Game settings
+        const gravity = 0.05;
+        const thrust = 0.1;
+        const rotationSpeed = 0.05;
+        const landingThreshold = 2;
+        const moonY = canvas.height - 50;
+        let gameActive = true;
+        let stars = [];
+
+        // Generate stars
+        for (let i = 0; i < 100; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * moonY,
+                size: Math.random() * 2 + 1
+            });
+        }
+
+        // Lander object
+        let lander = {
+            x: canvas.width / 2,
+            y: 50,
+            vx: 0,
+            vy: 0,
+            angle: 0,
+            isThrusting: false,
+            landed: false,
+            crashed: false,
+            fuel: 100
+        };
+
+        // Track arrow key presses
+        let keys = {
+            ArrowUp: false,
+            ArrowLeft: false,
+            ArrowRight: false
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key in keys) keys[e.key] = true;
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.key in keys) keys[e.key] = false;
+        });
+
+        // Restart game
+        restartBtn.addEventListener('click', () => {
+            lander = {
+                x: canvas.width / 2,
+                y: 50,
+                vx: 0,
+                vy: 0,
+                angle: 0,
+                isThrusting: false,
+                landed: false,
+                crashed: false,
+                fuel: 100
+            };
+            gameActive = true;
+            restartBtn.style.display = 'none';
+        });
+
+        // Game loop
+        function update() {
+            if (gameActive && !lander.landed && !lander.crashed) {
+                // Apply gravity
+                lander.vy += gravity;
+                
+                // Apply thrust if the up arrow is pressed and there's fuel
+                if (keys.ArrowUp && lander.fuel > 0) {
+                    lander.vx += thrust * Math.sin(lander.angle);
+                    lander.vy -= thrust * Math.cos(lander.angle);
+                    lander.isThrusting = true;
+                    lander.fuel -= 0.2; // Consume fuel
+                } else {
+                    lander.isThrusting = false;
+                }
+                
+                // Rotate the lander
+                if (keys.ArrowLeft) lander.angle -= rotationSpeed;
+                if (keys.ArrowRight) lander.angle += rotationSpeed;
+                
+                // Update position
+                lander.x += lander.vx;
+                lander.y += lander.vy;
+                
+                // Boundary checks
+                if (lander.x < 0) lander.x = 0;
+                if (lander.x > canvas.width) lander.x = canvas.width;
+                
+                // Check for landing or crash
+                if (lander.y >= moonY) {
+                    lander.y = moonY;
+                    if (Math.abs(lander.vy) < landingThreshold && Math.abs(lander.vx) < landingThreshold) {
+                        lander.landed = true;
+                    } else {
+                        lander.crashed = true;
+                    }
+                    gameActive = false;
+                    restartBtn.style.display = 'block';
+                }
+            }
+            
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        // Draw everything
+        function draw() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stars
+            drawStars();
+
+            // Draw the Earth in the distance
+            drawEarth();
+
+            // Draw moon surface with craters
+            drawMoonSurface();
+
+            // Draw lander
+            drawLander();
+
+            // Show landing outcome
+            if (lander.landed) {
+                drawAstronautAndFlag();
+                displayMessage("MISSION SUCCESSFUL! THE EAGLE HAS LANDED.");
+            } else if (lander.crashed) {
+                drawCrash();
+                displayMessage("MISSION FAILED! LANDER CRASHED.");
+            }
+
+            // Draw HUD
+            drawHUD();
+        }
+
+        // Draw stars
+        function drawStars() {
+            ctx.fillStyle = 'white';
+            for (const star of stars) {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Draw the Earth in the distance
+        function drawEarth() {
+            const earthGradient = ctx.createRadialGradient(100, 100, 20, 100, 100, 40);
+            earthGradient.addColorStop(0, '#1E90FF');
+            earthGradient.addColorStop(1, '#104E8B');
+            
+            ctx.fillStyle = earthGradient;
+            ctx.beginPath();
+            ctx.arc(100, 100, 40, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add cloud-like details
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(90, 90, 15, 0, Math.PI * 2);
+            ctx.arc(110, 95, 10, 0, Math.PI * 2);
+            ctx.arc(85, 110, 12, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw the moon surface with craters
+        function drawMoonSurface() {
+            // Moon surface
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(0, moonY, canvas.width, canvas.height - moonY);
+
+            // Add craters
+            ctx.fillStyle = 'darkgray';
+            drawCrater(100, moonY + 10, 20);
+            drawCrater(200, moonY + 15, 15);
+            drawCrater(300, moonY + 5, 25);
+            drawCrater(400, moonY + 20, 10);
+            drawCrater(500, moonY + 10, 20);
+            drawCrater(600, moonY + 15, 15);
+            drawCrater(700, moonY + 5, 25);
+        }
+
+        // Helper to draw a crater
+        function drawCrater(x, y, radius) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw the lander with a NASA-like design
+        function drawLander() {
+            ctx.save();
+            ctx.translate(lander.x, lander.y);
+            ctx.rotate(lander.angle);
+
+            // Lander body (rectangle)
+            ctx.fillStyle = 'white';
+            ctx.fillRect(-10, -15, 20, 20);
+
+            // NASA logo
+            ctx.fillStyle = 'blue';
+            ctx.font = '8px Arial';
+            ctx.fillText("NASA", -9, -5);
+
+            // Lander legs (lines)
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+
+            // Left legs
+            ctx.beginPath();
+            ctx.moveTo(-10, 5);
+            ctx.lineTo(-15, 15);
+            ctx.moveTo(-10, 5);
+            ctx.lineTo(-5, 15);
+            ctx.stroke();
+
+            // Right legs
+            ctx.beginPath();
+            ctx.moveTo(10, 5);
+            ctx.lineTo(15, 15);
+            ctx.moveTo(10, 5);
+            ctx.lineTo(5, 15);
+            ctx.stroke();
+
+            // Thrust flame if engine is on
+            if (lander.isThrusting) {
+                // Animated flame
+                const flameSize = 10 + Math.random() * 5;
+                ctx.fillStyle = 'orange';
+                ctx.beginPath();
+                ctx.moveTo(-5, 15);
+                ctx.lineTo(5, 15);
+                ctx.lineTo(0, 15 + flameSize);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Inner flame
+                ctx.fillStyle = 'yellow';
+                ctx.beginPath();
+                ctx.moveTo(-3, 15);
+                ctx.lineTo(3, 15);
+                ctx.lineTo(0, 15 + flameSize * 0.7);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        // Draw astronaut and flag
+        function drawAstronautAndFlag() {
+            // Astronaut
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(lander.x - 20, moonY - 10, 5, 0, Math.PI * 2); // Head
+            ctx.fill();
+            ctx.fillRect(lander.x - 22, moonY - 5, 4, 10);         // Body
+            
+            // American flag
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(lander.x + 15, moonY - 25, 5, 5);         // Blue square
+            
+            ctx.fillStyle = 'red';
+            ctx.fillRect(lander.x + 20, moonY - 25, 10, 1);        // Red stripes
+            ctx.fillRect(lander.x + 20, moonY - 23, 10, 1);
+            ctx.fillRect(lander.x + 20, moonY - 21, 10, 1);
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(lander.x + 20, moonY - 24, 10, 1);        // White stripes
+            ctx.fillRect(lander.x + 20, moonY - 22, 10, 1);
+            
+            // Flag pole
+            ctx.strokeStyle = 'silver';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(lander.x + 15, moonY - 25);
+            ctx.lineTo(lander.x + 15, moonY);
+            ctx.stroke();
+        }
+
+        // Draw crash explosion
+        function drawCrash() {
+            // Create animated explosion
+            const size = 20 + Math.random() * 5;
+            
+            // Outer explosion
+            ctx.fillStyle = 'orange';
+            ctx.beginPath();
+            ctx.arc(lander.x, lander.y, size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner explosion
+            ctx.fillStyle = 'yellow';
+            ctx.beginPath();
+            ctx.arc(lander.x, lander.y, size * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Debris particles
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 10; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 30 + 10;
+                const x = lander.x + Math.cos(angle) * distance;
+                const y = lander.y + Math.sin(angle) * distance;
+                const particleSize = Math.random() * 3 + 1;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, particleSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Draw HUD (Heads Up Display)
+        function drawHUD() {
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Courier New';
+            
+            // Altitude
+            const altitude = Math.max(0, Math.floor(moonY - lander.y));
+            ctx.fillText(`ALTITUDE: ${altitude} M`, 20, 30);
+            
+            // Velocity
+            const velocityY = Math.abs(lander.vy).toFixed(2);
+            const velocityX = Math.abs(lander.vx).toFixed(2);
+            ctx.fillText(`VELOCITY: X: ${velocityX} Y: ${velocityY}`, 20, 50);
+            
+            // Fuel
+            ctx.fillText(`FUEL: ${Math.max(0, Math.floor(lander.fuel))}%`, 20, 70);
+            
+            // Render fuel bar
+            ctx.fillStyle = 'grey';
+            ctx.fillRect(20, 80, 100, 10);
+            
+            if (lander.fuel > 0) {
+                ctx.fillStyle = lander.fuel > 30 ? 'green' : 'red';
+                ctx.fillRect(20, 80, lander.fuel, 10);
+            }
+        }
+
+        // Display mission outcome message
+        function displayMessage(message) {
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 20px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText(message, canvas.width / 2, 150);
+            ctx.textAlign = 'left'; // Reset text alignment
+        }
+
+        // Start the game
+        update();
+    </script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+/* Starbase1_IO - Windows 95 Style Interface */
+
+:root {
+    /* Windows 95 Color Palette */
+    --win95-gray: #c0c0c0;
+    --win95-dark-gray: #808080;
+    --win95-light-gray: #dfdfdf;
+    --win95-white: #ffffff;
+    --win95-black: #000000;
+    --win95-blue: #000080;
+    --win95-dark-blue: #000040;
+    --win95-red: #800000;
+    --win95-green: #008000;
+    --win95-yellow: #808000;
+    --win95-purple: #800080;
+    
+    /* Status Colors */
+    --status-good: #008000;
+    --status-warning: #808000;
+    --status-error: #800000;
+    --status-info: #000080;
+    
+    /* Window Effects */
+    --win95-border-raised: inset 2px 2px #dfdfdf, inset -2px -2px #808080;
+    --win95-border-sunken: inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+    --win95-border-button: outset 2px 2px #dfdfdf, outset -2px -2px #808080;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'MS Sans Serif', sans-serif;
+    background-color: var(--win95-gray);
+    color: var(--win95-black);
+    font-size: 11px;
+    line-height: 1.2;
+    overflow-x: auto;
+}
+
+/* Taskbar */
+.taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: var(--win95-gray);
+    border-top: 2px solid var(--win95-light-gray);
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    z-index: 1000;
+}
+
+.start-button {
+    height: 24px;
+    padding: 0 8px;
+    background: var(--win95-gray);
+    border: var(--win95-border-button);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.start-button:active {
+    border: var(--win95-border-sunken);
+}
+
+.taskbar-clock {
+    margin-left: auto;
+    padding: 0 8px;
+    border: var(--win95-border-sunken);
+    background: var(--win95-white);
+    height: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+}
+
+/* Main Window */
+.main-window {
+    margin: 10px;
+    margin-bottom: 40px;
+    background: var(--win95-gray);
+    border: var(--win95-border-raised);
+}
+
+.window-title-bar {
+    background: linear-gradient(to right, var(--win95-blue), var(--win95-dark-blue));
+    color: var(--win95-white);
+    padding: 2px 4px;
+    font-weight: bold;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.window-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.window-button {
+    width: 16px;
+    height: 14px;
+    background: var(--win95-gray);
+    border: 1px outset var(--win95-gray);
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.window-content {
+    padding: 8px;
+}
+
+/* Menu Bar */
+.menu-bar {
+    background: var(--win95-gray);
+    border-bottom: 1px solid var(--win95-dark-gray);
+    padding: 2px;
+    display: flex;
+    gap: 8px;
+}
+
+.menu-item {
+    padding: 4px 8px;
+    cursor: pointer;
+    border: 1px transparent;
+}
+
+.menu-item:hover {
+    border: 1px outset var(--win95-gray);
+}
+
+/* Status Bar */
+.status-bar {
+    background: var(--win95-gray);
+    border-top: 1px solid var(--win95-dark-gray);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+}
+
+.status-panel {
+    border: var(--win95-border-sunken);
+    padding: 2px 4px;
+    background: var(--win95-white);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+/* Windows 95 Style Panels */
+.win95-panel {
+    background: var(--win95-gray);
+    border: var(--win95-border-sunken);
+    padding: 8px;
+}
+
+.panel-header {
+    background: var(--win95-gray);
+    padding: 4px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--win95-dark-gray);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.panel-content {
+    background: var(--win95-white);
+    border: var(--win95-border-sunken);
+    padding: 6px;
+    min-height: 120px;
+}
+
+/* System Info Display */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    font-size: 10px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 4px;
+    border-bottom: 1px dotted var(--win95-dark-gray);
+}
+
+.info-label {
+    font-weight: bold;
+    color: var(--win95-black);
+}
+
+.info-value {
+    color: var(--win95-blue);
+    text-align: right;
+}
+
+/* List Views */
+.win95-listview {
+    background: var(--win95-white);
+    border: var(--win95-border-sunken);
+    min-height: 100px;
+    padding: 4px;
+    font-size: 10px;
+}
+
+.listview-header {
+    background: var(--win95-gray);
+    border: 1px outset var(--win95-gray);
+    padding: 2px 4px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.listview-item {
+    padding: 2px 4px;
+    border-bottom: 1px dotted var(--win95-dark-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.listview-item:hover {
+    background: var(--win95-blue);
+    color: var(--win95-white);
+}
+
+/* Service Status Icons */
+.service-icon {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-right: 4px;
+    border-radius: 50%;
+    background: var(--status-error); /* Default to error red */
+}
+
+.service-icon.service-running {
+    background: var(--status-good) !important;
+}
+
+.service-icon.service-stopped {
+    background: var(--status-warning) !important;
+}
+
+.service-icon.service-error {
+    background: var(--status-error) !important;
+}
+
+/* Progress Bars */
+.win95-progress {
+    height: 16px;
+    background: var(--win95-white);
+    border: var(--win95-border-sunken);
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--win95-blue);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: bold;
+    color: var(--win95-black);
+}
+
+/* Buttons */
+.win95-button {
+    background: var(--win95-gray);
+    border: var(--win95-border-button);
+    padding: 4px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.win95-button:active {
+    border: var(--win95-border-sunken);
+}
+
+.win95-button:disabled {
+    color: var(--win95-dark-gray);
+    cursor: not-allowed;
+}
+
+/* Tabs */
+.win95-tabs {
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.tab-button {
+    background: var(--win95-gray);
+    border: 1px outset var(--win95-gray);
+    border-bottom: none;
+    padding: 4px 12px;
+    font-size: 10px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.tab-button.active {
+    background: var(--win95-white);
+    border-bottom: 1px solid var(--win95-white);
+    z-index: 2;
+}
+
+.tab-content {
+    background: var(--win95-white);
+    border: 1px solid var(--win95-dark-gray);
+    padding: 8px;
+    min-height: 200px;
+}
+
+/* System Health Summary */
+.health-summary {
+    grid-column: 1 / -1;
+    background: var(--win95-white);
+    border: var(--win95-border-sunken);
+    padding: 8px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.health-status {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.health-details {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 10px;
+}
+
+/* Loading and Error States */
+.loading {
+    text-align: center;
+    padding: 16px;
+    color: var(--win95-dark-gray);
+    font-style: italic;
+}
+
+.error {
+    background: var(--win95-red);
+    color: var(--win95-white);
+    padding: 8px;
+    border: 2px solid var(--win95-red);
+    margin: 4px 0;
+    font-weight: bold;
+}
+
+/* Status Colors */
+.status-good { color: var(--status-good); }
+.status-warning { color: var(--status-warning); }
+.status-error { color: var(--status-error); }
+.status-info { color: var(--status-info); }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .health-details {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-bold { font-weight: bold; }
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mt-1 { margin-top: 4px; }
+.mt-2 { margin-top: 8px; }
+
+/* Icons (using simple colored squares for now) */
+.icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.icon-computer { background: var(--win95-blue); }
+.icon-network { background: var(--status-good); }
+.icon-security { background: var(--status-warning); }
+.icon-service { background: var(--win95-purple); }
+.icon-temperature { background: var(--status-error); }
+.icon-disk { background: var(--win95-yellow); }
