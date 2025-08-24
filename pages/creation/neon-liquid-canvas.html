@@ -1,0 +1,501 @@
+<\!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Liquid Canvas - VonHoltenCodes</title>
+    <link rel="icon" href="../../favicon-simple.svg" type="image/svg+xml">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/tabs-v2.css">
+    <link rel="stylesheet" href="../../css/footer.css">
+    <link rel="stylesheet" href="../../css/custom-cursor.css">
+    <link rel="stylesheet" href="../../css/background.css">
+    <link rel="stylesheet" href="../../css/night-mode-toggle.css">
+    <style>
+        .neon-canvas-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #000;
+            border-radius: 10px;
+            box-shadow: inset 0 0 50px rgba(0, 255, 255, 0.2);
+        }
+
+        #neonCanvas {
+            border: 3px solid transparent;
+            border-image: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff) 1;
+            cursor: crosshair;
+            display: block;
+            background: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .brush-size-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 25px;
+            border: 1px solid #00ffff;
+        }
+
+        .brush-size-control label {
+            color: #00ffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        #brushSize {
+            width: 100px;
+            height: 6px;
+            appearance: none;
+            background: linear-gradient(to right, #ff00ff, #00ffff);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        #brushSize::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        #brushSize::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .brush-size-display {
+            color: #ffff00;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .title {
+            text-align: center;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            animation: neonGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            from {
+                text-shadow: 0 0 20px rgba(0, 255, 255, 0.8),
+                            0 0 40px rgba(0, 255, 255, 0.6);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(255, 0, 255, 0.8),
+                            0 0 50px rgba(255, 0, 255, 0.6);
+            }
+        }
+
+        .description {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 140, 0, 0.2);
+            border: 1px solid #ff8c00;
+            border-radius: 5px;
+            color: #ff8c00;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 140, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="background-container">
+        <div class="hydraulic-background"></div>
+        <div class="scanlines"></div>
+        <div class="diagonal-stripes"></div>
+        <div class="circuit-lines"></div>
+    </div>
+    
+    <!-- Night Mode Toggle in Top Right -->
+    <div class="night-mode-toggle">
+        <div class="toggle-button">
+            <span class="toggle-icon toggle-sun">☀</span>
+            <span class="toggle-icon toggle-moon">☽</span>
+        </div>
+    </div>
+    <div class="bullet-hole-container"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div id="header-container">
+            <header class="site-header">
+                <a href="http://www.vonholtencodes.com" style="text-decoration: none; color: inherit;">
+                    <span class="thick">VonHolten</span><br>
+                    <span class="thick">Codes</span><br>
+                    <span class="thin">.com</span>
+                </a>
+                
+                <!-- 3D Rotating VH Logo -->
+                <div class="vh-logo-3d">
+                    <div class="logo-face front">
+                        VH
+                        <span class="bullet-hole bullet-hole-1"></span>
+                        <span class="bullet-hole bullet-hole-2"></span>
+                    </div>
+                    <div class="logo-face back">VH</div>
+                    <div class="logo-face right"></div>
+                    <div class="logo-face left"></div>
+                    <div class="logo-face top"></div>
+                    <div class="logo-face bottom"></div>
+                </div>
+            </header>
+        </div>
+        
+        <!-- Main Content -->
+        <main>
+            <section class="page-content">
+                <a href="index.html" class="back-link">← Back to Creation Station</a>
+                
+                <div class="neon-canvas-container">
+                    <h1 class="title">Neon Liquid Canvas</h1>
+                    <p class="description">Drag your mouse across the neon surface to reveal the darkness beneath. Like drawing through liquid light!</p>
+                    
+                    <div class="canvas-wrapper">
+                        <canvas id="neonCanvas" width="800" height="600"></canvas>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="control-btn" id="clearBtn">Clear Canvas</button>
+                        <button class="control-btn" id="randomizeBtn">New Colors</button>
+                        <button class="control-btn" id="saveBtn">Save Image</button>
+                        <button class="control-btn" id="downloadBtn">Download</button>
+                        <div class="brush-size-control">
+                            <label for="brushSize">Brush:</label>
+                            <input type="range" id="brushSize" min="5" max="50" value="20">
+                            <span class="brush-size-display" id="brushSizeDisplay">20</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="copyright">Created by VonHoltenCodes 2025</div>
+        </footer>
+    </div>
+    
+    <script src="../../js/main.js"></script>
+    <script src="../../js/header.js"></script>
+    <script src="../../js/custom-cursor.js"></script>
+    <script src="../../js/background.js"></script>
+    <script src="../../js/night-mode-toggle.js"></script>
+    <script>
+        // Neon Liquid Canvas Implementation
+        class NeonLiquidCanvas {
+            constructor() {
+                this.canvas = document.getElementById('neonCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.isDrawing = false;
+                this.brushSize = 20;
+                this.lastX = 0;
+                this.lastY = 0;
+                
+                // Neon color palette
+                this.neonColors = [
+                    '#ff00ff', // Magenta
+                    '#00ffff', // Cyan
+                    '#ffff00', // Yellow
+                    '#ff00aa', // Hot Pink
+                    '#00ff00', // Lime Green
+                    '#ff6600', // Orange
+                    '#0099ff', // Electric Blue
+                    '#ff0099', // Rose
+                    '#99ff00', // Chartreuse
+                    '#9900ff'  // Purple
+                ];
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupCanvas();
+                this.createNeonGradient();
+                this.setupEventListeners();
+            }
+            
+            setupCanvas() {
+                // Set canvas size
+                this.canvas.width = 800;
+                this.canvas.height = 600;
+                
+                // Enable smooth drawing
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+            }
+            
+            createNeonGradient() {
+                // Save the current state
+                this.ctx.save();
+                
+                // Fill with black background
+                this.ctx.fillStyle = '#000000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Create multiple radial gradients for tie-dye effect
+                const numGradients = 8;
+                this.ctx.globalCompositeOperation = 'screen';
+                
+                for (let i = 0; i < numGradients; i++) {
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+                    const radius = 200 + Math.random() * 300;
+                    
+                    const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
+                    
+                    // Pick random colors for this gradient
+                    const color1 = this.neonColors[Math.floor(Math.random() * this.neonColors.length)];
+                    const color2 = this.neonColors[Math.floor(Math.random() * this.neonColors.length)];
+                    const color3 = this.neonColors[Math.floor(Math.random() * this.neonColors.length)];
+                    
+                    gradient.addColorStop(0, color1 + 'ff');
+                    gradient.addColorStop(0.5, color2 + '88');
+                    gradient.addColorStop(1, color3 + '00');
+                    
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+                
+                // Add some noise/texture
+                this.ctx.globalCompositeOperation = 'overlay';
+                for (let i = 0; i < 3; i++) {
+                    const gradient = this.ctx.createLinearGradient(
+                        Math.random() * this.canvas.width,
+                        Math.random() * this.canvas.height,
+                        Math.random() * this.canvas.width,
+                        Math.random() * this.canvas.height
+                    );
+                    
+                    const color = this.neonColors[Math.floor(Math.random() * this.neonColors.length)];
+                    gradient.addColorStop(0, color + '44');
+                    gradient.addColorStop(0.5, color + '00');
+                    gradient.addColorStop(1, color + '44');
+                    
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+                
+                this.ctx.restore();
+                
+                // Store the gradient as image data
+                this.gradientData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            startDrawing(e) {
+                this.isDrawing = true;
+                const rect = this.canvas.getBoundingClientRect();
+                this.lastX = e.clientX - rect.left;
+                this.lastY = e.clientY - rect.top;
+            }
+            
+            draw(e) {
+                if (!this.isDrawing) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Set up eraser effect (reveals black underneath)
+                this.ctx.globalCompositeOperation = 'destination-out';
+                
+                // Draw smooth line
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.lastX, this.lastY);
+                this.ctx.lineTo(x, y);
+                this.ctx.lineWidth = this.brushSize;
+                this.ctx.stroke();
+                
+                // Add some scatter points for liquid effect
+                for (let i = 0; i < 3; i++) {
+                    const offsetX = (Math.random() - 0.5) * this.brushSize * 0.5;
+                    const offsetY = (Math.random() - 0.5) * this.brushSize * 0.5;
+                    const size = Math.random() * this.brushSize * 0.3;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(x + offsetX, y + offsetY, size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                
+                this.lastX = x;
+                this.lastY = y;
+            }
+            
+            stopDrawing() {
+                this.isDrawing = false;
+            }
+            
+            clear() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.createNeonGradient();
+            }
+            
+            randomizeColors() {
+                // Shuffle colors and recreate gradient
+                this.neonColors.sort(() => Math.random() - 0.5);
+                this.createNeonGradient();
+            }
+            
+            save() {
+                // Store current canvas state
+                localStorage.setItem('neonCanvasData', this.canvas.toDataURL());
+                alert('Canvas saved! It will be restored when you return.');
+            }
+            
+            download() {
+                const link = document.createElement('a');
+                link.download = 'neon-liquid-art-' + Date.now() + '.png';
+                link.href = this.canvas.toDataURL();
+                link.click();
+            }
+            
+            setupEventListeners() {
+                // Mouse events
+                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+                this.canvas.addEventListener('mouseleave', () => this.stopDrawing());
+                
+                // Touch events for mobile
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousedown', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    this.canvas.dispatchEvent(mouseEvent);
+                });
+                
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousemove', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    this.canvas.dispatchEvent(mouseEvent);
+                });
+                
+                this.canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    const mouseEvent = new MouseEvent('mouseup', {});
+                    this.canvas.dispatchEvent(mouseEvent);
+                });
+                
+                // Control buttons
+                document.getElementById('clearBtn').addEventListener('click', () => this.clear());
+                document.getElementById('randomizeBtn').addEventListener('click', () => this.randomizeColors());
+                document.getElementById('saveBtn').addEventListener('click', () => this.save());
+                document.getElementById('downloadBtn').addEventListener('click', () => this.download());
+                
+                // Brush size control
+                const brushSizeSlider = document.getElementById('brushSize');
+                const brushSizeDisplay = document.getElementById('brushSizeDisplay');
+                
+                brushSizeSlider.addEventListener('input', (e) => {
+                    this.brushSize = parseInt(e.target.value);
+                    brushSizeDisplay.textContent = this.brushSize;
+                });
+                
+                // Load saved canvas if exists
+                const savedData = localStorage.getItem('neonCanvasData');
+                if (savedData) {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = savedData;
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new NeonLiquidCanvas();
+        });
+    </script>
+</body>
+</html>
