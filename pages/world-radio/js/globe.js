@@ -56,6 +56,11 @@ class GlobeController {
         container.addEventListener('mouseup', (e) => this.onMouseUp(e));
         container.addEventListener('mouseleave', (e) => this.onMouseUp(e));
 
+        // Touch event listeners for mobile
+        container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+        container.addEventListener('touchend', (e) => this.onTouchEnd(e), { passive: false });
+
         // Start animation
         this.animate();
     }
@@ -298,6 +303,64 @@ class GlobeController {
     onMouseUp(event) {
         this.isDragging = false;
         document.body.style.cursor = 'grab';
+    }
+
+    onTouchStart(event) {
+        if (event.touches.length === 1) {
+            event.preventDefault();
+            this.isDragging = true;
+            this.autoRotate = false;
+            this.previousMousePosition = {
+                x: event.touches[0].clientX,
+                y: event.touches[0].clientY
+            };
+        }
+    }
+
+    onTouchMove(event) {
+        if (event.touches.length === 1 && this.isDragging) {
+            event.preventDefault();
+
+            const deltaMove = {
+                x: event.touches[0].clientX - this.previousMousePosition.x,
+                y: event.touches[0].clientY - this.previousMousePosition.y
+            };
+
+            this.rotationVelocity.x = deltaMove.x * 0.005;
+            this.rotationVelocity.y = deltaMove.y * 0.005;
+
+            // Apply rotation to globe
+            this.globe.rotation.y += this.rotationVelocity.x;
+            this.globe.rotation.x += this.rotationVelocity.y;
+
+            // Clamp vertical rotation
+            const maxRotation = Math.PI / 2;
+            this.globe.rotation.x = Math.max(-maxRotation, Math.min(maxRotation, this.globe.rotation.x));
+
+            this.previousMousePosition = {
+                x: event.touches[0].clientX,
+                y: event.touches[0].clientY
+            };
+        }
+    }
+
+    onTouchEnd(event) {
+        this.isDragging = false;
+
+        // Handle tap for country selection (if not dragged much)
+        if (event.changedTouches.length === 1) {
+            const touch = event.changedTouches[0];
+            this.mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+            const intersects = this.raycaster.intersectObjects(this.globe.children);
+
+            if (intersects.length > 0 && intersects[0].object.userData.name) {
+                const country = intersects[0].object.userData;
+                this.selectCountry(country);
+            }
+        }
     }
 
     onGlobeClick(event) {
