@@ -251,6 +251,16 @@ body {
     border: 1px solid #333;
 }
 
+.brand-name-link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.brand-name-link:hover {
+    opacity: 0.8;
+}
+
 .brand-name {
     font-size: 18px;
     font-weight: bold;
