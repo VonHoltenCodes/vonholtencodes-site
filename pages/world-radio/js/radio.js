@@ -1,7 +1,7 @@
 // Radio Browser API integration
 class RadioAPI {
     constructor() {
-        this.baseUrl = 'https://de1.api.radio-browser.info/json';
+        this.baseUrl = 'https://all.api.radio-browser.info/json';
         this.stationCache = {};
     }
 
@@ -12,28 +12,35 @@ class RadioAPI {
         }
 
         try {
+            // Fetch top voted stations (API endpoint working)
             const response = await fetch(
-                `${this.baseUrl}/stations/bycountrycodeexact/${countryCode}?limit=50&order=votes&reverse=true&hidebroken=true`
+                `${this.baseUrl}/stations/topvote/500`
             );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const stations = await response.json();
+            const allStations = await response.json();
 
-            // Filter for working stations with good quality
-            const filteredStations = stations.filter(station => {
-                return station.url_resolved &&
+            // Filter for the requested country code and quality
+            const filteredStations = allStations.filter(station => {
+                return station.countrycode === countryCode &&
+                       station.url_resolved &&
                        station.lastcheckok === 1 &&
                        station.codec &&
                        station.bitrate >= 64;
             });
 
-            // Cache the results
-            this.stationCache[countryCode] = filteredStations;
+            // Take top 50 by votes
+            const topStations = filteredStations
+                .sort((a, b) => b.votes - a.votes)
+                .slice(0, 50);
 
-            return filteredStations;
+            // Cache the results
+            this.stationCache[countryCode] = topStations;
+
+            return topStations;
         } catch (error) {
             console.error('Error fetching stations:', error);
             return [];
@@ -42,15 +49,25 @@ class RadioAPI {
 
     async searchStations(query) {
         try {
+            // Fetch top stations and filter client-side (workaround for broken search endpoint)
             const response = await fetch(
-                `${this.baseUrl}/stations/search?name=${encodeURIComponent(query)}&limit=20&hidebroken=true&order=votes&reverse=true`
+                `${this.baseUrl}/stations/topvote/200`
             );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            return await response.json();
+            const stations = await response.json();
+
+            // Filter by query (case-insensitive search in name and tags)
+            const queryLower = query.toLowerCase();
+            const filtered = stations.filter(station => {
+                return (station.name && station.name.toLowerCase().includes(queryLower)) ||
+                       (station.tags && station.tags.toLowerCase().includes(queryLower));
+            });
+
+            return filtered.slice(0, 20);
         } catch (error) {
             console.error('Error searching stations:', error);
             return [];
