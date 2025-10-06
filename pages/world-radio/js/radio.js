@@ -3,6 +3,34 @@ class RadioAPI {
     constructor() {
         this.baseUrl = 'https://all.api.radio-browser.info/json';
         this.stationCache = {};
+        this.fallbackStations = this.getFallbackStations();
+    }
+
+    getFallbackStations() {
+        // Hardcoded fallback stations for when API is down
+        return {
+            'US': [
+                { stationuuid: 'fallback-us-1', name: 'KEXP 90.3 FM', url_resolved: 'https://kexp-mp3-128.streamguys1.com/kexp128.mp3', country: 'United States', countrycode: 'US', tags: 'Alternative, Rock, Indie', codec: 'MP3', bitrate: 128, homepage: 'https://www.kexp.org', lastcheckok: 1 },
+                { stationuuid: 'fallback-us-2', name: 'WNYC FM', url_resolved: 'https://fm939.wnyc.org/wnycfm', country: 'United States', countrycode: 'US', tags: 'News, Talk, NPR', codec: 'MP3', bitrate: 128, homepage: 'https://www.wnyc.org', lastcheckok: 1 },
+                { stationuuid: 'fallback-us-3', name: 'KNKX Jazz', url_resolved: 'https://knkx-mp3-128.streamguys1.com/knkx128.mp3', country: 'United States', countrycode: 'US', tags: 'Jazz, Blues', codec: 'MP3', bitrate: 128, homepage: 'https://www.knkx.org', lastcheckok: 1 },
+            ],
+            'GB': [
+                { stationuuid: 'fallback-gb-1', name: 'BBC Radio 1', url_resolved: 'http://stream.live.vc.bbcmedia.co.uk/bbc_radio_one', country: 'United Kingdom', countrycode: 'GB', tags: 'Pop, Dance, Chart', codec: 'MP3', bitrate: 128, homepage: 'https://www.bbc.co.uk/radio1', lastcheckok: 1 },
+                { stationuuid: 'fallback-gb-2', name: 'BBC Radio 6 Music', url_resolved: 'http://stream.live.vc.bbcmedia.co.uk/bbc_6music', country: 'United Kingdom', countrycode: 'GB', tags: 'Alternative, Indie, Rock', codec: 'MP3', bitrate: 128, homepage: 'https://www.bbc.co.uk/6music', lastcheckok: 1 },
+            ],
+            'CA': [
+                { stationuuid: 'fallback-ca-1', name: 'CBC Radio One', url_resolved: 'https://cbcliveradio-lh.akamaihd.net/i/CBCR1_TOR@118115/master.m3u8', country: 'Canada', countrycode: 'CA', tags: 'News, Talk', codec: 'HLS', bitrate: 128, homepage: 'https://www.cbc.ca/radio', lastcheckok: 1 },
+            ],
+            'DE': [
+                { stationuuid: 'fallback-de-1', name: 'Bayern 3', url_resolved: 'https://streams.br.de/bayern3_2.m3u', country: 'Germany', countrycode: 'DE', tags: 'Pop, Rock', codec: 'MP3', bitrate: 128, homepage: 'https://www.br.de/bayern3', lastcheckok: 1 },
+            ],
+            'FR': [
+                { stationuuid: 'fallback-fr-1', name: 'FIP', url_resolved: 'https://icecast.radiofrance.fr/fip-midfi.mp3', country: 'France', countrycode: 'FR', tags: 'Eclectic, Jazz, World', codec: 'MP3', bitrate: 128, homepage: 'https://www.fip.fr', lastcheckok: 1 },
+            ],
+            'AU': [
+                { stationuuid: 'fallback-au-1', name: 'triple j', url_resolved: 'https://live-radio01.mediahubaustralia.com/2TJW/mp3/', country: 'Australia', countrycode: 'AU', tags: 'Alternative, Rock, Indie', codec: 'MP3', bitrate: 128, homepage: 'https://www.abc.net.au/triplej', lastcheckok: 1 },
+            ],
+        };
     }
 
     async getStationsByCountry(countryCode) {
@@ -14,7 +42,8 @@ class RadioAPI {
         try {
             // Fetch top voted stations (API endpoint working)
             const response = await fetch(
-                `${this.baseUrl}/stations/topvote/500`
+                `${this.baseUrl}/stations/topvote/500`,
+                { timeout: 5000 }
             );
 
             if (!response.ok) {
@@ -42,8 +71,12 @@ class RadioAPI {
 
             return topStations;
         } catch (error) {
-            console.error('Error fetching stations:', error);
-            return [];
+            console.warn('API error, using fallback stations:', error);
+
+            // Use fallback stations when API fails
+            const fallback = this.fallbackStations[countryCode] || [];
+            this.stationCache[countryCode] = fallback;
+            return fallback;
         }
     }
 
